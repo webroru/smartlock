@@ -1,0 +1,10 @@
+{
+  "autoload": {
+    "psr-4": {"App\\": "./"}
+  },
+  "require": {
+    "ext-json": "*",
+    "ext-dom": "*",
+    "guzzlehttp/guzzle": "~6.0"
+  }
+}

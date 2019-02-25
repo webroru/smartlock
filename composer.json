@@ -3,8 +3,12 @@
     "psr-4": {"App\\": "./"}
   },
   "require": {
-    "ext-json": "*",
     "ext-dom": "*",
+    "ext-json": "*",
+    "ext-imap": "*",
     "guzzlehttp/guzzle": "~6.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "*"
   }
 }

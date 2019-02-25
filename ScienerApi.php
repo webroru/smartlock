@@ -5,16 +5,12 @@ namespace App;
 class ScienerApi
 {
     const BASE_URL = 'https://api.sciener.cn';
-//    const BASE_URL = 'https://api.ttlock.com.cn';
     const APP_ID = '7af8fb46051e4f54984a94c6a5dcd46f';
     const APP_SECRET = 'e53cd30a6bcbcef49166833e8737dc0b';
     const GRANT_TYPE = 'password';
     const LOCK_ID = '1297585';
-//    const USER = 'webroru@gmail.com';
     const USER = '+38630387021';
-//    const PASSWORD = 'Qw19zx88';
     const PASSWORD = 'Itkiss19';
-    //const REDIRECT_URI = 'http://localhost:8000';
     const REDIRECT_URI = 'test.com';
 
     private $client;

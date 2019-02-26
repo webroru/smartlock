@@ -5,9 +5,9 @@ namespace App;
 class MailChecker
 {
     const HOST = '{imap.gmail.com:993/imap/ssl}INBOX';
-    const USER = 'webroru@gmail.com';
-    const PASSWORD = 'Jopajopa';
-    const CRITERIA = 'UNSEEN FROM "webroru@gmail.com"';
+    const USER = 'booker.greenslo@gmail.com';
+    const PASSWORD = 'Reenslog19';
+    const CRITERIA = 'UNSEEN FROM "noreply@mailing-service.otelms.com"';
 
     private $inbox;
 
@@ -22,6 +22,11 @@ class MailChecker
     public function getMail(): array
     {
         $emails = imap_search($this->inbox, self::CRITERIA);
+
+        if (!$emails) {
+            return [];
+        }
+
         $result = [];
         foreach ($emails as $uid) {
             $structure = imap_fetchstructure($this->inbox, $uid);

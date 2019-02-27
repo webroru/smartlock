@@ -13,12 +13,13 @@ foreach ($mailChecker->getMail() as $mail) {
     $parser = new Parser($mail);
     $checkInDate = $parser->getCheckInDate();
     $checkOutDate = $parser->getCheckOutDate();
-    $bookingNumber = $parser->getBookingNumber();
     $guestName = $parser->getGuestName();
-    $password = substr($bookingNumber, -6);
+    $phone = $parser->getPhone();
+    $password = substr(str_replace(' ', '', $phone), -5);
     $checkInDateInMs = (new \DateTime($checkInDate))->setTime(12, 0)->getTimestamp() * 1000;
     $checkOutDateInMs = (new \DateTime($checkOutDate))->setTime(12, 0)->getTimestamp() * 1000;
     if ($scienerApi->addPasscode($guestName, $password, $checkInDateInMs, $checkOutDateInMs)) {
-        echo "For $guestName have been added password: $password valid from $checkInDate to $checkOutDate";
+        $date = (new \DateTime())->format('Y-m-d h:i:s');
+        echo "$date For $guestName have been added password: $password valid from $checkInDate to $checkOutDate\n";
     }
 }

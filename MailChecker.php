@@ -7,7 +7,7 @@ class MailChecker
     const HOST = '{imap.gmail.com:993/imap/ssl}INBOX';
     const USER = 'booker.greenslo@gmail.com';
     const PASSWORD = 'Reenslog19';
-    const CRITERIA = 'UNSEEN FROM "noreply@mailing-service.otelms.com"';
+    const CRITERIA = 'UNSEEN FROM "otelms.com" SUBJECT "New booking"';
 
     private $inbox;
 

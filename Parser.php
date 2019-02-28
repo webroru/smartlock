@@ -15,27 +15,27 @@ class Parser
 
     public function getCheckInDate(): ?string
     {
-        $elements = $this->mail->query('//table/tr[6]/td[2]/b');
+        $elements = $this->mail->query('//table/tbody/tr/td[.="Check-in:"]/following-sibling::td/b');
 
         return $elements ? $elements[0]->nodeValue : null;
     }
 
     public function getCheckOutDate(): ?string
     {
-        $elements = $this->mail->query('.//table/tr[7]/td[2]/b');
+        $elements = $this->mail->query('//table/tbody/tr/td[.="Check-out:"]/following-sibling::td/b');
         return $elements ? $elements[0]->nodeValue : null;
     }
 
     public function getGuestName(): ?string
     {
-        $elements = $this->mail->query('//table/tr[13]/td[2]/b');
+        $elements = $this->mail->query('//table/tbody/tr/td[.="Booked for:"]/following-sibling::td/b');
 
         return $elements ? $elements[0]->nodeValue : null;
     }
 
     public function getPhone(): ?string
     {
-        $elements = $this->mail->query('//table/tr[14]/td[2]/b');
+        $elements = $this->mail->query('//table/tbody/tr/td[.="Phone:"]/following-sibling::td/b');
 
         return $elements ? $elements[0]->nodeValue : null;
     }

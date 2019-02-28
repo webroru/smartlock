@@ -9,7 +9,7 @@ require __DIR__ . '/vendor/autoload.php';
 try {
     run();
 } catch (\Exception $e) {
-    log("Error: {$e->getMessage()}");
+    addLog("Error: {$e->getMessage()}");
 }
 
 function run() {
@@ -24,7 +24,7 @@ function run() {
         $phone = $parser->getPhone();
         $password = (string) substr(str_replace(' ', '', $phone), -5);
         if ($scienerApi->addPasscode($guestName, $password, prepareDate($checkInDate), prepareDate($checkOutDate))) {
-            log("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
+            addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
         }
     }
 }
@@ -36,7 +36,7 @@ function prepareDate(string $date): int {
         ->getTimestamp() * 1000;
 }
 
-function log(string $message) {
+function addLog(string $message): void {
     $date = (new \DateTime())->format('Y-m-d h:i:s');
     echo "$date $message\n";
 }

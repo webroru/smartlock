@@ -12,6 +12,7 @@ class ScienerApi
     const USER = '+38630387021';
     const PASSWORD = 'Itkiss19';
     const REDIRECT_URI = 'test.com';
+    const GATEWAY = 2;
 
     private $client;
     private $token;
@@ -52,6 +53,7 @@ class ScienerApi
                 'keyboardPwd' => $password,
                 'keyboardPwdName' => $name,
                 'startDate' => $startDate,
+                'addType' => self::GATEWAY,
                 'endDate' => $endDate,
                 'date' => time() * 1000,
             ],

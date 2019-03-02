@@ -30,9 +30,7 @@ function run() {
 }
 
 function prepareDate(string $date): int {
-    return (new \DateTime($date))
-        ->setTime(12, 0)
-        ->setTimezone(new DateTimeZone('Europe/Vienna'))
+    return (new \DateTime("$date 12:00", new \DateTimeZone('Europe/Vienna')))
         ->getTimestamp() * 1000;
 }
 

@@ -35,6 +35,6 @@ function prepareDate(string $date): int {
 }
 
 function addLog(string $message): void {
-    $date = (new \DateTime())->format('Y-m-d h:i:s');
+    $date = (new \DateTime())->format('Y-m-d H:i:s');
     echo "$date $message\n";
 }

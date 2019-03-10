@@ -16,16 +16,25 @@ function run() {
     $mailChecker = new MailChecker();
     $scienerApi = new ScienerApi();
 
-    foreach ($mailChecker->getMail() as $mail) {
-        $parser = new Parser($mail);
-        $checkInDate = $parser->getCheckInDate();
-        $checkOutDate = $parser->getCheckOutDate();
-        $guestName = $parser->getGuestName();
-        $phone = $parser->getPhone();
-        $password = (string) substr(str_replace(' ', '', $phone), -5);
-        if ($scienerApi->addPasscode($guestName, $password, prepareDate($checkInDate), prepareDate($checkOutDate))) {
-            addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
+    foreach ($mailChecker->getMail() as $uid => $mail) {
+        try {
+            processMail($mail, $scienerApi);
+        } catch (\Exception $e) {
+            $mailChecker->setUnread($uid);
+            throw $e;
         }
+    }
+}
+
+function processMail(string $mail, ScienerApi $scienerApi): void {
+    $parser = new Parser($mail);
+    $checkInDate = $parser->getCheckInDate();
+    $checkOutDate = $parser->getCheckOutDate();
+    $guestName = $parser->getGuestName();
+    $phone = $parser->getPhone();
+    $password = (string) substr(str_replace(' ', '', $phone), -5);
+    if ($scienerApi->addPasscode($guestName, $password, prepareDate($checkInDate), prepareDate($checkOutDate))) {
+        addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
     }
 }
 

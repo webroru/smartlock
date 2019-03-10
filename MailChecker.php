@@ -31,20 +31,25 @@ class MailChecker
         foreach ($emails as $uid) {
             $structure = imap_fetchstructure($this->inbox, $uid);
             if (!isset($structure->parts, $structure->parts[1])) {
-                echo "Error: can't detect encoding part for $uid mail\n";
+                \addLog("Error: can't detect encoding part for $uid mail");
                 continue;
             }
             $part = $structure->parts[1];
             $message = imap_fetchbody($this->inbox, $uid, 2);
 
             if ($part->encoding === 3) {
-                $result[] = imap_base64($message);
+                $result[$uid] = imap_base64($message);
             } elseif ($part->encoding === 1) {
-                $result[] = imap_8bit($message);
+                $result[$uid] = imap_8bit($message);
             } else {
-                $result[] = imap_qprint($message);
+                $result[$uid] = imap_qprint($message);
             }
         }
         return $result;
+    }
+
+    public function setUnread(int $uid): void
+    {
+        imap_clearflag_full($this->inbox, $uid, "\\Seen");
     }
 }

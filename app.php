@@ -6,19 +6,44 @@ use App\ScienerApi;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$mailChecker = new MailChecker();
-$scienerApi = new ScienerApi();
+try {
+    run();
+} catch (\Exception $e) {
+    addLog("Error: {$e->getMessage()}");
+}
 
-foreach ($mailChecker->getMail() as $mail) {
+function run() {
+    $mailChecker = new MailChecker();
+    $scienerApi = new ScienerApi();
+
+    foreach ($mailChecker->getMail() as $uid => $mail) {
+        try {
+            processMail($mail, $scienerApi);
+        } catch (\Exception $e) {
+            $mailChecker->setUnread($uid);
+            throw $e;
+        }
+    }
+}
+
+function processMail(string $mail, ScienerApi $scienerApi): void {
     $parser = new Parser($mail);
     $checkInDate = $parser->getCheckInDate();
     $checkOutDate = $parser->getCheckOutDate();
-    $bookingNumber = $parser->getBookingNumber();
     $guestName = $parser->getGuestName();
-    $password = substr($bookingNumber, -6);
-    $checkInDateInMs = (new \DateTime($checkInDate))->setTime(12, 0)->getTimestamp() * 1000;
-    $checkOutDateInMs = (new \DateTime($checkOutDate))->setTime(12, 0)->getTimestamp() * 1000;
-    if ($scienerApi->addPasscode($guestName, $password, $checkInDateInMs, $checkOutDateInMs)) {
-        echo "For $guestName have been added password: $password valid from $checkInDate to $checkOutDate";
+    $phone = $parser->getPhone();
+    $password = (string) substr(str_replace(' ', '', $phone), -5);
+    if ($scienerApi->addPasscode($guestName, $password, prepareDate($checkInDate), prepareDate($checkOutDate))) {
+        addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
     }
+}
+
+function prepareDate(string $date): int {
+    return (new \DateTime("$date 12:00", new \DateTimeZone('Europe/Vienna')))
+        ->getTimestamp() * 1000;
+}
+
+function addLog(string $message): void {
+    $date = (new \DateTime())->format('Y-m-d H:i:s');
+    echo "$date $message\n";
 }

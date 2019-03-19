@@ -13,33 +13,29 @@ class Parser
         $this->mail = new \DOMXpath($dom);
     }
 
-    public function getCheckInDate()
+    public function getCheckInDate(): ?string
     {
-        $elements = $this->mail->query('//table/tr[6]/td[2]/b');
+        $elements = $this->mail->query('//table/tr/td[.="Check-in:"]/following-sibling::td/b');
 
         return $elements ? $elements[0]->nodeValue : null;
     }
 
-    public function getCheckOutDate()
+    public function getCheckOutDate(): ?string
     {
-        $elements = $this->mail->query('.//table/tr[7]/td[2]/b');
+        $elements = $this->mail->query('//table/tr/td[.="Check-out:"]/following-sibling::td/b');
         return $elements ? $elements[0]->nodeValue : null;
     }
 
-    public function getBookingNumber()
+    public function getGuestName(): ?string
     {
-        $elements = $this->mail->query('//table//tr[5]/td[2]');
-        if (!$elements) {
-            return null;
-        }
-        preg_match('/new ([\d]+)/', $elements[0]->nodeValue, $matches);
-        //return preg_replace('/[\D]+/', '', $elements[0]->nodeValue);
-        return $matches[1];
+        $elements = $this->mail->query('//table/tr/td[.="Booked for:"]/following-sibling::td/b');
+
+        return $elements ? $elements[0]->nodeValue : null;
     }
 
-    public function getGuestName()
+    public function getPhone(): ?string
     {
-        $elements = $this->mail->query('//table/tr[13]/td[2]/b');
+        $elements = $this->mail->query('//table/tr/td[.="Phone:"]/following-sibling::td/b');
 
         return $elements ? $elements[0]->nodeValue : null;
     }

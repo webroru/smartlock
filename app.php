@@ -17,12 +17,8 @@ function run() {
     $scienerApi = new ScienerApi();
 
     foreach ($mailChecker->getMail() as $uid => $mail) {
-        try {
-            processMail($mail, $scienerApi);
-        } catch (\Exception $e) {
-            $mailChecker->setUnread($uid);
-            throw $e;
-        }
+        processMail($mail, $scienerApi);
+        $mailChecker->setSeen($uid);
     }
 }
 
@@ -33,8 +29,13 @@ function processMail(string $mail, ScienerApi $scienerApi): void {
     $guestName = $parser->getGuestName();
     $phone = $parser->getPhone();
     $password = (string) substr(str_replace(' ', '', $phone), -5);
-    if ($scienerApi->addPasscode($guestName, $password, prepareDate($checkInDate), prepareDate($checkOutDate))) {
+    $result = $scienerApi->addPasscode($guestName, $password, prepareDate($checkInDate), prepareDate($checkOutDate));
+    if (isset($result['keyboardPwdId'])) {
         addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
+    } elseif (isset($result['errmsg'])) {
+        addLog("Error during processing for $guestName: {$result['errmsg']}");
+    } else {
+        addLog("Unknown error during processing for $guestName");
     }
 }
 

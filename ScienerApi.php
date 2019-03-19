@@ -62,7 +62,6 @@ class ScienerApi
         if ($response->getStatusCode() !== 200) {
             return null;
         }
-
-        return json_decode($response->getBody())->keyboardPwdId ?? null;
+        return json_decode($response->getBody()->getContents(), true);
     }
 }

@@ -35,7 +35,7 @@ class MailChecker
                 continue;
             }
             $part = $structure->parts[1];
-            $message = imap_fetchbody($this->inbox, $uid, 2);
+            $message = imap_fetchbody($this->inbox, $uid, 2, FT_PEEK);
 
             if ($part->encoding === 3) {
                 $result[$uid] = imap_base64($message);
@@ -48,8 +48,8 @@ class MailChecker
         return $result;
     }
 
-    public function setUnread(int $uid): void
+    public function setSeen(int $uid): void
     {
-        imap_clearflag_full($this->inbox, $uid, "\\Seen");
+        imap_setflag_full($this->inbox, $uid, "\\Seen");
     }
 }

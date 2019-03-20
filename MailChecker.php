@@ -15,7 +15,8 @@ class MailChecker
     {
         $this->inbox = imap_open(self::HOST, self::USER, self::PASSWORD);
         if (!$this->inbox) {
-            die('Cannot connect to Gmail: ' . imap_last_error());
+            \addLog('Cannot connect to Gmail: ' . imap_last_error());
+            exit;
         }
     }
 

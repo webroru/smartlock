@@ -36,7 +36,7 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     if (isset($result['keyboardPwdId'])) {
         if ($email) {
             $email = 'sersitki@gmail.com';
-            sendMail($mailSender, $email, $password);
+            sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate);
         }
         addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
     } elseif (isset($result['errmsg'])) {
@@ -56,13 +56,14 @@ function addLog(string $message): void {
     echo "$date $message\n";
 }
 
-function sendMail(MailSender $mailSender, string $mail, string $password): void {
-    $body = "Hotel «GreenSLO» Ljubljana.\n" .
+function sendMail(MailSender $mailSender, string $guestName, string $mail, string $password, string $checkInDate, string $checkOutDate): void {
+    $body = "Dear $guestName\n" .
+        "You have a reservation at the Hotel \"GreenSLO\"  from $checkInDate to $checkOutDate\n" .
         "Your CODE from the MAIN DOOR of the HOTEL:  # $password #\n" .
         "This CODE will be VALID from the time of сheck-in and until check-out\n" .
         "(14:00 - check in, 12:00 - check out)\n" .
         "I ask you to SAVE this CODE to enter the hotel.\n" .
         "Best regards, Sergey";
 
-    $mailSender->send($mail,'Hotel GreenSLO Ljubljana', $body);
+    $mailSender->send($mail, $guestName,'Hotel GreenSLO Ljubljana', $body);
 }

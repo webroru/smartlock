@@ -29,12 +29,12 @@ class MailSender
         $this->mail->setFrom(self::MAIL, self::USERNAME);
     }
 
-    public function send(string $mail, string $subject, string $body)
+    public function send(string $mail, string $name, string $subject, string $body)
     {
         try {
             $this->mail->Subject = $subject;
             $this->mail->Body = $body;
-            $this->mail->addAddress($mail);
+            $this->mail->addAddress($mail, $name);
             $this->mail->send();
         } catch (Exception $e) {
             \addLog("Message could not be sent. Mailer Error: {$this->mail->ErrorInfo}");

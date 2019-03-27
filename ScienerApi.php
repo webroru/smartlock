@@ -64,4 +64,48 @@ class ScienerApi
         }
         return json_decode($response->getBody()->getContents(), true);
     }
+
+    public function deletePasscode(int $keyboardPwdId)
+    {
+        $response = $this->client->post('v3/keyboardPwd/delete ', [
+            'form_params' => [
+                'clientId' => self::APP_ID,
+                'accessToken' => $this->token,
+                'lockId' => self::LOCK_ID,
+                'keyboardPwdId' => $keyboardPwdId,
+                'deleteType' => self::GATEWAY,
+                'date' => time() * 1000,
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            return null;
+        }
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function getAllPasscodes(int $pageNo = 1)
+    {
+        $response = $this->client->post('v3/lock/listKeyboardPwd ', [
+            'form_params' => [
+                'clientId' => self::APP_ID,
+                'accessToken' => $this->token,
+                'lockId' => self::LOCK_ID,
+                'pageNo' => $pageNo,
+                'pageSize' => 100,
+                'date' => time() * 1000,
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            return null;
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function removeExpiredPasscodes()
+    {
+
+    }
 }

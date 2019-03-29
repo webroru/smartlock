@@ -7,13 +7,28 @@ use App\ScienerApi;
 
 require __DIR__ . '/vendor/autoload.php';
 
+if (!isset($argv)) {
+    addLog('Error: $argv disabled');
+    exit;
+}
+
 try {
-    run();
+    switch ($argv[1]) {
+        case 'reservationChecker':
+            runReservationChecker();
+            break;
+        case 'expiredPasscodesRemover':
+            runExpiredPasscodesRemover();
+            break;
+        default:
+            addLog('run parameter not specified');
+            exit;
+    }
 } catch (\Exception $e) {
     addLog("Error: {$e->getMessage()}");
 }
 
-function run() {
+function runReservationChecker() {
     $mailChecker = new MailChecker();
     $mailSender = new MailSender();
     $scienerApi = new ScienerApi();
@@ -22,6 +37,12 @@ function run() {
         processMail($mail, $scienerApi, $mailSender);
         $mailChecker->setSeen($uid);
     }
+}
+
+function runExpiredPasscodesRemover() {
+    $scienerApi = new ScienerApi();
+    $scienerApi->removeExpiredPasscodes();
+    addLog('Expired passcodes removed successfully');
 }
 
 function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSender): void {

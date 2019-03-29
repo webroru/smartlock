@@ -65,7 +65,22 @@ class ScienerApi
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function deletePasscode(int $keyboardPwdId)
+    public function removeExpiredPasscodes()
+    {
+        $passCodes = array_filter($this->getAllPasscodes(), function (array $item) {
+            return $item['endDate'] !== 0 && $item['endDate'] < time() * 1000;
+        });
+
+        foreach ($passCodes as $passCode) {
+            try {
+                $this->deletePasscode($passCode['keyboardPwdId']);
+            } catch (\Exception $e) {
+                \addLog("{$e->getMessage()}");
+            }
+        }
+    }
+
+    private function deletePasscode(int $keyboardPwdId): void
     {
         $response = $this->client->post('v3/keyboardPwd/delete ', [
             'form_params' => [
@@ -79,12 +94,16 @@ class ScienerApi
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            return null;
+            throw new \Exception("Cant\'t delete passcode with id: $keyboardPwdId");
         }
-        return json_decode($response->getBody()->getContents(), true);
+
+        $result = json_decode($response->getBody()->getContents(), true);
+        if ($result['errcode']) {
+            throw new \Exception("Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}");
+        }
     }
 
-    public function getAllPasscodes(int $pageNo = 1)
+    private function getAllPasscodes(int $pageNo = 1)
     {
         $response = $this->client->post('v3/lock/listKeyboardPwd ', [
             'form_params' => [
@@ -98,14 +117,15 @@ class ScienerApi
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            return null;
+            throw new \Exception('Cant\'t get list of passcodes.');
         }
 
-        return json_decode($response->getBody()->getContents(), true);
-    }
+        $result = json_decode($response->getBody()->getContents(), true);
+        $list = $result['list'];
+        if ($pageNo !== $result['pages']) {
+            $list = array_merge($list, $this->getAllPasscodes(++$pageNo));
+        }
 
-    public function removeExpiredPasscodes()
-    {
-
+        return $list;
     }
 }

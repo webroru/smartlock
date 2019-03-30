@@ -13,6 +13,10 @@ class ScienerApi
     const PASSWORD = 'Itkiss19';
     const REDIRECT_URI = 'test.com';
     const GATEWAY = 2;
+    const KEYBOARD_PWD_VERSION = 4;
+    const KEYBOARD_PWD_TYPE = ['period' => 3];
+    const PASSCODE_ATTEMPTS = 10;
+    const SAME_PASSCODE_EXISTS = -3007;
 
     private $client;
     private $token;
@@ -60,9 +64,16 @@ class ScienerApi
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            return null;
+            throw new \Exception("Cant't generate passcode for $name");
         }
-        return json_decode($response->getBody()->getContents(), true);
+        $result = json_decode($response->getBody()->getContents(), true);
+        if (isset($result['errcode'])) {
+            if ($result['errcode'] === self::SAME_PASSCODE_EXISTS) {
+                return false;
+            }
+            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']}");
+        }
+        return isset($result['keyboardPwdId']);
     }
 
     public function removeExpiredPasscodes()
@@ -127,5 +138,42 @@ class ScienerApi
         }
 
         return $list;
+    }
+
+    public function generatePasscode(string $name, int $startDate, int $endDate): string
+    {
+        $response = $this->client->post('v3/keyboardPwd/get', [
+            'form_params' => [
+                'clientId' => self::APP_ID,
+                'accessToken' => $this->token,
+                'lockId' => self::LOCK_ID,
+                'keyboardPwdVersion' => self::KEYBOARD_PWD_VERSION,
+                'keyboardPwdType' => self::KEYBOARD_PWD_TYPE['period'],
+                'keyboardPwdName' => $name,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'date' => time() * 1000,
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception("Cant't generate passcode for $name");
+        }
+        $result = json_decode($response->getBody()->getContents(), true);
+        if (isset($result['errcode'])) {
+            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']}");
+        }
+        return $result['keyboardPwd'];
+    }
+
+    public function addRandomPasscode(string $name, int $startDate, int $endDate): ?string
+    {
+        for ($i = 0; $i < self::PASSCODE_ATTEMPTS; $i++) {
+            $password = sprintf('%04d', mt_rand(0, 9999));
+            if ($this->addPasscode($name, $password, $startDate, $endDate)) {
+                return $password;
+            }
+        }
+        return null;
     }
 }

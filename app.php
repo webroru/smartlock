@@ -28,7 +28,7 @@ try {
     addLog("Error: {$e->getMessage()}");
 }
 
-function runReservationChecker() {
+function runReservationChecker(): void {
     $mailChecker = new MailChecker();
     $mailSender = new MailSender();
     $scienerApi = new ScienerApi();
@@ -39,7 +39,7 @@ function runReservationChecker() {
     }
 }
 
-function runExpiredPasscodesRemover() {
+function runExpiredPasscodesRemover(): void {
     $scienerApi = new ScienerApi();
     $scienerApi->removeExpiredPasscodes();
     addLog('Expired passcodes removed successfully');
@@ -50,20 +50,13 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $checkInDate = $parser->getCheckInDate();
     $checkOutDate = $parser->getCheckOutDate();
     $guestName = $parser->getGuestName();
-    $phone = $parser->getPhone();
-    $email = $parser->getEmail();
-    $password = (string) substr(str_replace(' ', '', $phone), -5);
-    $result = $scienerApi->addPasscode($guestName, $password, prepareDate($checkInDate), prepareDate($checkOutDate));
-    if (isset($result['keyboardPwdId'])) {
-        if ($email) {
-            $email = 'sersitki@gmail.com';
-            sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate);
-        }
+    $email = $parser->getEmail() ?? 'sersitki@gmail.com';
+    $password = $scienerApi->addRandomPasscode($guestName, prepareDate($checkInDate), prepareDate($checkOutDate));
+    if ($password) {
+        sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate);
         addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
-    } elseif (isset($result['errmsg'])) {
-        addLog("Error during processing for $guestName: {$result['errmsg']}");
     } else {
-        addLog("Unknown error during processing for $guestName");
+        addLog("Can't add passcode for $guestName. All attempts have spent.");
     }
 }
 
@@ -86,5 +79,5 @@ function sendMail(MailSender $mailSender, string $guestName, string $mail, strin
         "I ask you to SAVE this CODE to enter the hotel.\n" .
         "Best regards, Sergey";
 
-    $mailSender->send($mail, $guestName,'Hotel GreenSLO Ljubljana', $body);
+    $mailSender->send($mail, $guestName, 'Hotel GreenSLO Ljubljana', $body);
 }

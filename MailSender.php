@@ -26,6 +26,8 @@ class MailSender
         $this->mail->Password = self::PASSWORD;
         $this->mail->SMTPSecure = self::SECURE;
         $this->mail->Port = self::PORT;
+        $this->mail->CharSet = 'UTF-8';
+        $this->mail->Encoding = 'base64';
         $this->mail->setFrom(self::MAIL, self::USERNAME);
     }
 

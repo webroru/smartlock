@@ -52,13 +52,9 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $guestName = $parser->getGuestName();
     $email = $parser->getEmail();
     $email = $email !== '' ? $email : 'sersitki@gmail.com';
-    $password = $scienerApi->addRandomPasscode($guestName, prepareDate($checkInDate), prepareDate($checkOutDate));
-    if ($password) {
-        sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate);
-        addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
-    } else {
-        addLog("Can't add passcode for $guestName. All attempts have spent.");
-    }
+    $password = $scienerApi->generatePasscode($guestName, prepareDate($checkInDate), prepareDate($checkOutDate));
+    sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate);
+    addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
 }
 
 function prepareDate(string $date): int {

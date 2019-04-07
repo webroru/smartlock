@@ -7,7 +7,8 @@ class MailChecker
     const HOST = '{imap.gmail.com:993/imap/ssl}INBOX';
     const USER = 'booker.greenslo@gmail.com';
     const PASSWORD = 'Reenslog19';
-    const CRITERIA = 'UNSEEN FROM "otelms.com" SUBJECT "New booking"';
+    const NEW_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "New booking"';
+    const CHANGED_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "Booking changed"';
 
     private $inbox;
 
@@ -22,7 +23,10 @@ class MailChecker
 
     public function getMail(): array
     {
-        $emails = imap_search($this->inbox, self::CRITERIA);
+        $emails = array_merge(
+            imap_search($this->inbox, self::NEW_BOOKING) ?: [],
+            imap_search($this->inbox, self::CHANGED_BOOKING) ?: []
+        );
 
         if (!$emails) {
             return [];

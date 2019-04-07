@@ -161,7 +161,7 @@ class ScienerApi
         }
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode'])) {
-            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']}");
+            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']} {$result['description']}");
         }
         return $result['keyboardPwd'];
     }

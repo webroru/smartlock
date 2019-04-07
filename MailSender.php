@@ -37,9 +37,12 @@ class MailSender
             $this->mail->Subject = $subject;
             $this->mail->Body = $body;
             $this->mail->addAddress($mail, $name);
-            $this->mail->send();
+            if (!$this->mail->send()) {
+                \addLog("Message could not be sent. Mailer Error: {$this->mail->ErrorInfo}");
+            }
+            $this->mail->clearAddresses();
         } catch (Exception $e) {
-            \addLog("Message could not be sent. Mailer Error: {$this->mail->ErrorInfo}");
+            \addLog("Message could not be sent. Mailer Error: {$e->getMessage()}");
         }
     }
 }

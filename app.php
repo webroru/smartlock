@@ -51,9 +51,11 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $checkOutDate = $parser->getCheckOutDate();
     $guestName = $parser->getGuestName();
     $email = $parser->getEmail();
+    $reason = $parser->getReason();
+    $isChanged = strpos($reason, 'changed') !== false || strpos($reason, 'modified') !== false;
     $email = $email !== '' ? $email : 'sersitki@gmail.com';
     $password = $scienerApi->generatePasscode($guestName, prepareDate($checkInDate), prepareDate($checkOutDate));
-    sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate);
+    sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate, $isChanged);
     addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
 }
 
@@ -67,9 +69,18 @@ function addLog(string $message): void {
     echo "$date $message\n";
 }
 
-function sendMail(MailSender $mailSender, string $guestName, string $mail, string $password, string $checkInDate, string $checkOutDate): void {
+function sendMail(
+    MailSender $mailSender,
+    string $guestName,
+    string $mail,
+    string $password,
+    string $checkInDate,
+    string $checkOutDate,
+    bool $isChanged
+): void {
     $body = "Dear $guestName\n" .
-        "You have a reservation at the Hotel \"GreenSLO\"  from $checkInDate to $checkOutDate\n" .
+        'You have ' . ($isChanged ? 'changes ' : 'a ') .
+        "reservation at the Hotel \"GreenSLO\" from $checkInDate to $checkOutDate\n" .
         "Your CODE from the MAIN DOOR of the HOTEL:  # $password #\n" .
         "This CODE will be VALID from the time of check-in and until check-out\n" .
         "(14:00 - check in, 12:00 - check out)\n" .

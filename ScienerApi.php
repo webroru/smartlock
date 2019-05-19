@@ -142,6 +142,7 @@ class ScienerApi
 
     public function generatePasscode(string $name, int $startDate, int $endDate): string
     {
+        $name = implode(' ', array_slice(explode(' ', $name), 0, 2));
         $response = $this->client->post('v3/keyboardPwd/get', [
             'form_params' => [
                 'clientId' => self::APP_ID,

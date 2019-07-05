@@ -86,7 +86,7 @@ function sendMail(
     $body = "Dear $guestName\n" .
         'You have ' . ($isChanged ? 'changes ' : 'a ') .
         "reservation at the Hotel \"GreenSLO\" from $checkInDate to $checkOutDate\n" .
-        "Your CODE from the MAIN DOOR of the HOTEL:  # $password #\n" .
+        "Your CODE from the MAIN DOOR of the HOTEL:  #$password#\n" .
         "This CODE will be VALID from the time of check-in and until check-out\n" .
         "(14:00 - check in, 12:00 - check out)\n" .
         "I ask you to SAVE this CODE to enter the hotel.\n" .

@@ -51,8 +51,7 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $checkOutDate = $parser->getCheckOutDate();
     $guestName = $parser->getGuestName();
     $email = $parser->getEmail();
-    $reason = $parser->getReason();
-    $isChanged = strpos($reason, 'changed') !== false || strpos($reason, 'modified') !== false;
+    $isChanged = $parser->isChanged();
     $email = $email !== '' ? $email : 'sersitki@gmail.com';
     $password = $scienerApi->generatePasscode($guestName, prepareCheckInDate($checkInDate), prepareChechOutDate($checkOutDate));
     sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate, $isChanged);

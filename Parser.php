@@ -15,37 +15,37 @@ class Parser
 
     public function getCheckInDate(): ?string
     {
-        $elements = $this->mail->query('//table/tr/td[.="Check-in:"]/following-sibling::td/b');
+        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Check-in:"]/../following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
     public function getCheckOutDate(): ?string
     {
-        $elements = $this->mail->query('//table/tr/td[.="Check-out:"]/following-sibling::td/b');
+        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Check-out:"]/../following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
     public function getGuestName(): ?string
     {
-        $elements = $this->mail->query('//table/tr/td[.="Booked for:"]/following-sibling::td/b');
+        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Booked for:"]/../following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
     public function getPhone(): ?string
     {
-        $elements = $this->mail->query('//table/tr/td[.="Phone:"]/following-sibling::td/b');
+        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Phone:"]/../following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
     public function getEmail(): ?string
     {
-        $elements = $this->mail->query('//table/tr/td[.="E-mail:"]/following-sibling::td/b');
+        $elements = $this->mail->query('//table/tbody/tr/td/b[.="E-mail:"]/../following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
-    public function getReason(): ?string
+    public function isChanged(): bool
     {
-        $elements = $this->mail->query('//table/tr/td[.="Reason:"]/following-sibling::td');
-        return $elements->length ? $elements[0]->nodeValue : null;
+        $elements = $this->mail->query('//table/tbody/tr/td/div/b[contains(text(), "Booking changed")]');
+        return (bool) $elements->length;
     }
 }

@@ -51,18 +51,11 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $checkOutDate = $parser->getCheckOutDate();
     $guestName = $parser->getGuestName();
     $email = $parser->getEmail();
-    if (!isset($checkInDate, $checkOutDate, $guestName, $email)) {
-        throw new \Exception("Can't parse some fields.");
-    }
     $isChanged = $parser->isChanged();
     $email = $email !== '' ? $email : 'sersitki@gmail.com';
-    $password = $scienerApi->addRandomPasscode($guestName, prepareCheckInDate($checkInDate), prepareChechOutDate($checkOutDate));
-    if ($password) {
-        sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate, $isChanged);
-        addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
-    } else {
-        addLog("Can't add passcode for $guestName. All attempts have spent.");
-    }
+    $password = $scienerApi->generatePasscode($guestName, prepareCheckInDate($checkInDate), prepareChechOutDate($checkOutDate));
+    sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate, $isChanged);
+    addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
 }
 
 function prepareCheckInDate(string $date): int {

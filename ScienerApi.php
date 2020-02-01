@@ -2,6 +2,8 @@
 
 namespace App;
 
+use GuzzleHttp\Client;
+
 class ScienerApi
 {
     const BASE_URL = 'https://api.sciener.cn';
@@ -23,11 +25,11 @@ class ScienerApi
 
     public function __construct()
     {
-        $this->client = new \GuzzleHttp\Client(['base_uri' => self::BASE_URL]);
+        $this->client = new Client(['base_uri' => self::BASE_URL]);
         $this->token = $this->getAccessToken();
     }
 
-    public function getAccessToken()
+    public function getAccessToken(): ?string
     {
         $response = $this->client->post('oauth2/token', [
             'form_params' => [
@@ -47,7 +49,7 @@ class ScienerApi
         return json_decode($response->getBody())->access_token ?? null;
     }
 
-    public function addPasscode(string $name, string $password, int $startDate, int $endDate)
+    public function addPasscode(string $name, string $password, int $startDate, int $endDate): bool
     {
         $response = $this->client->post('v3/keyboardPwd/add', [
             'form_params' => [
@@ -76,7 +78,7 @@ class ScienerApi
         return isset($result['keyboardPwdId']);
     }
 
-    public function removeExpiredPasscodes()
+    public function removeExpiredPasscodes(): void
     {
         $passCodes = array_filter($this->getAllPasscodes(), function (array $item) {
             return $item['endDate'] !== 0 && $item['endDate'] < time() * 1000;
@@ -89,55 +91,6 @@ class ScienerApi
                 \addLog("{$e->getMessage()}");
             }
         }
-    }
-
-    private function deletePasscode(int $keyboardPwdId): void
-    {
-        $response = $this->client->post('v3/keyboardPwd/delete ', [
-            'form_params' => [
-                'clientId' => self::APP_ID,
-                'accessToken' => $this->token,
-                'lockId' => self::LOCK_ID,
-                'keyboardPwdId' => $keyboardPwdId,
-                'deleteType' => self::GATEWAY,
-                'date' => time() * 1000,
-            ],
-        ]);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception("Cant\'t delete passcode with id: $keyboardPwdId");
-        }
-
-        $result = json_decode($response->getBody()->getContents(), true);
-        if ($result['errcode']) {
-            throw new \Exception("Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}");
-        }
-    }
-
-    private function getAllPasscodes(int $pageNo = 1)
-    {
-        $response = $this->client->post('v3/lock/listKeyboardPwd ', [
-            'form_params' => [
-                'clientId' => self::APP_ID,
-                'accessToken' => $this->token,
-                'lockId' => self::LOCK_ID,
-                'pageNo' => $pageNo,
-                'pageSize' => 100,
-                'date' => time() * 1000,
-            ],
-        ]);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('Cant\'t get list of passcodes.');
-        }
-
-        $result = json_decode($response->getBody()->getContents(), true);
-        $list = $result['list'];
-        if ($pageNo !== $result['pages']) {
-            $list = array_merge($list, $this->getAllPasscodes(++$pageNo));
-        }
-
-        return $list;
     }
 
     public function generatePasscode(string $name, int $startDate, int $endDate): string
@@ -176,5 +129,54 @@ class ScienerApi
             }
         }
         return null;
+    }
+
+    private function getAllPasscodes(int $pageNo = 1)
+    {
+        $response = $this->client->post('v3/lock/listKeyboardPwd ', [
+            'form_params' => [
+                'clientId' => self::APP_ID,
+                'accessToken' => $this->token,
+                'lockId' => self::LOCK_ID,
+                'pageNo' => $pageNo,
+                'pageSize' => 100,
+                'date' => time() * 1000,
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('Cant\'t get list of passcodes.');
+        }
+
+        $result = json_decode($response->getBody()->getContents(), true);
+        $list = $result['list'];
+        if ($pageNo !== $result['pages']) {
+            $list = array_merge($list, $this->getAllPasscodes(++$pageNo));
+        }
+
+        return $list;
+    }
+
+    private function deletePasscode(int $keyboardPwdId): void
+    {
+        $response = $this->client->post('v3/keyboardPwd/delete ', [
+            'form_params' => [
+                'clientId' => self::APP_ID,
+                'accessToken' => $this->token,
+                'lockId' => self::LOCK_ID,
+                'keyboardPwdId' => $keyboardPwdId,
+                'deleteType' => self::GATEWAY,
+                'date' => time() * 1000,
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception("Cant\'t delete passcode with id: $keyboardPwdId");
+        }
+
+        $result = json_decode($response->getBody()->getContents(), true);
+        if ($result['errcode']) {
+            throw new \Exception("Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}");
+        }
     }
 }

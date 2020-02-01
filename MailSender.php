@@ -31,7 +31,7 @@ class MailSender
         $this->mail->setFrom(self::MAIL, self::USERNAME);
     }
 
-    public function send(string $mail, string $name, string $subject, string $body)
+    public function send(string $mail, string $name, string $subject, string $body): void
     {
         try {
             $this->mail->Subject = $subject;

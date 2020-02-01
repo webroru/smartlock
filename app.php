@@ -7,6 +7,9 @@ use App\ScienerApi;
 
 require __DIR__ . '/vendor/autoload.php';
 
+// Load .env
+Dotenv\Dotenv::createImmutable(__DIR__)->load();
+
 if (!isset($argv)) {
     addLog('Error: $argv disabled');
     exit;

@@ -4,17 +4,15 @@ namespace App;
 
 class MailChecker
 {
-    const HOST = '{imap.gmail.com:993/imap/ssl}INBOX';
-    const USER = 'booker.greenslo@gmail.com';
-    const PASSWORD = 'Reenslog19';
-    const NEW_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "New booking"';
-    const CHANGED_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "Booking changed"';
+    private const HOST = '{imap.gmail.com:993/imap/ssl}INBOX';
+    private const NEW_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "New booking"';
+    private const CHANGED_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "Booking changed"';
 
     private $inbox;
 
     public function __construct()
     {
-        $this->inbox = imap_open(self::HOST, self::USER, self::PASSWORD);
+        $this->inbox = imap_open(self::HOST, getenv('MAIL_USER'), getenv('MAIL_PASSWORD'));
         if (!$this->inbox) {
             \addLog('Cannot connect to Gmail: ' . imap_last_error());
             exit;

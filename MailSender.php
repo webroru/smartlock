@@ -7,12 +7,9 @@ use PHPMailer\PHPMailer\Exception;
 
 class MailSender
 {
-    const HOST = 'smtp.gmail.com';
-    const MAIL = 'booker.greenslo@gmail.com';
-    const PASSWORD = 'Reenslog19';
-    const PORT = 587;
-    const SECURE = 'tls';
-    const USERNAME = 'Family Guesthouse GreenSLO';
+    private const HOST = 'smtp.gmail.com';
+    private const PORT = 587;
+    private const SECURE = 'tls';
 
     protected $mail;
 
@@ -22,13 +19,13 @@ class MailSender
         $this->mail->isSMTP();
         $this->mail->Host = self::HOST;
         $this->mail->SMTPAuth = true;
-        $this->mail->Username = self::MAIL;
-        $this->mail->Password = self::PASSWORD;
+        $this->mail->Username = getenv('MAIL_USER');
+        $this->mail->Password = getenv('MAIL_PASSWORD');
         $this->mail->SMTPSecure = self::SECURE;
         $this->mail->Port = self::PORT;
         $this->mail->CharSet = 'UTF-8';
         $this->mail->Encoding = 'base64';
-        $this->mail->setFrom(self::MAIL, self::USERNAME);
+        $this->mail->setFrom(getenv('MAIL_USER'), getenv('MAIL_NAME'));
     }
 
     public function send(string $mail, string $name, string $subject, string $body): void

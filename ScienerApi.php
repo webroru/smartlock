@@ -6,19 +6,14 @@ use GuzzleHttp\Client;
 
 class ScienerApi
 {
-    const BASE_URL = 'https://api.sciener.cn';
-    const APP_ID = '7af8fb46051e4f54984a94c6a5dcd46f';
-    const APP_SECRET = 'e53cd30a6bcbcef49166833e8737dc0b';
-    const GRANT_TYPE = 'password';
-    const LOCK_ID = '1297585';
-    const USER = '+38630387021';
-    const PASSWORD = 'Itkiss19';
-    const REDIRECT_URI = 'test.com';
-    const GATEWAY = 2;
-    const KEYBOARD_PWD_VERSION = 4;
-    const KEYBOARD_PWD_TYPE = ['period' => 3];
-    const PASSCODE_ATTEMPTS = 10;
-    const SAME_PASSCODE_EXISTS = -3007;
+    private const BASE_URL = 'https://api.sciener.cn';
+    private const GRANT_TYPE = 'password';
+    private const REDIRECT_URI = 'test.com';
+    private const GATEWAY = 2;
+    private const KEYBOARD_PWD_VERSION = 4;
+    private const KEYBOARD_PWD_TYPE = ['period' => 3];
+    private const PASSCODE_ATTEMPTS = 10;
+    private const SAME_PASSCODE_EXISTS = -3007;
 
     private $client;
     private $token;
@@ -33,11 +28,11 @@ class ScienerApi
     {
         $response = $this->client->post('oauth2/token', [
             'form_params' => [
-                'client_id' => self::APP_ID,
-                'client_secret' => self::APP_SECRET,
+                'client_id' => getenv('SCIENER_APP_ID'),
+                'client_secret' => getenv('SCIENER_APP_SECRET'),
                 'grant_type' => self::GRANT_TYPE,
-                'username' => self::USER,
-                'password' => md5(self::PASSWORD),
+                'username' => getenv('SCIENER_USER'),
+                'password' => md5(getenv('SCIENER_PASSWORD')),
                 'redirect_uri' => self::REDIRECT_URI,
             ],
         ]);
@@ -53,9 +48,9 @@ class ScienerApi
     {
         $response = $this->client->post('v3/keyboardPwd/add', [
             'form_params' => [
-                'clientId' => self::APP_ID,
+                'clientId' => getenv('SCIENER_APP_ID'),
                 'accessToken' => $this->token,
-                'lockId' => self::LOCK_ID,
+                'lockId' => getenv('SCIENER_LOCK_ID'),
                 'keyboardPwd' => $password,
                 'keyboardPwdName' => $name,
                 'startDate' => $startDate,
@@ -98,9 +93,9 @@ class ScienerApi
         $name = implode(' ', array_slice(explode(' ', $name), 0, 2));
         $response = $this->client->post('v3/keyboardPwd/get', [
             'form_params' => [
-                'clientId' => self::APP_ID,
+                'clientId' => getenv('SCIENER_APP_ID'),
                 'accessToken' => $this->token,
-                'lockId' => self::LOCK_ID,
+                'lockId' => getenv('SCIENER_LOCK_ID'),
                 'keyboardPwdVersion' => self::KEYBOARD_PWD_VERSION,
                 'keyboardPwdType' => self::KEYBOARD_PWD_TYPE['period'],
                 'keyboardPwdName' => $name,
@@ -135,9 +130,9 @@ class ScienerApi
     {
         $response = $this->client->post('v3/lock/listKeyboardPwd ', [
             'form_params' => [
-                'clientId' => self::APP_ID,
+                'clientId' => getenv('SCIENER_APP_ID'),
                 'accessToken' => $this->token,
-                'lockId' => self::LOCK_ID,
+                'lockId' => getenv('SCIENER_LOCK_ID'),
                 'pageNo' => $pageNo,
                 'pageSize' => 100,
                 'date' => time() * 1000,
@@ -161,9 +156,9 @@ class ScienerApi
     {
         $response = $this->client->post('v3/keyboardPwd/delete ', [
             'form_params' => [
-                'clientId' => self::APP_ID,
+                'clientId' => getenv('SCIENER_APP_ID'),
                 'accessToken' => $this->token,
-                'lockId' => self::LOCK_ID,
+                'lockId' => getenv('SCIENER_LOCK_ID'),
                 'keyboardPwdId' => $keyboardPwdId,
                 'deleteType' => self::GATEWAY,
                 'date' => time() * 1000,

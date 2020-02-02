@@ -2,7 +2,7 @@
 
 namespace App;
 
-class Order
+class Booking
 {
     private $id;
     private $name;

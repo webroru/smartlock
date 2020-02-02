@@ -55,7 +55,7 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $guestName = $parser->getGuestName();
     $email = $parser->getEmail();
     $isChanged = $parser->isChanged();
-    $email = $email !== '' ? $email : 'sersitki@gmail.com';
+    $email = $email !== '' ? $email : getenv('SUPPORT_EMAIL');
     $password = $scienerApi->generatePasscode($guestName, prepareCheckInDate($checkInDate), prepareChechOutDate($checkOutDate));
     sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate, $isChanged);
     addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");

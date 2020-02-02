@@ -23,6 +23,9 @@ try {
         case 'expiredPasscodesRemover':
             runExpiredPasscodesRemover();
             break;
+        case 'registerPasscodes':
+            runExpiredPasscodesRemover();
+            break;
         default:
             addLog('run parameter not specified');
             exit;

@@ -31,7 +31,8 @@ try {
     addLog("Error: {$e->getMessage()}");
 }
 
-function runReservationChecker(): void {
+function runReservationChecker(): void
+{
     $mailChecker = new MailChecker();
     $mailSender = new MailSender();
     $scienerApi = new ScienerApi();
@@ -42,13 +43,15 @@ function runReservationChecker(): void {
     }
 }
 
-function runExpiredPasscodesRemover(): void {
+function runExpiredPasscodesRemover(): void
+{
     $scienerApi = new ScienerApi();
     $scienerApi->removeExpiredPasscodes();
     addLog('Expired passcodes removed successfully');
 }
 
-function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSender): void {
+function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSender): void
+{
     $parser = new Parser($mail);
     $checkInDate = $parser->getCheckInDate();
     $checkOutDate = $parser->getCheckOutDate();
@@ -61,17 +64,20 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
 }
 
-function prepareCheckInDate(string $date): int {
+function prepareCheckInDate(string $date): int
+{
     return (new \DateTime("$date 14:00", new \DateTimeZone('Europe/Vienna')))
         ->getTimestamp() * 1000;
 }
 
-function prepareChechOutDate(string $date): int {
+function prepareChechOutDate(string $date): int
+{
     return (new \DateTime("$date 12:00", new \DateTimeZone('Europe/Vienna')))
         ->getTimestamp() * 1000;
 }
 
-function addLog(string $message): void {
+function addLog(string $message): void
+{
     $date = (new \DateTime())->format('Y-m-d H:i:s');
     echo "$date $message\n";
 }

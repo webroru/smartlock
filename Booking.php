@@ -9,7 +9,6 @@ class Booking
     private $checkInDate;
     private $checkOutDate;
     private $email;
-    private $code;
 
     public function getId(): string
     {
@@ -63,17 +62,6 @@ class Booking
     public function setEmail($email): self
     {
         $this->email = $email;
-        return $this;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(string $code): self
-    {
-        $this->code = $code;
         return $this;
     }
 }

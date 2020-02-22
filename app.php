@@ -1,11 +1,14 @@
 <?php
 
+use App\BookingRepository;
 use App\MailChecker;
 use App\MailSender;
 use App\Parser;
 use App\ScienerApi;
 
 require __DIR__ . '/vendor/autoload.php';
+
+const REGISTRATION_DELAY = 60 * 60 * 24 * 7; // 1 week
 
 // Load .env
 Dotenv\Dotenv::createImmutable(__DIR__)->load();
@@ -39,9 +42,10 @@ function runReservationChecker(): void
     $mailChecker = new MailChecker();
     $mailSender = new MailSender();
     $scienerApi = new ScienerApi();
+    $bookingRepository = new BookingRepository();
 
     foreach ($mailChecker->getMail() as $uid => $mail) {
-        processMail($mail, $scienerApi, $mailSender);
+        processMail($mail, $scienerApi, $mailSender, $bookingRepository);
         $mailChecker->setSeen($uid);
     }
 }
@@ -53,7 +57,7 @@ function runExpiredPasscodesRemover(): void
     addLog('Expired passcodes removed successfully');
 }
 
-function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSender): void
+function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSender, BookingRepository $bookingRepository): void
 {
     $parser = new Parser($mail);
     $checkInDate = $parser->getCheckInDate();
@@ -62,9 +66,17 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $email = $parser->getEmail();
     $isChanged = $parser->isChanged();
     $email = $email !== '' ? $email : getenv('SUPPORT_EMAIL');
-    $password = $scienerApi->generatePasscode($guestName, prepareCheckInDate($checkInDate), prepareCheckOutDate($checkOutDate));
-    sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate, $isChanged);
-    addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
+    $booking = (new \App\Booking())
+        ->setName($guestName)
+        ->setEmail($email)
+        ->setCheckInDate(new \DateTime($checkInDate)) // использовать prepareCheckInDate
+        ->setCheckOutDate(new \DateTime($checkOutDate));
+
+    if (time() - strtotime($checkInDate) <= REGISTRATION_DELAY) {
+        registerBooking($booking, $scienerApi, $mailSender, $isChanged);
+    } else {
+        $bookingRepository->add($booking);
+    }
 }
 
 function prepareCheckInDate(string $date): int
@@ -87,21 +99,34 @@ function addLog(string $message): void
 
 function sendMail(
     MailSender $mailSender,
-    string $guestName,
-    string $mail,
+    \App\Booking $booking,
     string $password,
-    string $checkInDate,
-    string $checkOutDate,
     bool $isChanged
 ): void {
-    $body = "Dear $guestName\n" .
+    $body = "Dear {$booking->getName()}\n" .
         'You have ' . ($isChanged ? 'changes ' : 'a ') .
-        "reservation at the Hotel \"GreenSLO\" from $checkInDate to $checkOutDate\n" .
+        "reservation at the Hotel \"GreenSLO\" from {$booking->getCheckInDate()->format('Y-m-d H:i')}" .
+        "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}\n" .
         "Your CODE from the MAIN DOOR of the HOTEL:  #$password#\n" .
         "This CODE will be VALID from the time of check-in and until check-out\n" .
         "(14:00 - check in, 12:00 - check out)\n" .
         "I ask you to SAVE this CODE to enter the hotel.\n" .
         "Best regards, Sergey";
 
-    $mailSender->send($mail, $guestName, 'Hotel GreenSLO Ljubljana', $body);
+    $mailSender->send($booking->getEmail(), $booking->getName(), 'Hotel GreenSLO Ljubljana', $body);
+}
+
+function registerBooking(\App\Booking $booking, ScienerApi $scienerApi, MailSender $mailSender, bool $isChanged): void
+{
+    $password = $scienerApi->generatePasscode(
+        $booking->getName(),
+        $booking->getCheckInDate()->getTimestamp() * 1000,
+        $booking->getCheckOutDate()->getTimestamp() * 1000
+    );
+    sendMail($mailSender, $booking, $password, $isChanged);
+    addLog(
+        "For {$booking->getName()} have been added password: $password valid from " .
+        "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
+        "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
+    );
 }

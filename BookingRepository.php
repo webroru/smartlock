@@ -7,16 +7,16 @@ use Google\Cloud\Firestore\FirestoreClient;
 
 class BookingRepository
 {
-    private $entityName;
+    //private $entityName;
     private $firestore;
     private $collectionReference;
 
-    public function __construct(string $entityName)
+    public function __construct()
     {
-        $this->entityName = $entityName;
+        //$this->entityName = $entityName;
         $this->firestore = new FirestoreClient();
 
-        $this->collectionReference = $this->firestore->collection($entityName);
+        $this->collectionReference = $this->firestore->collection(Booking::class);
         //$documentReference = $collectionReference->document($userId);
         //$snapshot = $documentReference->snapshot();
     }
@@ -28,7 +28,6 @@ class BookingRepository
             'CheckInDate' => $booking->getCheckInDate(),
             'CheckOutDate' => $booking->getCheckOutDate(),
             'Email' => $booking->getEmail(),
-            'Code' => $booking->getCode(),
         ]);
     }
 
@@ -39,7 +38,6 @@ class BookingRepository
             'CheckInDate' => $booking->getCheckInDate(),
             'CheckOutDate' => $booking->getCheckOutDate(),
             'Email' => $booking->getEmail(),
-            'Code' => $booking->getCode(),
         ]);
     }
 

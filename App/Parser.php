@@ -48,4 +48,10 @@ class Parser
         $elements = $this->mail->query('//table/tbody/tr/td/div/b[contains(text(), "Booking changed")]');
         return (bool) $elements->length;
     }
+
+    public function getOrderId(): ?string
+    {
+        $elements = $this->mail->query('//table/tbody/tr/td/div/b[2]');
+        return $elements->length ? $elements[0]->nodeValue : null;
+    }
 }

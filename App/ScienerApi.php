@@ -83,7 +83,7 @@ class ScienerApi
             try {
                 $this->deletePasscode($passCode['keyboardPwdId']);
             } catch (\Exception $e) {
-                \addLog("{$e->getMessage()}");
+                Logger::error("{$e->getMessage()}");
             }
         }
     }

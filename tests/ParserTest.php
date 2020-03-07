@@ -14,6 +14,7 @@ class ParserTest extends TestCase
     const GUEST_NAME = 'YI ZHANG';
     const EMAIL = 'yzhang.289577@guest.booking.com';
     const PHONE = '+420910763556';
+    const ORDER_ID = '3060027592 - 2739509449';
 
 
     /** @var Parser */
@@ -60,5 +61,10 @@ class ParserTest extends TestCase
     public function testGetPhone(): void
     {
         $this->assertEquals(self::PHONE, $this->parser->getPhone());
+    }
+
+    public function testGetOrderId(): void
+    {
+        $this->assertEquals(self::ORDER_ID, $this->parser->getOrderId());
     }
 }

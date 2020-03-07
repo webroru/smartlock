@@ -67,4 +67,10 @@ class Parser
     {
         return str_replace(self::MONTHS_RU, self::MONTHS_EN, mb_strtolower($date, 'UTF-8'));
     }
+
+    public function getOrderId(): ?string
+    {
+        $elements = $this->mail->query('//table/tbody/tr/td/div/b[2]');
+        return $elements->length ? $elements[0]->nodeValue : null;
+    }
 }

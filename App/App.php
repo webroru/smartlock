@@ -26,8 +26,12 @@ class App
     public function runReservationChecker(): void
     {
         foreach ($this->mailChecker->getMail() as $uid => $mail) {
-            $this->processMail($mail);
-            $this->mailChecker->setSeen($uid);
+            try {
+                $this->processMail($mail);
+            } catch (\Exception $e) {
+                Logger::error($e->getMessage());
+                $this->mailChecker->setSeen($uid);
+            }
         }
     }
 
@@ -37,6 +41,19 @@ class App
         Logger::log('Expired passcodes removed successfully');
     }
 
+    public function checkDelayedBooking()
+    {
+        $checkInDate = new \DateTime(time() + self::REGISTRATION_DELAY);
+        $bookings = $this->bookingRepository->getUnregisteredBookingsByDateRange($checkInDate);
+        foreach ($bookings as $booking) {
+            try {
+                $this->registerBooking($booking, false);
+            } catch (\Exception $e) {
+                Logger::error($e->getMessage());
+            }
+        }
+    }
+
     private function processMail(string $mail): void
     {
         $parser = new Parser($mail);
@@ -44,19 +61,24 @@ class App
         $checkOutDate = $parser->getCheckOutDate();
         $guestName = $parser->getGuestName();
         $email = $parser->getEmail();
+        $orderId = $parser->getOrderId();
         $isChanged = $parser->isChanged();
         $email = $email !== '' ? $email : getenv('SUPPORT_EMAIL');
         $booking = (new Booking())
             ->setName($guestName)
             ->setEmail($email)
-            ->setCheckInDate($this->prepareCheckInDate($checkInDate)) // использовать prepareCheckInDate
-            ->setCheckOutDate($this->prepareCheckOutDate($checkOutDate));
+            ->setCheckInDate($this->prepareCheckInDate($checkInDate))
+            ->setCheckOutDate($this->prepareCheckOutDate($checkOutDate))
+            ->setOrderId($orderId);
 
         if (time() - strtotime($checkInDate) <= self::REGISTRATION_DELAY) {
             $this->registerBooking($booking, $isChanged);
-        } else {
-            $this->bookingRepository->add($booking);
+            return;
         }
+        if ($isChanged) {
+            $this->removeOldBooking($orderId);
+        }
+        $this->bookingRepository->add($booking);
     }
 
     private function prepareCheckInDate(string $date): \DateTime
@@ -69,13 +91,13 @@ class App
         return new \DateTime("$date 12:00", new \DateTimeZone('Europe/Vienna'));
     }
 
-    private function sendMail(Booking $booking, string $password, bool $isChanged): void
+    private function sendMail(Booking $booking, bool $isChanged): void
     {
         $body = "Dear {$booking->getName()}\n" .
             'You have ' . ($isChanged ? 'changes ' : 'a ') .
             "reservation at the Hotel \"GreenSLO\" from {$booking->getCheckInDate()->format('Y-m-d H:i')}" .
             "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}\n" .
-            "Your CODE from the MAIN DOOR of the HOTEL:  #$password#\n" .
+            "Your CODE from the MAIN DOOR of the HOTEL:  #{$booking->getCode()}#\n" .
             "This CODE will be VALID from the time of check-in and until check-out\n" .
             "(14:00 - check in, 12:00 - check out)\n" .
             "I ask you to SAVE this CODE to enter the hotel.\n" .
@@ -86,16 +108,37 @@ class App
 
     private function registerBooking(Booking $booking, bool $isChanged): void
     {
-        $password = $this->scienerApi->generatePasscode(
+        $password = $this->scienerApi->addRandomPasscode(
             $booking->getName(),
             $booking->getCheckInDate()->getTimestamp() * 1000,
             $booking->getCheckOutDate()->getTimestamp() * 1000
         );
-        $this->sendMail($booking, $password, $isChanged);
+        if (!$password) {
+            $error = "Can't add passcode. All attempts have been spent." .
+                "Guest: {$booking->getName()}, " .
+                "Reservation: {$booking->getCheckInDate()->format('Y-m-d H:i')} — " .
+                "{$booking->getCheckOutDate()->format('Y-m-d H:i')}, " .
+                "Order №: {$booking->getOrderId()}, " .
+                "Mail: {$booking->getEmail()}";
+            throw new \Exception($error);
+        }
+        $booking->setCode($password);
+        $this->bookingRepository->update($booking);
+
+        $this->sendMail($booking, $isChanged);
         Logger::log(
-            "For {$booking->getName()} have been added password: $password valid from " .
+            "For {$booking->getName()} have been added password: {$booking->getCode()} valid from " .
             "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
             "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
         );
+    }
+
+    private function removeOldBooking(string $orderId): void
+    {
+        /** @var Booking[] $bookings */
+        $bookings = $this->bookingRepository->findBy(['OrderId' => $orderId]);
+        foreach ($bookings as $booking) {
+            $this->bookingRepository->delete($booking->getId());
+        }
     }
 }

@@ -9,8 +9,10 @@ class Booking
     private $checkInDate;
     private $checkOutDate;
     private $email;
+    private $code;
+    private $orderId;
 
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -34,21 +36,21 @@ class Booking
 
     public function getCheckInDate(): \DateTime
     {
-        return new \DateTime($this->checkInDate);
+        return $this->checkInDate;
     }
 
     public function setCheckInDate(\DateTime $checkInDate): self
     {
-        $this->checkInDate = $checkInDate->getTimestamp();
+        $this->checkInDate = $checkInDate;
         return $this;
     }
 
     public function getCheckOutDate(): \DateTime
     {
-        return new \DateTime($this->checkOutDate);
+        return $this->checkOutDate;
     }
 
-    public function setCheckOutDate($checkOutDate): self
+    public function setCheckOutDate(\DateTime $checkOutDate): self
     {
         $this->checkOutDate = $checkOutDate;
         return $this;
@@ -62,6 +64,28 @@ class Booking
     public function setEmail($email): self
     {
         $this->email = $email;
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): self
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    public function getOrderId(): string
+    {
+        return $this->orderId;
+    }
+
+    public function setOrderId(string $orderId): self
+    {
+        $this->orderId = $orderId;
         return $this;
     }
 }

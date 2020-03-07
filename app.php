@@ -12,7 +12,7 @@ require __DIR__ . '/vendor/autoload.php';
 Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
 if (!isset($argv)) {
-    Logger::log('Error: $argv has not been specified');
+    Logger::error('$argv has not been specified');
     exit;
 }
 
@@ -34,9 +34,8 @@ try {
             $app->runExpiredPasscodesRemover();
             break;
         default:
-            Logger::log('run parameter not specified');
-            exit;
+            throw new Exception('run parameter not specified');
     }
 } catch (\Exception $e) {
-    Logger::log("Error: {$e->getMessage()}");
+    Logger::error($e->getMessage());
 }

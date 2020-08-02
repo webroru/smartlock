@@ -59,20 +59,14 @@ function processMail(string $mail, ScienerApi $scienerApi, MailSender $mailSende
     $email = $parser->getEmail();
     $isChanged = $parser->isChanged();
     $email = $email !== '' ? $email : getenv('SUPPORT_EMAIL');
-    $password = $scienerApi->generatePasscode($guestName, prepareCheckInDate($checkInDate), prepareCheckOutDate($checkOutDate));
+    $password = $scienerApi->generatePasscode($guestName, prepareDate($checkInDate), prepareDate($checkOutDate));
     sendMail($mailSender, $guestName, $email, $password, $checkInDate, $checkOutDate, $isChanged);
     addLog("For $guestName have been added password: $password valid from $checkInDate to $checkOutDate");
 }
 
-function prepareCheckInDate(string $date): int
+function prepareDate(string $date): int
 {
-    return (new \DateTime("$date 14:00", new \DateTimeZone('Europe/Vienna')))
-        ->getTimestamp() * 1000;
-}
-
-function prepareCheckOutDate(string $date): int
-{
-    return (new \DateTime("$date 12:00", new \DateTimeZone('Europe/Vienna')))
+    return (new \DateTime($date, new \DateTimeZone('Europe/Vienna')))
         ->getTimestamp() * 1000;
 }
 

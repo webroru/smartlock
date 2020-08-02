@@ -1,11 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Repository;
 
+use App\Entity\Booking;
 use Google\Cloud\Firestore\DocumentSnapshot;
 use Google\Cloud\Firestore\FirestoreClient;
 
-class BookingRepository
+class BookingFirestireRepository implements RepositoryInterface
 {
     private $firestore;
     private $collectionReference;

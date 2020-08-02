@@ -2,8 +2,8 @@
 
 namespace tests;
 
-use App\Booking;
-use App\BookingRepository;
+use App\Entity\Booking;
+use App\Repository\BookingFirestireRepository;
 use PHPUnit\Framework\TestCase;
 
 class BookingRepositoryTest extends TestCase
@@ -12,7 +12,7 @@ class BookingRepositoryTest extends TestCase
     private const MAIL = 'test@mail.net';
     private const ORDER_ID = 'test-123';
 
-    /** @var BookingRepository */
+    /** @var BookingFirestireRepository */
     private $bookingRepository;
     /** @var Booking */
     private $testBooking;
@@ -20,7 +20,7 @@ class BookingRepositoryTest extends TestCase
     protected function setUp(): void
     {
         \Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->load();
-        $this->bookingRepository = new BookingRepository();
+        $this->bookingRepository = new BookingFirestireRepository();
 
         $checkInDate = new \DateTime('+1 year');
         $checkOutDate = new \DateTime('+1 year + 1 day');

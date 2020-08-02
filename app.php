@@ -1,10 +1,10 @@
 <?php
 
-use App\BookingRepository;
+use App\Logger;
 use App\MailChecker;
 use App\MailSender;
+use App\Repository\BookingFirestireRepository;
 use App\ScienerApi;
-use App\Logger;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -19,7 +19,7 @@ if (!isset($argv)) {
 $mailChecker = new MailChecker();
 $mailSender = new MailSender();
 $scienerApi = new ScienerApi();
-$bookingRepository = new BookingRepository();
+$bookingRepository = new BookingFirestireRepository();
 $app = new \App\App($mailChecker, $mailSender, $scienerApi, $bookingRepository);
 
 try {

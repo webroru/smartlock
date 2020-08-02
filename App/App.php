@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Entity\Booking;
+use App\Repository\RepositoryInterface;
+
 class App
 {
     private const REGISTRATION_DELAY = 60 * 60 * 24 * 7; // 1 week
@@ -15,7 +18,7 @@ class App
         MailChecker $mailChecker,
         MailSender $mailSender,
         ScienerApi $scienerApi,
-        BookingRepository $bookingRepository
+        RepositoryInterface $bookingRepository
     ) {
         $this->mailChecker = $mailChecker;
         $this->mailSender = $mailSender;

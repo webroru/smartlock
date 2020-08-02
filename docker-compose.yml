@@ -6,9 +6,9 @@ services:
     volumes:
       - ./temp/dev/mysql/data:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: smartlock
-      MYSQL_USER: smartlock
-      MYSQL_PASSWORD: rbptbK6O0
+      MYSQL_DATABASE: host1253209_smartlock
+      MYSQL_USER: host1253209
+      MYSQL_PASSWORD: hostlandshino
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     ports:
       - 3306:3306

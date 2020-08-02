@@ -12,4 +12,6 @@
 ```
 
 ## Tests ##
-`./composer.phar test`
+Run all tests `./composer.phar test`
+
+Run specific test:  `./vendor/bin/phpunit --filter [test method] [path to test class]`, example: `./vendor/bin/phpunit --filter testGetCheckInDate tests/ParserTest.php` 

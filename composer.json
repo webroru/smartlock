@@ -5,13 +5,11 @@
   "require": {
     "ext-dom": "*",
     "ext-json": "*",
-    "ext-grpc": "*",
     "ext-imap": "*",
     "ext-mbstring": "*",
     "guzzlehttp/guzzle": "~6.0",
     "phpmailer/phpmailer": "^6.0",
-    "vlucas/phpdotenv": "^4.1",
-    "google/cloud-firestore": "^1.10"
+    "vlucas/phpdotenv": "^4.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",

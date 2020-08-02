@@ -4,6 +4,9 @@ namespace App;
 
 class Parser
 {
+    private const MONTHS_RU = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    private const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
     private $mail;
 
     public function __construct(string $mail)
@@ -15,37 +18,53 @@ class Parser
 
     public function getCheckInDate(): ?string
     {
-        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Check-in:"]/../following-sibling::td');
-        return $elements->length ? $elements[0]->nodeValue : null;
+        $elements = $this->mail->query('//table/tbody/tr/td[normalize-space() = "Даты проживания"]/following-sibling::td');
+        if (!$elements->length) {
+            return null;
+        }
+
+        $value = trim($elements[0]->nodeValue);
+        $dateStr = explode(' — ', $value)[0];
+        return $this->translateDate($dateStr);
     }
 
     public function getCheckOutDate(): ?string
     {
-        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Check-out:"]/../following-sibling::td');
-        return $elements->length ? $elements[0]->nodeValue : null;
+        $elements = $this->mail->query('//table/tbody/tr/td[normalize-space() = "Даты проживания"]/following-sibling::td');
+        if (!$elements->length) {
+            return null;
+        }
+
+        $value = trim($elements[0]->nodeValue);
+        $dateStr = explode(' — ', $value)[1];
+        return $this->translateDate($dateStr);
     }
 
     public function getGuestName(): ?string
     {
-        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Booked for:"]/../following-sibling::td');
+        $elements = $this->mail->query('//table/tbody/tr/td[.="Заказчик"]/following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
     public function getPhone(): ?string
     {
-        $elements = $this->mail->query('//table/tbody/tr/td/b[.="Phone:"]/../following-sibling::td');
+        $elements = $this->mail->query('//table/tbody/tr/td[.="Телефон"]/following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
     public function getEmail(): ?string
     {
-        $elements = $this->mail->query('//table/tbody/tr/td/b[.="E-mail:"]/../following-sibling::td');
+        $elements = $this->mail->query('//table/tbody/tr/td[.="Эл. почта"]/following-sibling::td');
         return $elements->length ? $elements[0]->nodeValue : null;
     }
 
     public function isChanged(): bool
     {
-        $elements = $this->mail->query('//table/tbody/tr/td/div/b[contains(text(), "Booking changed")]');
-        return (bool) $elements->length;
+        return false;
+    }
+
+    private function translateDate(string $date): string
+    {
+        return str_replace(self::MONTHS_RU, self::MONTHS_EN, mb_strtolower($date, 'UTF-8'));
     }
 }

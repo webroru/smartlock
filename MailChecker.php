@@ -5,8 +5,8 @@ namespace App;
 class MailChecker
 {
     private const HOST = '{imap.gmail.com:993/imap/ssl}INBOX';
-    private const NEW_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "New booking"';
-    private const CHANGED_BOOKING = 'UNSEEN FROM "otelms.com" SUBJECT "Booking changed"';
+    private const NEW_BOOKING = 'UNSEEN FROM "noreply@reservationsteps.ru" SUBJECT "Новое бронирование"';
+    private const CHANGED_BOOKING = 'UNSEEN FROM "noreply@reservationsteps.ru" SUBJECT "Изменение бронирования"';
 
     private $inbox;
 

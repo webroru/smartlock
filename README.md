@@ -8,6 +8,7 @@
 5. Add to cron:
 ```
 0 0 * * * php -f app.php expiredPasscodesRemover >> logs/cron.log 2>&1
+0 0 * * * php -f app.php checkDelayedBooking >> logs/cron.log 2>&1
 * * * * * php -f app.php reservationChecker >> logs/cron.log 2>&1
 ```
 

@@ -30,8 +30,8 @@ try {
         case 'expiredPasscodesRemover':
             $app->runExpiredPasscodesRemover();
             break;
-        case 'registerPasscodes':
-            $app->runExpiredPasscodesRemover();
+        case 'checkDelayedBooking':
+            $app->checkDelayedBooking();
             break;
         default:
             throw new Exception('run parameter not specified');

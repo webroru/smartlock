@@ -21,9 +21,10 @@ class MailChecker
 
     public function getMail(): array
     {
+        $sinceToday = ' SINCE ' . (new \DateTime())->format('d-M-Y');
         $emails = array_merge(
-            imap_search($this->inbox, self::NEW_BOOKING) ?: [],
-            imap_search($this->inbox, self::CHANGED_BOOKING) ?: []
+            imap_search($this->inbox, self::NEW_BOOKING . $sinceToday)  ?: [],
+            imap_search($this->inbox, self::CHANGED_BOOKING . $sinceToday) ?: []
         );
 
         if (!$emails) {

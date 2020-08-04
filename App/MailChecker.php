@@ -38,14 +38,7 @@ class MailChecker
             }
             $part = $structure->parts[1];
             $message = imap_fetchbody($this->inbox, $uid, 2, FT_PEEK);
-
-            if ($part->encoding === 3) {
-                $result[$uid] = imap_base64($message);
-            } elseif ($part->encoding === 1) {
-                $result[$uid] = imap_8bit($message);
-            } else {
-                $result[$uid] = imap_qprint($message);
-            }
+            $result[$uid] = $this->decodeBody($message, $part->encoding);
         }
         return $result;
     }
@@ -53,5 +46,24 @@ class MailChecker
     public function setSeen(int $uid): void
     {
         imap_setflag_full($this->inbox, $uid, "\\Seen");
+    }
+
+    private function decodeBody(string $body, int $encoding): string
+    {
+        switch ($encoding) {
+            case ENC7BIT:
+                return $body;
+            case ENC8BIT:
+                return quoted_printable_decode(imap_8bit($body));
+            case ENCBINARY:
+                return imap_binary($body);
+            case ENCBASE64:
+                return imap_base64($body);
+            case ENCQUOTEDPRINTABLE:
+                return quoted_printable_decode($body);
+            case ENCOTHER:
+            default:
+                return $body;
+        }
     }
 }

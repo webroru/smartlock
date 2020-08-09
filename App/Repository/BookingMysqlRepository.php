@@ -6,7 +6,7 @@ use App\Entity\Booking;
 use Google\Cloud\Firestore\DocumentSnapshot;
 use Google\Cloud\Firestore\FirestoreClient;
 
-class BookingMySqlRepository implements RepositoryInterface
+class BookingMysqlRepository implements RepositoryInterface
 {
     private $client;
 

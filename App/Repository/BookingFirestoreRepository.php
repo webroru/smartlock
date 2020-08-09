@@ -6,7 +6,7 @@ use App\Entity\Booking;
 use Google\Cloud\Firestore\DocumentSnapshot;
 use Google\Cloud\Firestore\FirestoreClient;
 
-class BookingFirestireRepository implements RepositoryInterface
+class BookingFirestoreRepository implements RepositoryInterface
 {
     private $firestore;
     private $collectionReference;

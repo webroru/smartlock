@@ -3,17 +3,17 @@
 namespace tests;
 
 use App\Entity\Booking;
-use App\Repository\BookingFirestireRepository;
-use App\Repository\BookingMySqlRepository;
+use App\Repository\BookingFirestoreRepository;
+use App\Repository\BookingMysqlRepository;
 use PHPUnit\Framework\TestCase;
 
-class BookingRepositoryTest extends TestCase
+class BookingMysqlRepositoryTest extends TestCase
 {
     private const NAME = 'test name';
     private const MAIL = 'test@mail.net';
     private const ORDER_ID = 'test-123';
 
-    /** @var BookingMySqlRepository */
+    /** @var BookingMysqlRepository */
     private $bookingRepository;
     /** @var Booking */
     private $testBooking;
@@ -21,7 +21,7 @@ class BookingRepositoryTest extends TestCase
     protected function setUp(): void
     {
         \Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->load();
-        $this->bookingRepository = new BookingMySqlRepository();
+        $this->bookingRepository = new BookingMysqlRepository();
 
         $checkInDate = new \DateTime('14:00 +1 year');
         $checkOutDate = new \DateTime('12:00 +1 year + 1 day');

@@ -44,7 +44,7 @@ class App
         Logger::log('Expired passcodes removed successfully');
     }
 
-    public function checkDelayedBooking()
+    public function checkDelayedBooking(): void
     {
         $checkInDate = new \DateTime(time() + self::REGISTRATION_DELAY);
         $bookings = $this->bookingRepository->getUnregisteredBookingsByDateRange($checkInDate);

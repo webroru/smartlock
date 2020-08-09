@@ -3,7 +3,6 @@
 namespace tests;
 
 use App\Entity\Booking;
-use App\Repository\BookingFirestoreRepository;
 use App\Repository\BookingMysqlRepository;
 use PHPUnit\Framework\TestCase;
 

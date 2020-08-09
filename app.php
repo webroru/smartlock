@@ -3,7 +3,7 @@
 use App\Logger;
 use App\MailChecker;
 use App\MailSender;
-use App\Repository\BookingFirestoreRepository;
+use App\Repository\BookingMysqlRepository;
 use App\ScienerApi;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -19,7 +19,7 @@ if (!isset($argv)) {
 $mailChecker = new MailChecker();
 $mailSender = new MailSender();
 $scienerApi = new ScienerApi();
-$bookingRepository = new BookingFirestoreRepository();
+$bookingRepository = new BookingMysqlRepository();
 $app = new \App\App($mailChecker, $mailSender, $scienerApi, $bookingRepository);
 
 try {

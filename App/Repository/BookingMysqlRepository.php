@@ -103,10 +103,16 @@ class BookingMysqlRepository implements RepositoryInterface
 
     public function delete($id): void
     {
+        $this->client->prepare('DELETE FROM booking WHERE id = ?')->execute([$id]);
     }
 
     public function getUnregisteredBookingsByDateRange(\DateTime $checkInDate): array
     {
+        $sql = 'SELECT * FROM booking where check_in_date <= :check_in_date AND code IS NULL';
+        $statement = $this->client->prepare($sql);
+        $statement->execute(['check_in_date' => $checkInDate->format('Y-m-d H:i:s')]);
+        $rows = $statement->fetchAll();
+        return array_map([$this, 'toEntity'], $rows);
     }
 
     private function toEntity(array $row): Booking

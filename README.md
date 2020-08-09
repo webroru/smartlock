@@ -29,6 +29,6 @@ You can use MySql or Google Firebase.
 2. Set variables in the .env
 
 ## Tests ##
-Run all tests `./composer.phar test`
+Run all tests `docker-compose run php ./composer.phar test`
 
-Run specific test:  `./vendor/bin/phpunit --filter [test method] [path to test class]`, example: `./vendor/bin/phpunit --filter testGetCheckInDate tests/ParserTest.php`
+Run specific test:  `docker-compose run php ./vendor/bin/phpunit --filter [test method] [path to test class]`, example: `docker-compose run php ./vendor/bin/phpunit --filter testGetCheckInDate tests/ParserTest.php`

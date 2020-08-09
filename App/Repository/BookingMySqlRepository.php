@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Booking;
 use Google\Cloud\Firestore\DocumentSnapshot;
 use Google\Cloud\Firestore\FirestoreClient;
-use PDO;
 
 class BookingMySqlRepository implements RepositoryInterface
 {
@@ -15,18 +14,18 @@ class BookingMySqlRepository implements RepositoryInterface
     {
         $host = getenv('MYSQL_HOST');
         $db = getenv('MYSQL_DB');
-        $user = getenv('host1253209');
-        $pass = getenv('hostlandshino');
+        $user = getenv('MYSQL_USER');
+        $pass = getenv('MYSQL_PASS');
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
         $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::ATTR_EMULATE_PREPARES => false,
         ];
         try {
-            $this->client = new PDO($dsn, $user, $pass, $options);
+            $this->client = new \PDO($dsn, $user, $pass, $options);
         } catch (\PDOException $e) {
             throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
@@ -34,11 +33,14 @@ class BookingMySqlRepository implements RepositoryInterface
 
     public function add(Booking $booking): string
     {
-        $this->client->prepare('INSERT INTO booking VALUES (NULL, :name, :check_in_date, :check_out_date, :email, :code, :order_id)')
+        $sql = 'INSERT INTO booking
+            VALUES (NULL, :name, :check_in_date, :check_out_date, :email, :code, :order_id)';
+
+        $this->client->prepare($sql)
             ->execute([
                 'name' => $booking->getName(),
-                'check_in_date' => $booking->getCheckInDate(),
-                'check_out_date' => $booking->getCheckOutDate(),
+                'check_in_date' => $booking->getCheckInDate()->format('Y-m-d H:i:s'),
+                'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
                 'email' => $booking->getEmail(),
                 'code' => $booking->getCode(),
                 'order_id' => $booking->getOrderId(),
@@ -56,10 +58,47 @@ class BookingMySqlRepository implements RepositoryInterface
 
     public function update(Booking $booking): void
     {
+        $sql = 'UPDATE booking
+            SET
+                name = :name,
+                check_in_date = :check_in_date,
+                check_out_date = :check_out_date,
+                email = :email,
+                code = :code,
+                order_id = :order_id
+            WHERE id = :id';
+
+        $this->client->prepare($sql)
+            ->execute([
+                'id' => $booking->getId(),
+                'name' => $booking->getName(),
+                'check_in_date' => $booking->getCheckInDate()->format('Y-m-d H:i:s'),
+                'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
+                'email' => $booking->getEmail(),
+                'code' => $booking->getCode(),
+                'order_id' => $booking->getOrderId(),
+            ]);
     }
 
     public function findBy(array $params): array
     {
+        $where = '';
+        $values = [];
+        foreach ($params as $field => $value) {
+            $where .= "$field = :$field";
+            $values[$field] = $value;
+        }
+
+        $sql = 'SELECT * FROM booking';
+
+        if ($where) {
+            $sql .= " WHERE $where";
+        }
+
+        $statement = $this->client->prepare($sql);
+        $statement->execute($values);
+        $rows = $statement->fetchAll();
+        return array_map([$this, 'toEntity'], $rows);
     }
 
     public function delete($id): void

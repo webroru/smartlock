@@ -4,6 +4,7 @@ namespace tests;
 
 use App\Entity\Booking;
 use App\Repository\BookingFirestireRepository;
+use App\Repository\BookingMySqlRepository;
 use PHPUnit\Framework\TestCase;
 
 class BookingRepositoryTest extends TestCase
@@ -12,7 +13,7 @@ class BookingRepositoryTest extends TestCase
     private const MAIL = 'test@mail.net';
     private const ORDER_ID = 'test-123';
 
-    /** @var BookingFirestireRepository */
+    /** @var BookingMySqlRepository */
     private $bookingRepository;
     /** @var Booking */
     private $testBooking;
@@ -20,10 +21,10 @@ class BookingRepositoryTest extends TestCase
     protected function setUp(): void
     {
         \Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->load();
-        $this->bookingRepository = new BookingFirestireRepository();
+        $this->bookingRepository = new BookingMySqlRepository();
 
-        $checkInDate = new \DateTime('+1 year');
-        $checkOutDate = new \DateTime('+1 year + 1 day');
+        $checkInDate = new \DateTime('14:00 +1 year');
+        $checkOutDate = new \DateTime('12:00 +1 year + 1 day');
         $this->testBooking = (new Booking())
             ->setName(self::NAME)
             ->setEmail(self::MAIL)
@@ -73,6 +74,17 @@ class BookingRepositoryTest extends TestCase
         $testBooking = $this->bookingRepository->find($id);
         $this->bookingRepository->delete($id);
         $this->assertInstanceOf(Booking::class, ($testBooking));
+    }
+
+    public function testFindBy()
+    {
+        $id = $this->bookingRepository->add($this->testBooking);
+        $testBookings = $this->bookingRepository->findBy(['id' => $id]);
+        $this->bookingRepository->delete($id);
+        $testBooking = $testBookings[0];
+        $this->assertIsArray($testBookings);
+        $this->assertInstanceOf(Booking::class, ($testBooking));
+        $this->assertEquals($id, $testBooking->getId());
     }
 
     public function testDelete()

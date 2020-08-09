@@ -70,8 +70,8 @@ class App
         $booking = (new Booking())
             ->setName($guestName)
             ->setEmail($email)
-            ->setCheckInDate($this->prepareCheckInDate($checkInDate))
-            ->setCheckOutDate($this->prepareCheckOutDate($checkOutDate))
+            ->setCheckInDate($this->prepareDate($checkInDate))
+            ->setCheckOutDate($this->prepareDate($checkOutDate))
             ->setOrderId($orderId);
 
         if (time() - strtotime($checkInDate) <= self::REGISTRATION_DELAY) {
@@ -84,14 +84,9 @@ class App
         $this->bookingRepository->add($booking);
     }
 
-    private function prepareCheckInDate(string $date): \DateTime
+    private function prepareDate(string $date): \DateTime
     {
-        return new \DateTime("$date 14:00", new \DateTimeZone('Europe/Vienna'));
-    }
-
-    private function prepareCheckOutDate(string $date): \DateTime
-    {
-        return new \DateTime("$date 12:00", new \DateTimeZone('Europe/Vienna'));
+        return new \DateTime($date, new \DateTimeZone('Europe/Vienna'));
     }
 
     private function sendMail(Booking $booking, bool $isChanged): void

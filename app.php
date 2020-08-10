@@ -1,5 +1,6 @@
 <?php
 
+use App\App;
 use App\Logger;
 use App\MailChecker;
 use App\MailSender;
@@ -20,7 +21,7 @@ $mailChecker = new MailChecker();
 $mailSender = new MailSender();
 $scienerApi = new ScienerApi();
 $bookingRepository = new BookingMysqlRepository();
-$app = new \App\App($mailChecker, $mailSender, $scienerApi, $bookingRepository);
+$app = new App($mailChecker, $mailSender, $scienerApi, $bookingRepository);
 
 try {
     switch ($argv[1]) {

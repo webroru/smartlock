@@ -3,8 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Booking;
-use Google\Cloud\Firestore\DocumentSnapshot;
-use Google\Cloud\Firestore\FirestoreClient;
 
 interface RepositoryInterface
 {

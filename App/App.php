@@ -74,7 +74,7 @@ class App
             ->setCheckOutDate($this->prepareDate($checkOutDate))
             ->setOrderId($orderId);
 
-        if (time() - strtotime($checkInDate) <= self::REGISTRATION_DELAY) {
+        if (strtotime($checkInDate) - time() <= self::REGISTRATION_DELAY) {
             $this->registerBooking($booking, $isChanged);
             return;
         }

@@ -33,8 +33,8 @@ class App
                 $this->processMail($mail);
             } catch (\Exception $e) {
                 Logger::error($e->getMessage());
-                $this->mailChecker->setSeen($uid);
             }
+            $this->mailChecker->setSeen($uid);
         }
     }
 

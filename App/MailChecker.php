@@ -14,8 +14,7 @@ class MailChecker
     {
         $this->inbox = imap_open(self::HOST, getenv('MAIL_USER'), getenv('MAIL_PASSWORD'));
         if (!$this->inbox) {
-            \addLog('Cannot connect to Gmail: ' . imap_last_error());
-            exit;
+            throw new \Exception('Cannot connect to Gmail: ' . imap_last_error());
         }
     }
 
@@ -35,7 +34,7 @@ class MailChecker
         foreach ($emails as $uid) {
             $structure = imap_fetchstructure($this->inbox, $uid);
             if (!isset($structure->parts, $structure->parts[1])) {
-                \addLog("Error: can't detect encoding part for $uid mail");
+                Logger::error("Can't detect encoding part for $uid mail");
                 continue;
             }
             $part = $structure->parts[1];

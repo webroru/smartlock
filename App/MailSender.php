@@ -3,7 +3,6 @@
 namespace App;
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 class MailSender
 {
@@ -30,16 +29,13 @@ class MailSender
 
     public function send(string $mail, string $name, string $subject, string $body): void
     {
-        try {
-            $this->mail->Subject = $subject;
-            $this->mail->Body = $body;
-            $this->mail->addAddress($mail, $name);
-            if (!$this->mail->send()) {
-                \addLog("Message could not be sent. Mailer Error: {$this->mail->ErrorInfo}");
-            }
+        $this->mail->Subject = $subject;
+        $this->mail->Body = $body;
+        $this->mail->addAddress($mail, $name);
+        if (!$this->mail->send()) {
             $this->mail->clearAddresses();
-        } catch (Exception $e) {
-            \addLog("Message could not be sent. Mailer Error: {$e->getMessage()}");
+            throw new \Exception("Message could not be sent. Mailer Error: {$this->mail->ErrorInfo}");
         }
+        $this->mail->clearAddresses();
     }
 }

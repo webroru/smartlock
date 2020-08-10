@@ -63,6 +63,18 @@ class Parser
         return false;
     }
 
+    public function getOrderId(): ?string
+    {
+        $elements = $this->mail->query('//h3[contains(text(),\'Бронирование №\')]');
+        if (!$elements->length) {
+            return null;
+        }
+
+        preg_match('/Бронирование №\s+([^ ]+) /', trim($elements[0]->nodeValue), $matches);
+
+        return $matches[1] ?? null;
+    }
+
     private function translateDate(string $date): string
     {
         return str_replace(self::MONTHS_RU, self::MONTHS_EN, mb_strtolower($date, 'UTF-8'));

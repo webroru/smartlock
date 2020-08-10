@@ -6,7 +6,7 @@
 1. Install [Docker](https://docs.docker.com/engine/installation/linux/ubuntu/)
 2. Install [Docker Compose](https://docs.docker.com/compose/install/)
 3. Run the project: `docker-compose up -d`
-4. Instal dependencies: `docker-compose php exec composer install`
+4. Instal dependencies: `docker-compose run php composer install`
 5. Import MySql table: `mysql -uroot -h 0.0.0.0 host1253209_smartlock < db.sql`
 
 ### Select data storage ###

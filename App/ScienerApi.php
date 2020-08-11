@@ -14,6 +14,7 @@ class ScienerApi
     private const KEYBOARD_PWD_TYPE = ['period' => 3];
     private const PASSCODE_ATTEMPTS = 10;
     private const SAME_PASSCODE_EXISTS = -3007;
+    private const IGNORE_PASSCODES = [37782310, 37780116, 37663144, 37663134, 9318334];
 
     private $client;
     private $token;
@@ -80,6 +81,9 @@ class ScienerApi
         });
 
         foreach ($passCodes as $passCode) {
+            if (in_array($passCode['keyboardPwdId'], self::IGNORE_PASSCODES)) {
+                continue;
+            }
             try {
                 $this->deletePasscode($passCode['keyboardPwdId']);
             } catch (\Exception $e) {

@@ -46,7 +46,7 @@ class App
 
     public function checkDelayedBooking(): void
     {
-        $checkInDate = new \DateTime(time() + self::REGISTRATION_DELAY);
+        $checkInDate = (new \DateTime())->setTimestamp(time() + self::REGISTRATION_DELAY);
         $bookings = $this->bookingRepository->getUnregisteredBookingsByDateRange($checkInDate);
         foreach ($bookings as $booking) {
             try {

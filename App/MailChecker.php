@@ -4,7 +4,7 @@ namespace App;
 
 class MailChecker
 {
-    private const HOST = '{imap.gmail.com:993/imap/ssl}INBOX';
+    private const HOST = '{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX';
     private const NEW_BOOKING = 'UNSEEN FROM "noreply@reservationsteps.ru" SUBJECT "Новое бронирование"';
     private const CHANGED_BOOKING = 'UNSEEN FROM "noreply@reservationsteps.ru" SUBJECT "Изменение бронирования"';
 

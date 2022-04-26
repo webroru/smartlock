@@ -7,10 +7,7 @@ use App\MailSender;
 use App\Repository\BookingMysqlRepository;
 use App\ScienerApi;
 
-require __DIR__ . '/vendor/autoload.php';
-
-// Load .env
-Dotenv\Dotenv::createImmutable(__DIR__)->load();
+require __DIR__ . '/bootstrap.php';
 
 if (!isset($argv)) {
     Logger::error('$argv has not been specified');

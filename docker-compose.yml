@@ -17,5 +17,21 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     volumes:
-      - ./:/opt/app
+      - ./:/var/www
       - ./temp/dev/php/logs:/var/log/php
+    environment:
+      PHP_IDE_CONFIG: "serverName=xdebug-docker"
+      XDEBUG_CONFIG: "client_host=172.17.0.1"
+      XDEBUG_MODE: "debug"
+      XDEBUG_SESSION: "PHPSTORM"
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/hosts:/etc/nginx/conf.d
+      - ./temp/dev/nginx/logs:/var/log/nginx
+    links:
+      - php

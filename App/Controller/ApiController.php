@@ -20,11 +20,19 @@ class ApiController
 
     public function create(Request $request): Response
     {
-        $checkInDate = $request->get('checkindate', '2022-01-01');
-        $checkOutDate = $request->get('checkoutdate', '2022-01-02');
-        $guestName = $request->get('guestname', 'asdf');
-        $email = $request->get('email', 'test@asdf.asf');
-        $orderId = $request->get('orderid', '11');
+        $checkInDate = $request->get('checkindate');
+        $checkOutDate = $request->get('checkoutdate');
+        $guestName = $request->get('guestname');
+        $email = $request->get('email');
+        $orderId = $request->get('orderid');
+
+        $message = 'The Booking has been processed';
+        $status = Response::HTTP_OK;
+
+        if (!$checkInDate || !$checkOutDate || !$guestName || !$email || !$orderId) {
+            $message = 'Validation error';
+            $status = Response::HTTP_UNPROCESSABLE_ENTITY;
+        }
 
         $booking = (new Booking())
             ->setName($guestName)
@@ -36,8 +44,8 @@ class ApiController
         $this->lockService->registerBooking($booking);
 
         return new Response(
-            'Content',
-            Response::HTTP_OK,
+            $message,
+            $status,
             ['content-type' => 'text/html']
         );
     }

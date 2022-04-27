@@ -1,0 +1,13 @@
+services:
+  App\ScienerApi:
+    class: App\ScienerApi
+
+  App\Services\LockService:
+    class: App\Services\LockService
+    arguments:
+      - '@App\ScienerApi'
+
+  App\Controller\ApiController:
+    class: App\Controller\ApiController
+    arguments:
+      - '@App\Services\LockService'

@@ -8,7 +8,9 @@
     "phpmailer/phpmailer": "^6.0",
     "vlucas/phpdotenv": "^4.1",
     "symfony/http-foundation": "^5.4",
-    "symfony/dependency-injection": "^5.4"
+    "symfony/dependency-injection": "^5.4",
+    "symfony/yaml": "^5.4",
+    "symfony/config": "^5.4"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",

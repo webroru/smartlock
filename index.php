@@ -2,29 +2,19 @@
 
 declare(strict_types=1);
 
-use App\Controller\ApiController;
-use App\ScienerApi;
-use App\Services\LockService;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpFoundation\Request;
 
 require __DIR__ . '/bootstrap.php';
 
 $containerBuilder = new ContainerBuilder();
-$containerBuilder
-    ->register('scienerApi', ScienerApi::class);
-
-$containerBuilder
-    ->register('lockService', Lockservice::class)
-    ->addArgument(new Reference('scienerApi'));
-
-$containerBuilder
-    ->register('apiController', ApiController::class)
-    ->addArgument(new Reference('lockService'));
+$loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__));
+$loader->load(__DIR__ . '/config/services.yaml');
 
 $request = Request::createFromGlobals();
-$apiController = $containerBuilder->get('apiController');
+$apiController = $containerBuilder->get(App\Controller\ApiController::class);
 $response = $apiController->create($request);
 $response->prepare($request);
 $response->send();

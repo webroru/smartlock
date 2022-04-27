@@ -32,6 +32,12 @@ class ApiController
         if (!$checkInDate || !$checkOutDate || !$guestName || !$email || !$orderId) {
             $message = 'Validation error';
             $status = Response::HTTP_UNPROCESSABLE_ENTITY;
+
+            return new Response(
+                $message,
+                $status,
+                ['content-type' => 'text/html']
+            );
         }
 
         $booking = (new Booking())

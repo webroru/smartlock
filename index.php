@@ -5,15 +5,26 @@ declare(strict_types=1);
 use App\Controller\ApiController;
 use App\ScienerApi;
 use App\Services\LockService;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\Request;
 
 require __DIR__ . '/bootstrap.php';
 
-$scienerApi = new ScienerApi();
-$lockService = new LockService($scienerApi);
+$containerBuilder = new ContainerBuilder();
+$containerBuilder
+    ->register('scienerApi', ScienerApi::class);
+
+$containerBuilder
+    ->register('lockService', Lockservice::class)
+    ->addArgument(new Reference('scienerApi'));
+
+$containerBuilder
+    ->register('apiController', ApiController::class)
+    ->addArgument(new Reference('lockService'));
 
 $request = Request::createFromGlobals();
-$apiControler = new ApiController($lockService);
-$response = $apiControler->create($request);
+$apiController = $containerBuilder->get('apiController');
+$response = $apiController->create($request);
 $response->prepare($request);
 $response->send();

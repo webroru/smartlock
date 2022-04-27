@@ -20,11 +20,11 @@ class ApiController
 
     public function create(Request $request): Response
     {
-        $checkInDate = $request->get('checkindate');
-        $checkOutDate = $request->get('checkoutdate');
-        $guestName = $request->get('guestname');
-        $email = $request->get('email');
-        $orderId = $request->get('orderid');
+        $checkInDate = $request->get('checkindate', '2022-01-01');
+        $checkOutDate = $request->get('checkoutdate', '2022-01-02');
+        $guestName = $request->get('guestname', 'asdf');
+        $email = $request->get('email', 'test@asdf.asf');
+        $orderId = $request->get('orderid', '11');
 
         $booking = (new Booking())
             ->setName($guestName)

@@ -1,10 +1,7 @@
 <?php
 
-use App\App;
+use App\Commands\RemoveExpiredPasscodes;
 use App\Logger;
-use App\MailChecker;
-use App\MailSender;
-use App\Repository\BookingMysqlRepository;
 use App\ScienerApi;
 
 require __DIR__ . '/bootstrap.php';
@@ -14,22 +11,12 @@ if (!isset($argv)) {
     exit;
 }
 
-$mailChecker = new MailChecker();
-$mailSender = new MailSender();
-$scienerApi = new ScienerApi();
-$bookingRepository = new BookingMysqlRepository();
-$app = new App($mailChecker, $mailSender, $scienerApi, $bookingRepository);
-
 try {
     switch ($argv[1]) {
-        case 'reservationChecker':
-            $app->runReservationChecker();
-            break;
         case 'expiredPasscodesRemover':
-            $app->runExpiredPasscodesRemover();
-            break;
-        case 'checkDelayedBooking':
-            $app->checkDelayedBooking();
+            $scienerApi = new ScienerApi();
+            $removeExpiredPasscodes = new RemoveExpiredPasscodes($scienerApi);
+            $removeExpiredPasscodes->execute();
             break;
         default:
             throw new Exception('run parameter not specified');

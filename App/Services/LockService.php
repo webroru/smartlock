@@ -17,29 +17,24 @@ class LockService
         $this->scienerApi = $scienerApi;
     }
 
-    public function registerBooking(Booking $booking): void
+    public function getPassword(Booking $booking): string
     {
-        $password = $this->scienerApi->addRandomPasscode(
-            $booking->getName(),
-            $booking->getCheckInDate()->getTimestamp() * 1000,
-            $booking->getCheckOutDate()->getTimestamp() * 1000
-        );
-        if (!$password) {
-            $error = "Can't add passcode. All attempts have been spent." .
-                "Guest: {$booking->getName()}, " .
-                "Reservation: {$booking->getCheckInDate()->format('Y-m-d H:i')} — " .
-                "{$booking->getCheckOutDate()->format('Y-m-d H:i')}, " .
-                "Order №: {$booking->getOrderId()}, " .
-                "Mail: {$booking->getEmail()}";
-            throw new \Exception($error);
+        try {
+            $password = $this->scienerApi->addRandomPasscode(
+                $booking->getName(),
+                $booking->getCheckInDate()->getTimestamp() * 1000,
+                $booking->getCheckOutDate()->getTimestamp() * 1000
+            );
+        } catch (\Exception $e) {
+            throw new \Exception("Adding a passcode to the Lock is failed. Reason: {$e->getMessage()}");
         }
-        $booking->setCode($password);
 
-        //$this->sendMail($booking, $isChanged);
         Logger::log(
             "For {$booking->getName()} have been added password: {$booking->getCode()} valid from " .
             "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
             "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
         );
+
+        return $password;
     }
 }

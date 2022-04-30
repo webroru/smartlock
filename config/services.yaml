@@ -1,13 +1,33 @@
+parameters:
+  beds24.apikey: '%env(BEDS24_APIKEY)%'
+  beds24.propkey: '%env(BEDS24_PROPKEY)%'
+
 services:
-  App\ScienerApi:
-    class: App\ScienerApi
+  App\Services\ScienerApi:
+    class: App\Services\ScienerApi
 
   App\Services\LockService:
     class: App\Services\LockService
     arguments:
-      - '@App\ScienerApi'
+      - '@App\Services\ScienerApi'
+
+  GuzzleHttp\ClientInterface:
+    class: GuzzleHttp\Client
+
+  App\Services\Beds24Api:
+    class: App\Services\Beds24Api
+    arguments:
+      - '@GuzzleHttp\ClientInterface'
+      - '%beds24.apikey%'
+      - '%beds24.propkey%'
+
+  App\Services\BookingService:
+    class: App\Services\BookingService
+    arguments:
+      - '@App\Services\Beds24Api'
 
   App\Controller\ApiController:
     class: App\Controller\ApiController
     arguments:
       - '@App\Services\LockService'
+      - '@App\Services\BookingService'

@@ -2,7 +2,7 @@
 
 namespace App\tests;
 
-use App\MailSender;
+use App\Services\MailSender;
 use PHPUnit\Framework\TestCase;
 
 class MailSenderTest extends TestCase

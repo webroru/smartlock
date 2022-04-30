@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use App\Logger;
-use App\ScienerApi;
+use App\Services\ScienerApi;
 
 class RemoveExpiredPasscodes
 {

@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Services;
 
+use App\Logger;
 use GuzzleHttp\Client;
 
 class ScienerApi

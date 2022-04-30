@@ -6,8 +6,6 @@ namespace App\Services;
 
 use App\Entity\Booking;
 use App\Logger;
-use App\Repository\RepositoryInterface;
-use App\ScienerApi;
 
 class LockService
 {

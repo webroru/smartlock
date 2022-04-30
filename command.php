@@ -2,7 +2,7 @@
 
 use App\Commands\RemoveExpiredPasscodes;
 use App\Logger;
-use App\ScienerApi;
+use App\Services\ScienerApi;
 
 require __DIR__ . '/bootstrap.php';
 

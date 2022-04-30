@@ -2,7 +2,7 @@
 
 namespace App\tests;
 
-use App\MailChecker;
+use App\Services\MailChecker;
 use PHPUnit\Framework\TestCase;
 
 class MailCheckerTest extends TestCase

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
+namespace test\App;
+
+use Dotenv\Dotenv;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\HttpFoundation\Request;
+use tests\App\Unit\UnitTestCase;
 
-require __DIR__ . '/bootstrap.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 $containerBuilder = new ContainerBuilder();
 $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__));
-$loader->load(__DIR__ . '/config/services.yaml');
+$loader->load(__DIR__ . '/../config/services.yaml');
 $containerBuilder->compile(true);
-
-$request = Request::createFromGlobals();
-$apiController = $containerBuilder->get(App\Controller\ApiController::class);
-$response = $apiController->create($request);
-$response->prepare($request);
-$response->send();
+UnitTestCase::setContainer($containerBuilder);
+// Load .env
+Dotenv::createImmutable(__DIR__)->load();

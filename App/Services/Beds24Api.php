@@ -18,7 +18,6 @@ class Beds24Api
 
     public function __construct(ClientInterface $client, string $apiKey, string $propKey)
     {
-
         $this->apiKey = $apiKey;
         $this->propKey = $propKey;
         $this->client = $client;

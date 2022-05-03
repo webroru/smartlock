@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace tests\App\Unit;
 
+use App\Logger;
 use PHPUnit\Framework\TestCase;
 
 class LoggerTest extends TestCase

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\tests;
+namespace tests\App\Unit;
 
 use App\Services\MailSender;
 use PHPUnit\Framework\TestCase;

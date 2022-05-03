@@ -1,6 +1,6 @@
 <?php
 
-namespace tests;
+namespace tests\App\Unit;
 
 use App\Entity\Booking;
 use App\Repository\BookingFirestoreRepository;

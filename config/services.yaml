@@ -15,6 +15,7 @@ services:
     class: GuzzleHttp\Client
 
   App\Services\Beds24Api:
+    public: true
     class: App\Services\Beds24Api
     arguments:
       - '@GuzzleHttp\ClientInterface'

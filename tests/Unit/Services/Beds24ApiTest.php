@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unit\Services;
 
 use App\Services\Beds24Api;
-
 use tests\App\Unit\UnitTestCase;
 
 

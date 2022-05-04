@@ -12,10 +12,11 @@ use tests\App\Unit\UnitTestCase;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+// Load .env
+Dotenv::createImmutable(__DIR__ . '/../')->load();
+
 $containerBuilder = new ContainerBuilder();
 $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__));
 $loader->load(__DIR__ . '/../config/services.yaml');
 $containerBuilder->compile(true);
 UnitTestCase::setContainer($containerBuilder);
-// Load .env
-Dotenv::createImmutable(__DIR__)->load();

@@ -8,6 +8,8 @@ use App\Entity\Booking;
 
 class BookingService
 {
+    private const SMARTLOCK = 'SMARTLOCK';
+
     private Beds24Api $beds24Api;
 
     public function __construct(Beds24Api $beds24Api)
@@ -24,7 +26,12 @@ class BookingService
 
         $requestData = [
             'bookId' => $booking->getOrderId(),
-            'custom1' => "Code: {$booking->getCode()}",
+            'infoItems' => [
+                [
+                    'code' => self::SMARTLOCK,
+                    'text'=> "Passcode: {$booking->getCode()}",
+                ]
+            ],
         ];
         $this->beds24Api->setBooking($requestData);
     }

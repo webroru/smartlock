@@ -12,8 +12,14 @@ class Beds24ApiTest extends UnitTestCase
     public function testSetBooking()
     {
         $requestData = [
-            'bookId' => 111,
-            'custom1' => "Code: 222",
+            'bookId' => 30641419,
+            'notes' => "Code: 222",
+            'infoItems' => [
+               [
+                   'code' => 'SMARTLOCK',
+                   'text'=> 'Passcode: 111',
+               ]
+            ],
         ];
         $beds24Api = $this->performTestMethod();
         $beds24Api->setBooking($requestData);

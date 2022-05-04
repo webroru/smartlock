@@ -36,7 +36,11 @@ class Beds24Api
             ]
         );
 
-        $status = $response->getStatusCode();
+        $content = $response->getBody()->getContents();
+        $message = json_decode($content, true);
+        if ($message['error']) {
+            throw new \Exception($message['error']);
+        }
     }
 
     private function getAuth(): array

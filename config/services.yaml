@@ -11,8 +11,9 @@ services:
     arguments:
       - '@App\Services\ScienerApi'
 
-  GuzzleHttp\ClientInterface:
-    class: GuzzleHttp\Client
+  GuzzleHttp\Client: ~
+
+  GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'
 
   App\Services\Beds24Api:
     public: true

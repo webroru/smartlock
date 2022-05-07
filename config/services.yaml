@@ -5,7 +5,7 @@ parameters:
   mysql.db: '%env(MYSQL_DB)%'
   mysql.user: '%env(MYSQL_USER)%'
   mysql.pass: '%env(MYSQL_PASS)%'
-  mysql.charset: 'utf8mb4';
+  mysql.charset: 'utf8mb4'
 
 services:
   _defaults:

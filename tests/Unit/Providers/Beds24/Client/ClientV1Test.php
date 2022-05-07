@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Unit\Services;
+namespace Unit\Providers\Beds24\Client;
 
-use App\Services\Beds24Api;
+use App\Providers\Beds24\Client\ClientV1;
 use tests\App\Unit\UnitTestCase;
 
-
-class Beds24ApiTest extends UnitTestCase
+class ClientV1Test extends UnitTestCase
 {
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testSetBooking()
     {
         $requestData = [
@@ -18,7 +20,7 @@ class Beds24ApiTest extends UnitTestCase
             'infoItems' => [
                [
                    'code' => 'SMARTLOCK',
-                   'text'=> 'Passcode: 111',
+                   'text' => 'Passcode: 111',
                ]
             ],
         ];
@@ -26,8 +28,8 @@ class Beds24ApiTest extends UnitTestCase
         $beds24Api->setBooking($requestData);
     }
 
-    private function performTestMethod(): Beds24Api
+    private function performTestMethod(): ClientV1
     {
-        return $this->getContainer()->get(Beds24Api::class);
+        return $this->getContainer()->get(ClientV1::class);
     }
 }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Providers\Beds24\Client;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
 
-class Beds24Api
+class ClientV1 implements Beds24ClientInterface
 {
     private const HOST = 'https://api.beds24.com';
     private const DATA_TYPE = 'json';

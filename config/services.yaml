@@ -13,8 +13,8 @@ services:
   App\Services\LockService: ~
   App\Services\BookingService: ~
 
-  App\Services\Beds24Api:
-    class: App\Services\Beds24Api
+  App\Providers\Beds24\Client\ClientV1:
+    class: App\Providers\Beds24\Client\ClientV1
     arguments:
       - '@GuzzleHttp\ClientInterface'
       - '%beds24.apikey%'

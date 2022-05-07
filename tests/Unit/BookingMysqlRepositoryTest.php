@@ -3,7 +3,7 @@
 namespace tests\App\Unit;
 
 use App\Entity\Booking;
-use App\Repository\BookingMysqlRepository;
+use App\Repository\BookingMysqlBookingRepository;
 use PHPUnit\Framework\TestCase;
 
 class BookingMysqlRepositoryTest extends TestCase
@@ -12,7 +12,7 @@ class BookingMysqlRepositoryTest extends TestCase
     private const MAIL = 'test@mail.net';
     private const ORDER_ID = 'test-123';
 
-    /** @var BookingMysqlRepository */
+    /** @var BookingMysqlBookingRepository */
     private $bookingRepository;
     /** @var Booking */
     private $testBooking;
@@ -20,7 +20,7 @@ class BookingMysqlRepositoryTest extends TestCase
     protected function setUp(): void
     {
         \Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->load();
-        $this->bookingRepository = new BookingMysqlRepository();
+        $this->bookingRepository = new BookingMysqlBookingRepository();
 
         $checkInDate = new \DateTime('14:00 +1 year');
         $checkOutDate = new \DateTime('12:00 +1 year + 1 day');

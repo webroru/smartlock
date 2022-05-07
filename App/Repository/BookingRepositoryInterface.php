@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Booking;
 
-interface RepositoryInterface
+interface BookingRepositoryInterface
 {
     public function add(Booking $booking): string;
     public function find(string $id): ?Booking;

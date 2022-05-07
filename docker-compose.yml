@@ -19,8 +19,6 @@ services:
     volumes:
       - ./:/var/www
       - ./temp/dev/php/logs:/var/log/php
-#    env_file:
-#      - ./.env
     environment:
       PHP_IDE_CONFIG: "serverName=xdebug-docker"
       XDEBUG_CONFIG: "client_host=172.22.0.1"

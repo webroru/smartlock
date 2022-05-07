@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\App\Unit;
+namespace Unit\Repository;
 
 use App\Entity\Booking;
 use App\Repository\BookingMysqlBookingRepository;

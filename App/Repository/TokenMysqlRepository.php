@@ -14,7 +14,7 @@ class TokenMysqlRepository implements TokenRepositoryInterface
         $this->client = $client;
     }
 
-    public function add(Token $token): string
+    public function add(Token $token): int
     {
         $sql = "INSERT INTO $this->table
             VALUES (NULL, :access_token, :refresh_token, :expiration_time)";

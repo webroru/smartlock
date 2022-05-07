@@ -8,7 +8,7 @@ use App\Entity\Token;
 
 interface TokenRepositoryInterface
 {
-    public function add(Token $token): string;
+    public function add(Token $token);
     public function find($id): ?Token;
     public function update(Token $token): void;
     public function findBy(array $params): array;

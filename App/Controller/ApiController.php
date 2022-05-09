@@ -27,7 +27,7 @@ class ApiController
         $checkInDate = $data['checkindate'] ?? null;
         $checkOutDate = $data['checkoutdate'] ?? null;
         $guestName = $data['guestname'] ?? null;
-        $orderId = $data['orderid'] ?? null;
+        $orderId = $data['order_id'] ?? null;
 
         $message = 'The Booking has been processed';
         $status = Response::HTTP_OK;

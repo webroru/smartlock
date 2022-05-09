@@ -9,7 +9,7 @@ use App\Providers\Beds24\Client\ClientV1;
 
 class BookingService
 {
-    private const SMARTLOCK = 'SMARTLOCK';
+    private const CODELOCK = 'CODELOCK';
 
     private ClientV1 $beds24Api;
 
@@ -29,8 +29,8 @@ class BookingService
             'bookId' => $booking->getOrderId(),
             'infoItems' => [
                 [
-                    'code' => self::SMARTLOCK,
-                    'text'=> "Passcode: {$booking->getCode()}",
+                    'code' => self::CODELOCK,
+                    'text' => "Passcode: {$booking->getCode()}",
                 ]
             ],
         ];

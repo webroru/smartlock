@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Services\MailSender;
+
 class Logger
 {
     public static function log(string $message): void

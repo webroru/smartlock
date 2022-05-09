@@ -1,16 +1,24 @@
 {
   "autoload": {
-    "psr-4": {"App\\": "./App"}
+    "psr-4": {
+      "App\\": "./App"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "tests\\App\\": "./tests"
+    }
   },
   "require": {
-    "ext-dom": "*",
     "ext-json": "*",
-    "ext-imap": "*",
-    "ext-mbstring": "*",
     "ext-pdo": "*",
     "guzzlehttp/guzzle": "~6.0",
     "phpmailer/phpmailer": "^6.0",
-    "vlucas/phpdotenv": "^4.1"
+    "vlucas/phpdotenv": "^4.1",
+    "symfony/http-foundation": "^5.4",
+    "symfony/dependency-injection": "^5.4",
+    "symfony/yaml": "^5.4",
+    "symfony/config": "^5.4"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",

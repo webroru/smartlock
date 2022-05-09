@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Booking;
 
-class BookingMysqlRepository implements RepositoryInterface
+class BookingMysqlBookingRepository implements BookingRepositoryInterface
 {
     private $client;
 

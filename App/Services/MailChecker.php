@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Services;
+
+use App\Logger;
 
 class MailChecker
 {

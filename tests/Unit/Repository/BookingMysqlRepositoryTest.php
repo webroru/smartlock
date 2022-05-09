@@ -1,18 +1,18 @@
 <?php
 
-namespace tests;
+namespace Unit\Repository;
 
 use App\Entity\Booking;
-use App\Repository\BookingFirestoreRepository;
+use App\Repository\BookingMysqlBookingRepository;
 use PHPUnit\Framework\TestCase;
 
-class BookingFirestoreRepositoryTest extends TestCase
+class BookingMysqlRepositoryTest extends TestCase
 {
     private const NAME = 'test name';
     private const MAIL = 'test@mail.net';
     private const ORDER_ID = 'test-123';
 
-    /** @var BookingFirestoreRepository */
+    /** @var BookingMysqlBookingRepository */
     private $bookingRepository;
     /** @var Booking */
     private $testBooking;
@@ -20,7 +20,7 @@ class BookingFirestoreRepositoryTest extends TestCase
     protected function setUp(): void
     {
         \Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->load();
-        $this->bookingRepository = new BookingFirestoreRepository();
+        $this->bookingRepository = new BookingMysqlBookingRepository();
 
         $checkInDate = new \DateTime('14:00 +1 year');
         $checkOutDate = new \DateTime('12:00 +1 year + 1 day');

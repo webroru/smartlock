@@ -1,8 +1,8 @@
 <?php
 
-namespace App\tests;
+namespace tests\App\Unit;
 
-use App\Parser;
+use App\Services\Parser;
 use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase

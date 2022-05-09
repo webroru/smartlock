@@ -1,8 +1,8 @@
 <?php
 
-namespace App\tests;
+namespace tests\App\Unit;
 
-use App\ScienerApi;
+use App\Services\ScienerApi;
 use PHPUnit\Framework\TestCase;
 
 class ScienerApiTest extends TestCase

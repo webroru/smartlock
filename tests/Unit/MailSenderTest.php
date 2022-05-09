@@ -1,8 +1,8 @@
 <?php
 
-namespace App\tests;
+namespace tests\App\Unit;
 
-use App\MailSender;
+use App\Services\MailSender;
 use PHPUnit\Framework\TestCase;
 
 class MailSenderTest extends TestCase

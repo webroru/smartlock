@@ -14,15 +14,26 @@ class ApiController
 {
     private LockService $lockService;
     private BookingService $bookingService;
+    private string $token;
 
-    public function __construct(LockService $lockService, BookingService $bookingService)
+    public function __construct(LockService $lockService, BookingService $bookingService, string $token)
     {
         $this->lockService = $lockService;
         $this->bookingService = $bookingService;
+        $this->token = $token;
     }
 
     public function create(Request $request): Response
     {
+        $authorizationHeader = $request->headers->get('Authorization', '');
+        $token = explode(' ', $authorizationHeader)[1] ?? '';
+        if (!$this->validateToken($token)) {
+            return new Response(
+                'Authorization is not valid',
+                Response::HTTP_UNAUTHORIZED,
+                ['content-type' => 'text/html']
+            );
+        }
         $data = $request->toArray();
         $checkInDate = $data['checkindate'] ?? null;
         $checkOutDate = $data['checkoutdate'] ?? null;
@@ -74,5 +85,10 @@ class ApiController
     private function prepareDate(string $date): \DateTime
     {
         return new \DateTime($date, new \DateTimeZone('Europe/Vienna'));
+    }
+
+    private function validateToken(string $token): bool
+    {
+        return $token === $this->token;
     }
 }

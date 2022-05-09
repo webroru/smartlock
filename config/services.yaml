@@ -1,6 +1,7 @@
 parameters:
   beds24.apikey: '%env(BEDS24_APIKEY)%'
   beds24.propkey: '%env(BEDS24_PROPKEY)%'
+  beds24.token: '%env(BEDS24_DIGEST_TOKEN)%'
   mysql.host: '%env(MYSQL_HOST)%'
   mysql.db: '%env(MYSQL_DB)%'
   mysql.user: '%env(MYSQL_USER)%'
@@ -12,7 +13,12 @@ services:
     autowire: true
     autoconfigure: true
     public: true
-  App\Controller\ApiController: ~
+  App\Controller\ApiController:
+    class: App\Controller\ApiController
+    arguments:
+      - '@App\Services\LockService'
+      - '@App\Services\BookingService'
+      - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
     class: App\Providers\Beds24\Client\ClientV1
     arguments:

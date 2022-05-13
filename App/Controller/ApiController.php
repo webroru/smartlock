@@ -26,7 +26,7 @@ class ApiController
 
     public function create(Request $request): Response
     {
-        $authorizationHeader = $request->headers->get('Authorization', '');
+        $authorizationHeader = $request->headers->get('authorization', '');
         $token = explode(' ', $authorizationHeader)[1] ?? '';
         if (!$this->validateToken($token)) {
             Logger::log("Authorization is not valid: Token is $token");

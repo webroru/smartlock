@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Booking;
+use App\Logger;
 use App\Services\BookingService;
 use App\Services\LockService;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,7 @@ class ApiController
         $authorizationHeader = $request->headers->get('Authorization', '');
         $token = explode(' ', $authorizationHeader)[1] ?? '';
         if (!$this->validateToken($token)) {
+            Logger::log("Authorization is not valid: Token is $token");
             return new Response(
                 'Authorization is not valid',
                 Response::HTTP_UNAUTHORIZED,
@@ -44,6 +46,7 @@ class ApiController
         $status = Response::HTTP_OK;
 
         if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId) {
+            Logger::log("Validation error: checkInDate: $checkInDate, checkOutDate: $checkOutDate, guestName: $guestName, orderId: $orderId");
             return new Response(
                 'Validation error',
                 Response::HTTP_UNPROCESSABLE_ENTITY,
@@ -68,6 +71,7 @@ class ApiController
                 "{$booking->getCheckOutDate()->format('Y-m-d H:i')}, " .
                 "Order №: {$booking->getOrderId()}.";
 
+            Logger::log($error);
             return new Response(
                 $error,
                 Response::HTTP_INTERNAL_SERVER_ERROR,

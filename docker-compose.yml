@@ -28,10 +28,18 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - 8080:80
+      - 80:80
+      - 443:443
     volumes:
       - ./:/var/www
       - ./docker/nginx/hosts:/etc/nginx/conf.d
       - ./temp/dev/nginx/logs:/var/log/nginx
+      - ./temp/dev/certbot/www:/var/www/certbot/:ro
     links:
       - php
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./temp/dev/certbot/www:/var/www/certbot/:rw
+      - ./temp/dev/certbot/conf/:/etc/letsencrypt/:rw

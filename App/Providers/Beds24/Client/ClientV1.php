@@ -38,7 +38,7 @@ class ClientV1 implements Beds24ClientInterface
 
         $content = $response->getBody()->getContents();
         $message = json_decode($content, true);
-        if ($message['error']) {
+        if (isset($message['error'])) {
             throw new \Exception($message['error']);
         }
     }

@@ -13,7 +13,7 @@ class BookingServiceTest extends UnitTestCase
     public function testUpdateCode()
     {
         $booking = (new Booking())
-            ->setOrderId('111')
+            ->setOrderId('30641419')
             ->setCode('222')
             ->setProperty('159459');
         $bookingService = $this->performTestMethod();

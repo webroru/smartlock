@@ -67,7 +67,7 @@ class ApiController
             $booking->setCode($password);
             $this->bookingService->updateCode($booking);
         } catch (\Exception $e) {
-            $error = "Couldn't register new passcode for the booking. Error: {$e->getMessage()}." .
+            $error = "Couldn't register new passcode for the booking. Error: {$e->getMessage()}. " .
                 "Guest: {$booking->getName()}, " .
                 "Reservation: {$booking->getCheckInDate()->format('Y-m-d H:i')} — " .
                 "{$booking->getCheckOutDate()->format('Y-m-d H:i')}, " .

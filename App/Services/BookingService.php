@@ -36,7 +36,7 @@ class BookingService
             'infoItems' => [
                 [
                     'code' => self::CODELOCK,
-                    'text' => "Passcode: {$booking->getCode()}",
+                    'text' => "Passcode: #{$booking->getCode()}#",
                 ]
             ],
         ];

@@ -26,6 +26,7 @@ class BookingFirestoreBookingRepository implements BookingRepositoryInterface
             'Email' => $booking->getEmail(),
             'Code' => $booking->getCode(),
             'OrderId' => $booking->getOrderId(),
+            'Property' => $booking->getProperty(),
         ])->id();
     }
 
@@ -44,6 +45,7 @@ class BookingFirestoreBookingRepository implements BookingRepositoryInterface
             ['path' => 'Email', 'value' => $booking->getEmail()],
             ['path' => 'Code', 'value' => $booking->getCode()],
             ['path' => 'OrderId', 'value' => $booking->getOrderId()],
+            ['path' => 'Property', 'value' => $booking->getProperty()],
         ]);
     }
 
@@ -87,6 +89,7 @@ class BookingFirestoreBookingRepository implements BookingRepositoryInterface
             ->setEmail($document->get('Email'))
             ->setName($document->get('Name'))
             ->setCode($document->get('Code'))
-            ->setOrderId($document->get('OrderId'));
+            ->setOrderId($document->get('OrderId'))
+            ->setProperty($document->get('Property'));
     }
 }

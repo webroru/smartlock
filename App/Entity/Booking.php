@@ -4,13 +4,14 @@ namespace App\Entity;
 
 class Booking
 {
-    private $id;
-    private $name;
-    private $checkInDate;
-    private $checkOutDate;
-    private $email;
-    private $code;
-    private $orderId;
+    private int $id;
+    private string $name;
+    private \DateTime $checkInDate;
+    private \DateTime $checkOutDate;
+    private string $email;
+    private string $code;
+    private string $orderId;
+    private string $property;
 
     public function getId(): ?string
     {
@@ -86,6 +87,17 @@ class Booking
     public function setOrderId(string $orderId): self
     {
         $this->orderId = $orderId;
+        return $this;
+    }
+
+    public function getProperty(): string
+    {
+        return $this->property;
+    }
+
+    public function setProperty(string $property): Booking
+    {
+        $this->property = $property;
         return $this;
     }
 }

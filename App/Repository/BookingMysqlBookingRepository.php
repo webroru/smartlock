@@ -32,7 +32,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
     public function add(Booking $booking): string
     {
         $sql = 'INSERT INTO booking
-            VALUES (NULL, :name, :check_in_date, :check_out_date, :email, :code, :order_id)';
+            VALUES (NULL, :name, :check_in_date, :check_out_date, :email, :code, :order_id, :property)';
 
         $this->client->prepare($sql)
             ->execute([
@@ -42,6 +42,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'email' => $booking->getEmail(),
                 'code' => $booking->getCode(),
                 'order_id' => $booking->getOrderId(),
+                'property' => $booking->getProperty(),
             ]);
         return $this->client->lastInsertId();
     }
@@ -63,7 +64,8 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 check_out_date = :check_out_date,
                 email = :email,
                 code = :code,
-                order_id = :order_id
+                order_id = :order_id,
+                property = :property
             WHERE id = :id';
 
         $this->client->prepare($sql)
@@ -75,6 +77,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'email' => $booking->getEmail(),
                 'code' => $booking->getCode(),
                 'order_id' => $booking->getOrderId(),
+                'property' => $booking->getProperty(),
             ]);
     }
 
@@ -122,6 +125,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->setEmail($row['email'])
             ->setName($row['name'])
             ->setCode($row['code'])
-            ->setOrderId($row['order_id']);
+            ->setOrderId($row['order_id'])
+            ->setProperty($row['property']);
     }
 }

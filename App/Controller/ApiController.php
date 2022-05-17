@@ -41,11 +41,12 @@ class ApiController
         $checkOutDate = $data['checkoutdate'] ?? null;
         $guestName = $data['guestname'] ?? null;
         $orderId = $data['order_id'] ?? null;
+        $property = $data['property'] ?? null;
 
         $message = 'The Booking has been processed';
         $status = Response::HTTP_OK;
 
-        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId) {
+        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property) {
             Logger::log("Validation error: checkInDate: $checkInDate, checkOutDate: $checkOutDate, guestName: $guestName, orderId: $orderId");
             return new Response(
                 'Validation error',
@@ -58,7 +59,8 @@ class ApiController
             ->setName($guestName)
             ->setCheckInDate($this->prepareDate($checkInDate))
             ->setCheckOutDate($this->prepareDate($checkOutDate))
-            ->setOrderId($orderId);
+            ->setOrderId($orderId)
+            ->setProperty($property);
 
         try {
             $password = $this->lockService->getPassword($booking);

@@ -1,7 +1,12 @@
 parameters:
   beds24.apikey: '%env(BEDS24_APIKEY)%'
-  beds24.propkey: '%env(BEDS24_PROPKEY)%'
   beds24.token: '%env(BEDS24_DIGEST_TOKEN)%'
+  beds24.props:
+    156799: '%env(BEDS24_PROP_APARTMENTS)%'
+    156424: '%env(BEDS24_PROP_GUESTHOUSE)%'
+    156798: '%env(BEDS24_PROP_HOSTEL)%'
+    159459: '%env(BEDS24_PROP_TEST)%'
+
   mysql.host: '%env(MYSQL_HOST)%'
   mysql.db: '%env(MYSQL_DB)%'
   mysql.user: '%env(MYSQL_USER)%'
@@ -24,12 +29,15 @@ services:
     arguments:
       - '@GuzzleHttp\ClientInterface'
       - '%beds24.apikey%'
-      - '%beds24.propkey%'
   App\Repository\TokenMysqlRepository:
     class: App\Repository\TokenMysqlRepository
     arguments:
       - '@PDO'
-  App\Services\BookingService: ~
+  App\Services\BookingService:
+    class: App\Services\BookingService
+    arguments:
+      - '@App\Providers\Beds24\Client\ClientV1'
+      - '%beds24.props%'
   App\Services\LockService: ~
   App\Services\ScienerApi: ~
   App\Repository\TokenRepositoryInterface: '@App\Repository\TokenMysqlRepository'

@@ -34,6 +34,7 @@ services:
       - ./:/var/www
       - ./docker/nginx/hosts:/etc/nginx/conf.d/:ro
       - ./temp/dev/nginx/logs:/var/log/nginx/:rw
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
     links:
       - php
 

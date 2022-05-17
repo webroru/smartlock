@@ -30,7 +30,7 @@ class LockService
         }
 
         Logger::log(
-            "For {$booking->getName()} have been added password: {$booking->getCode()} valid from " .
+            "For {$booking->getName()} have been added password: {$password} valid from " .
             "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
             "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
         );

@@ -24,14 +24,6 @@ class ParserTest extends TestCase
         $this->parser = new Parser(self::MAIL);
     }
 
-    public function test__construct(): void
-    {
-        $this->assertInstanceOf(
-            Parser::class,
-            ($this->parser)
-        );
-    }
-
     public function testGetCheckOutDate(): void
     {
         $this->assertEquals(self::CHECKOUT_DATE, $this->parser->getCheckOutDate());

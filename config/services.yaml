@@ -25,16 +25,13 @@ services:
       - '@App\Services\BookingService'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
-    class: App\Providers\Beds24\Client\ClientV1
     arguments:
       - '@GuzzleHttp\ClientInterface'
       - '%beds24.apikey%'
   App\Repository\TokenMysqlRepository:
-    class: App\Repository\TokenMysqlRepository
     arguments:
       - '@PDO'
   App\Services\BookingService:
-    class: App\Services\BookingService
     arguments:
       - '@App\Providers\Beds24\Client\ClientV1'
       - '%beds24.props%'

@@ -26,6 +26,4 @@ ADD docker/php/schedule-run /etc/crontabs/schedule-run
 RUN chmod 0755 /etc/crontabs/schedule-run
 RUN crontab -u www-data /etc/crontabs/schedule-run
 
-USER www-data
-
 WORKDIR /var/www

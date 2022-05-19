@@ -22,4 +22,10 @@ RUN docker-php-ext-install \
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+ADD docker/php/schedule-run /etc/crontabs/schedule-run
+RUN chmod 0755 /etc/crontabs/schedule-run
+RUN crontab -u www-data /etc/crontabs/schedule-run
+
+USER www-data
+
 WORKDIR /var/www

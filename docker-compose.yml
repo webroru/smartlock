@@ -25,6 +25,16 @@ services:
       XDEBUG_MODE: "debug"
       XDEBUG_SESSION: "PHPSTORM"
 
+  cron:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: ["crond", "-f", "-d", "8"]
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/:rw
+      - ./docker/php/conf.d:/usr/local/etc/php/conf.d/:ro
+
   nginx:
     image: nginx:alpine
     ports:

@@ -3,14 +3,14 @@
 namespace App\Commands;
 
 use App\Logger;
-use App\Services\ScienerApi;
+use App\Providers\Sciener\Client\Client;
 
 class RemoveExpiredPasscodes
 {
     private $scienerApi;
 
     public function __construct(
-        ScienerApi $scienerApi
+        Client $scienerApi
     ) {
         $this->scienerApi = $scienerApi;
     }

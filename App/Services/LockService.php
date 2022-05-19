@@ -6,13 +6,14 @@ namespace App\Services;
 
 use App\Entity\Booking;
 use App\Logger;
+use App\Providers\Sciener\Client\Client;
 
 class LockService
 {
     private $scienerApi;
 
     public function __construct(
-        ScienerApi $scienerApi
+        Client $scienerApi
     ) {
         $this->scienerApi = $scienerApi;
     }

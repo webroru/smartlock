@@ -9,8 +9,7 @@ use tests\App\Unit\UnitTestCase;
 
 class ClientTest extends UnitTestCase
 {
-    /** @var Client */
-    private $client;
+    private ?Client $client;
 
     protected function setUp(): void
     {

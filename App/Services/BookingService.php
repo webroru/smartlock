@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Booking;
+use App\Logger;
 use App\Providers\Beds24\Client\ClientV1;
+use Symfony\Component\HttpFoundation\Response;
 
 class BookingService
 {
@@ -18,6 +20,26 @@ class BookingService
     {
         $this->beds24Api = $beds24Api;
         $this->beds24Props = $beds24Props;
+    }
+
+    public function create(array $data): Booking
+    {
+        $checkInDate = $data['checkindate'] ?? null;
+        $checkOutDate = $data['checkoutdate'] ?? null;
+        $guestName = $data['guestname'] ?? null;
+        $orderId = $data['order_id'] ?? null;
+        $property = $data['property'] ?? null;
+
+        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property) {
+            throw new \Exception("Data is not valid: $data");
+        }
+
+        return (new Booking())
+            ->setName($guestName)
+            ->setCheckInDate($this->prepareDate($checkInDate))
+            ->setCheckOutDate($this->prepareDate($checkOutDate))
+            ->setOrderId($orderId)
+            ->setProperty($property);
     }
 
     public function updateCode(Booking $booking): void
@@ -50,5 +72,10 @@ class BookingService
         }
 
         return $this->beds24Props[$property];
+    }
+
+    private function prepareDate(string $date): \DateTime
+    {
+        return new \DateTime($date, new \DateTimeZone('Europe/Vienna'));
     }
 }

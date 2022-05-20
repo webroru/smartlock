@@ -36,31 +36,19 @@ class ApiController
                 ['content-type' => 'text/html']
             );
         }
+
         $data = $request->toArray();
-        $checkInDate = $data['checkindate'] ?? null;
-        $checkOutDate = $data['checkoutdate'] ?? null;
-        $guestName = $data['guestname'] ?? null;
-        $orderId = $data['order_id'] ?? null;
-        $property = $data['property'] ?? null;
 
-        $message = 'The Booking has been processed';
-        $status = Response::HTTP_OK;
-
-        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property) {
-            Logger::log("Validation error: checkInDate: $checkInDate, checkOutDate: $checkOutDate, guestName: $guestName, orderId: $orderId");
+        try {
+            $booking = $this->bookingService->create($data);
+        } catch (\Exception $e) {
+            Logger::log($e->getMessage());
             return new Response(
-                'Validation error',
-                Response::HTTP_UNPROCESSABLE_ENTITY,
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
                 ['content-type' => 'text/html']
             );
         }
-
-        $booking = (new Booking())
-            ->setName($guestName)
-            ->setCheckInDate($this->prepareDate($checkInDate))
-            ->setCheckOutDate($this->prepareDate($checkOutDate))
-            ->setOrderId($orderId)
-            ->setProperty($property);
 
         try {
             $password = $this->lockService->getPassword($booking);
@@ -82,15 +70,10 @@ class ApiController
         }
 
         return new Response(
-            $message,
-            $status,
+            'The Booking has been processed',
+            Response::HTTP_OK,
             ['content-type' => 'text/html']
         );
-    }
-
-    private function prepareDate(string $date): \DateTime
-    {
-        return new \DateTime($date, new \DateTimeZone('Europe/Vienna'));
     }
 
     private function validateToken(string $token): bool

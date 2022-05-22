@@ -3,7 +3,7 @@
 namespace Unit\Repository;
 
 use App\Entity\Booking;
-use App\Repository\BookingMysqlBookingRepository;
+use App\Repository\BookingRepositoryInterface;
 use tests\App\Unit\UnitTestCase;
 
 class BookingRepositoryTest extends UnitTestCase
@@ -11,13 +11,14 @@ class BookingRepositoryTest extends UnitTestCase
     private const NAME = 'test name';
     private const MAIL = 'test@mail.net';
     private const ORDER_ID = 'test-123';
+    private const PROPERTY_ID = '1111';
 
-    private BookingMysqlBookingRepository $bookingRepository;
+    private BookingRepositoryInterface $bookingRepository;
     private Booking $booking;
 
     protected function setUp(): void
     {
-        $this->bookingRepository = $this->getContainer()->get(BookingMysqlBookingRepository::class);
+        $this->bookingRepository = $this->getContainer()->get(BookingRepositoryInterface::class);
 
         $checkInDate = new \DateTime('14:00 +1 year');
         $checkOutDate = new \DateTime('12:00 +1 year + 1 day');
@@ -26,6 +27,7 @@ class BookingRepositoryTest extends UnitTestCase
             ->setEmail(self::MAIL)
             ->setCheckInDate($checkInDate)
             ->setCheckOutDate($checkOutDate)
+            ->setProperty(self::PROPERTY_ID)
             ->setOrderId(self::ORDER_ID);
     }
 

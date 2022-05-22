@@ -6,33 +6,19 @@ use App\Entity\Booking;
 
 class BookingMysqlBookingRepository implements BookingRepositoryInterface
 {
-    private $client;
+    private \PDO $client;
+    private LockRepositoryInterface $lockRepository;
 
-    public function __construct()
+    public function __construct(\PDO $client, LockRepositoryInterface $lockRepository)
     {
-        $host = getenv('MYSQL_HOST');
-        $db = getenv('MYSQL_DB');
-        $user = getenv('MYSQL_USER');
-        $pass = getenv('MYSQL_PASS');
-        $charset = 'utf8mb4';
-
-        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-        $options = [
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-            \PDO::ATTR_EMULATE_PREPARES => false,
-        ];
-        try {
-            $this->client = new \PDO($dsn, $user, $pass, $options);
-        } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
-        }
+        $this->client = $client;
+        $this->lockRepository = $lockRepository;
     }
 
     public function add(Booking $booking): string
     {
         $sql = 'INSERT INTO booking
-            VALUES (NULL, :name, :check_in_date, :check_out_date, :email, :code, :order_id, :property)';
+            VALUES (NULL, :name, :check_in_date, :check_out_date, :email, :code, :order_id, :property, :lock_id)';
 
         $this->client->prepare($sql)
             ->execute([
@@ -43,6 +29,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'code' => $booking->getCode(),
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
+                'lock_id' => $booking->getLock()?->getId(),
             ]);
         return $this->client->lastInsertId();
     }
@@ -65,7 +52,8 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 email = :email,
                 code = :code,
                 order_id = :order_id,
-                property = :property
+                property = :property,
+                lock_id = :lock_id
             WHERE id = :id';
 
         $this->client->prepare($sql)
@@ -78,6 +66,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'code' => $booking->getCode(),
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
+                'lock_id' => $booking->getLock()?->getId(),
             ]);
     }
 
@@ -118,7 +107,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
 
     private function toEntity(array $row): Booking
     {
-        return (new Booking())
+        $booking = (new Booking())
             ->setId($row['id'])
             ->setCheckInDate(new \DateTime($row['check_in_date']))
             ->setCheckOutDate(new \DateTime($row['check_out_date']))
@@ -127,5 +116,11 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->setCode($row['code'])
             ->setOrderId($row['order_id'])
             ->setProperty($row['property']);
+
+        if ($row['lock_id']) {
+            $booking->setLock($this->lockRepository->find($row['lock_id']));
+        }
+
+        return $booking;
     }
 }

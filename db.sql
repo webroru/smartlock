@@ -1,3 +1,14 @@
+create table if not exists `lock`
+(
+    id int auto_increment
+        primary key,
+    passcode_id varchar(200) not null,
+    passcode varchar(200) null,
+    name varchar(200) null,
+    start_date datetime not null,
+    end_date datetime not null
+) COLLATE='utf8_general_ci';
+
 create table if not exists booking
 (
     id int auto_increment
@@ -7,7 +18,10 @@ create table if not exists booking
     check_out_date datetime not null,
     email varchar(200) null,
     code varchar(10) null,
-    order_id varchar(15) null
+    order_id varchar(15) null,
+    property varchar(15) null,
+    lock_id int default null null,
+    FOREIGN KEY (lock_id) REFERENCES `lock`(id)
 ) COLLATE='utf8_general_ci';
 
 create table if not exists token

@@ -39,9 +39,26 @@ class LockService
         }
     }
 
+    public function removePasscode(Booking $booking): void
+    {
+        $name = $this->prepareName($booking->getName());
+        $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
+        $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
+        $passCodes = $this->scienerApi->getAllPasscodes();
+
+        foreach ($passCodes as $passCode) {
+            //if (($passCode['keyboardPwdId'] === $passcodeId);
+            try {
+                $this->scienerApi->deletePasscode($passCode['keyboardPwdId']);
+            } catch (\Exception $e) {
+                Logger::error("{$e->getMessage()}");
+            }
+        }
+    }
+
     public function addRandomPasscode(Booking $booking): string
     {
-        $name = $booking->getName();
+        $name = $this->prepareName($booking->getName());
         $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
         $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
 
@@ -53,5 +70,10 @@ class LockService
         }
 
         throw new \Exception('All attempts are spent.');
+    }
+
+    private function prepareName(string $name): string
+    {
+        return implode(' ', array_slice(explode(' ', $name), 0, 2));
     }
 }

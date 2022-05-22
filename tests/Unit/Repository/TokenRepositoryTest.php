@@ -3,17 +3,17 @@
 namespace Unit\Repository;
 
 use App\Entity\Token;
-use Prophecy\Argument\Token\TokenInterface;
+use App\Repository\TokenRepositoryInterface;
 use tests\App\Unit\UnitTestCase;
 
 class TokenRepositoryTest extends UnitTestCase
 {
-    private TokenInterface $tokenRepository;
+    private TokenRepositoryInterface $tokenRepository;
     private Token $token;
 
     protected function setUp(): void
     {
-        $this->tokenRepository = $this->getContainer()->get(TokenInterface::class);
+        $this->tokenRepository = $this->getContainer()->get(TokenRepositoryInterface::class);
 
         $this->token = (new Token())
             ->setAccessToken('test')

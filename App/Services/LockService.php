@@ -10,7 +10,10 @@ use App\Providers\Sciener\Client\Client;
 
 class LockService
 {
-    private $scienerApi;
+    private const IGNORE_PASSCODES = [37782310, 37780116, 37663144, 37663134, 9318334];
+    private const PASSCODE_ATTEMPTS = 10;
+
+    private Client $scienerApi;
 
     public function __construct(
         Client $scienerApi
@@ -18,24 +21,37 @@ class LockService
         $this->scienerApi = $scienerApi;
     }
 
-    public function getPassword(Booking $booking): string
+    public function removeExpiredPasscodes(): void
     {
-        try {
-            $password = $this->scienerApi->addRandomPasscode(
-                $booking->getName(),
-                $booking->getCheckInDate()->getTimestamp() * 1000,
-                $booking->getCheckOutDate()->getTimestamp() * 1000
-            );
-        } catch (\Exception $e) {
-            throw new \Exception("Adding a passcode to the Lock is failed. Reason: {$e->getMessage()}");
+        $passCodes = array_filter($this->scienerApi->getAllPasscodes(), function (array $item) {
+            return $item['endDate'] !== 0 && $item['endDate'] < time() * 1000;
+        });
+
+        foreach ($passCodes as $passCode) {
+            if (in_array($passCode['keyboardPwdId'], self::IGNORE_PASSCODES)) {
+                continue;
+            }
+            try {
+                $this->scienerApi->deletePasscode($passCode['keyboardPwdId']);
+            } catch (\Exception $e) {
+                Logger::error("{$e->getMessage()}");
+            }
+        }
+    }
+
+    public function addRandomPasscode(Booking $booking): string
+    {
+        $name = $booking->getName();
+        $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
+        $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
+
+        for ($i = 0; $i < self::PASSCODE_ATTEMPTS; $i++) {
+            $password = sprintf('%04d', mt_rand(0, 9999));
+            if ($this->scienerApi->addPasscode($name, $password, $startDate, $endDate)) {
+                return $password;
+            }
         }
 
-        Logger::log(
-            "For {$booking->getName()} have been added password: {$password} valid from " .
-            "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
-            "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
-        );
-
-        return $password;
+        throw new \Exception('All attempts are spent.');
     }
 }

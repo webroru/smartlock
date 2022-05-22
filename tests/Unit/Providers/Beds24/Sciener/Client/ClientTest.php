@@ -22,18 +22,10 @@ class ClientTest extends UnitTestCase
         $this->assertIsString($passcode);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
-    public function testRemoveExpiredPasscodes()
+    public function testGetAllPasscodes()
     {
-        $this->client->removeExpiredPasscodes();
-    }
-
-    public function testAddRandomPasscode()
-    {
-        $passcode = $this->client->addRandomPasscode('Test', time() * 1000, (time() + 60 * 60 * 24) * 1000);
-        $this->assertIsString($passcode);
+        $passcodes = $this->client->getAllPasscodes();
+        $this->assertIsArray($passcodes);
     }
 
     public function testAddPasscode()

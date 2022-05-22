@@ -15,9 +15,7 @@ class Client
     private const GATEWAY = 2;
     private const KEYBOARD_PWD_VERSION = 4;
     private const KEYBOARD_PWD_TYPE = ['period' => 3];
-    private const PASSCODE_ATTEMPTS = 10;
     private const SAME_PASSCODE_EXISTS = -3007;
-    private const IGNORE_PASSCODES = [37782310, 37780116, 37663144, 37663134, 9318334];
 
     private ClientInterface $client;
     private string $token;
@@ -71,24 +69,6 @@ class Client
         return isset($result['keyboardPwdId']);
     }
 
-    public function removeExpiredPasscodes(): void
-    {
-        $passCodes = array_filter($this->getAllPasscodes(), function (array $item) {
-            return $item['endDate'] !== 0 && $item['endDate'] < time() * 1000;
-        });
-
-        foreach ($passCodes as $passCode) {
-            if (in_array($passCode['keyboardPwdId'], self::IGNORE_PASSCODES)) {
-                continue;
-            }
-            try {
-                $this->deletePasscode($passCode['keyboardPwdId']);
-            } catch (\Exception $e) {
-                Logger::error("{$e->getMessage()}");
-            }
-        }
-    }
-
     public function generatePasscode(string $name, int $startDate, int $endDate): string
     {
         $name = implode(' ', array_slice(explode(' ', $name), 0, 2));
@@ -119,42 +99,7 @@ class Client
         return $result['keyboardPwd'];
     }
 
-    public function addRandomPasscode(string $name, int $startDate, int $endDate): string
-    {
-        for ($i = 0; $i < self::PASSCODE_ATTEMPTS; $i++) {
-            $password = sprintf('%04d', mt_rand(0, 9999));
-            if ($this->addPasscode($name, $password, $startDate, $endDate)) {
-                return $password;
-            }
-        }
-
-        throw new \Exception('All attempts are spent.');
-    }
-
-    private function getAccessToken(string $clientSecret, string $username, string $password): ?string
-    {
-        $response = $this->client->post(
-            self::BASE_URL . '/oauth2/token',
-            [
-                'form_params' => [
-                    'client_id' => $this->appId,
-                    'client_secret' => $clientSecret,
-                    'grant_type' => self::GRANT_TYPE,
-                    'username' => $username,
-                    'password' => md5($password),
-                    'redirect_uri' => self::REDIRECT_URI,
-                ],
-            ],
-        );
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('Can not get access token');
-        }
-
-        return json_decode($response->getBody()->getContents())->access_token ?? null;
-    }
-
-    private function getAllPasscodes(int $pageNo = 1)
+    public function getAllPasscodes(int $pageNo = 1): array
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/lock/listKeyboardPwd ',
@@ -183,7 +128,7 @@ class Client
         return $list;
     }
 
-    private function deletePasscode(int $keyboardPwdId): void
+    public function deletePasscode(int $keyboardPwdId): void
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/keyboardPwd/delete ',
@@ -207,5 +152,28 @@ class Client
         if ($result['errcode']) {
             throw new \Exception("Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}");
         }
+    }
+
+    private function getAccessToken(string $clientSecret, string $username, string $password): ?string
+    {
+        $response = $this->client->post(
+            self::BASE_URL . '/oauth2/token',
+            [
+                'form_params' => [
+                    'client_id' => $this->appId,
+                    'client_secret' => $clientSecret,
+                    'grant_type' => self::GRANT_TYPE,
+                    'username' => $username,
+                    'password' => md5($password),
+                    'redirect_uri' => self::REDIRECT_URI,
+                ],
+            ],
+        );
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('Can not get access token');
+        }
+
+        return json_decode($response->getBody()->getContents())->access_token ?? null;
     }
 }

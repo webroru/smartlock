@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Booking;
 use App\Logger;
 use App\Services\BookingService;
 use App\Services\LockService;
@@ -51,7 +50,12 @@ class ApiController
         }
 
         try {
-            $password = $this->lockService->getPassword($booking);
+            $password = $this->lockService->addRandomPasscode($booking);
+            Logger::log(
+                "For {$booking->getName()} have been added password: {$password} valid from " .
+                "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
+                "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
+            );
             $booking->setCode($password);
             $this->bookingService->updateCode($booking);
         } catch (\Exception $e) {

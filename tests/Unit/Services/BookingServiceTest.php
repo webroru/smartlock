@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace tests\App\Unit\Services;
 
 use App\Entity\Booking;
-use App\Providers\Sciener\Client\Client;
 use App\Services\BookingService;
 use tests\App\Unit\UnitTestCase;
 

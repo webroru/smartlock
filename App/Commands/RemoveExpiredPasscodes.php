@@ -3,21 +3,21 @@
 namespace App\Commands;
 
 use App\Logger;
-use App\Providers\Sciener\Client\Client;
+use App\Services\LockService;
 
 class RemoveExpiredPasscodes
 {
-    private $scienerApi;
+    private LockService $lockService;
 
     public function __construct(
-        Client $scienerApi
+        LockService $lockService
     ) {
-        $this->scienerApi = $scienerApi;
+        $this->lockService = $lockService;
     }
 
     public function execute(): void
     {
-        $this->scienerApi->removeExpiredPasscodes();
+        $this->lockService->removeExpiredPasscodes();
         Logger::log('Expired passcodes removed successfully');
     }
 }

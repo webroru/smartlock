@@ -2,7 +2,7 @@ version: '3'
 
 services:
   mysql:
-    image: mysql:5.6
+    image: mysql:8
     volumes:
       - ./temp/dev/mysql/data/:/var/lib/mysql/:rw
     environment:
@@ -11,14 +11,14 @@ services:
       MYSQL_PASSWORD: smartlock
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     ports:
-      - 3306:3306
+      - "127.0.0.1:3306:3306"
+
   php:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
     volumes:
       - ./:/var/www/:rw
-      - ./docker/php/conf.d:/usr/local/etc/php/conf.d/:ro
     environment:
       PHP_IDE_CONFIG: "serverName=xdebug-docker"
       XDEBUG_CONFIG: "client_host=172.22.0.1"
@@ -38,8 +38,8 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     volumes:
       - ./:/var/www
       - ./docker/nginx/hosts:/etc/nginx/conf.d/:ro

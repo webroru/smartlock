@@ -3,17 +3,17 @@
 namespace Unit\Repository;
 
 use App\Entity\Token;
-use App\Repository\TokenMysqlRepository;
+use Prophecy\Argument\Token\TokenInterface;
 use tests\App\Unit\UnitTestCase;
 
-class TokenMysqlRepositoryTest extends UnitTestCase
+class TokenRepositoryTest extends UnitTestCase
 {
-    private TokenMysqlRepository $tokenRepository;
+    private TokenInterface $tokenRepository;
     private Token $token;
 
     protected function setUp(): void
     {
-        $this->tokenRepository = $this->getContainer()->get(TokenMysqlRepository::class);
+        $this->tokenRepository = $this->getContainer()->get(TokenInterface::class);
 
         $this->token = (new Token())
             ->setAccessToken('test')

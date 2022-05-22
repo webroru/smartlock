@@ -4,27 +4,24 @@ namespace Unit\Repository;
 
 use App\Entity\Booking;
 use App\Repository\BookingMysqlBookingRepository;
-use PHPUnit\Framework\TestCase;
+use tests\App\Unit\UnitTestCase;
 
-class BookingMysqlRepositoryTest extends TestCase
+class BookingRepositoryTest extends UnitTestCase
 {
     private const NAME = 'test name';
     private const MAIL = 'test@mail.net';
     private const ORDER_ID = 'test-123';
 
-    /** @var BookingMysqlBookingRepository */
-    private $bookingRepository;
-    /** @var Booking */
-    private $testBooking;
+    private BookingMysqlBookingRepository $bookingRepository;
+    private Booking $booking;
 
     protected function setUp(): void
     {
-        \Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->load();
-        $this->bookingRepository = new BookingMysqlBookingRepository();
+        $this->bookingRepository = $this->getContainer()->get(BookingMysqlBookingRepository::class);
 
         $checkInDate = new \DateTime('14:00 +1 year');
         $checkOutDate = new \DateTime('12:00 +1 year + 1 day');
-        $this->testBooking = (new Booking())
+        $this->booking = (new Booking())
             ->setName(self::NAME)
             ->setEmail(self::MAIL)
             ->setCheckInDate($checkInDate)
@@ -34,14 +31,14 @@ class BookingMysqlRepositoryTest extends TestCase
 
     public function testAdd()
     {
-        $id = $this->bookingRepository->add($this->testBooking);
+        $id = $this->bookingRepository->add($this->booking);
         $this->bookingRepository->delete($id);
         $this->assertIsString($id);
     }
 
     public function testGetUnregisteredBookingsByDateRange()
     {
-        $id = $this->bookingRepository->add($this->testBooking);
+        $id = $this->bookingRepository->add($this->booking);
         $date = new \DateTime('+1 year');
         /** @var Booking[] $bookings */
         $bookings = $this->bookingRepository->getUnregisteredBookingsByDateRange($date);
@@ -58,10 +55,10 @@ class BookingMysqlRepositoryTest extends TestCase
 
     public function testUpdate()
     {
-        $id = $this->bookingRepository->add($this->testBooking);
-        $this->testBooking->setId($id);
-        $this->testBooking->setCode('test');
-        $this->bookingRepository->update($this->testBooking);
+        $id = $this->bookingRepository->add($this->booking);
+        $this->booking->setId($id);
+        $this->booking->setCode('test');
+        $this->bookingRepository->update($this->booking);
         $testBooking = $this->bookingRepository->find($id);
         $this->bookingRepository->delete($id);
         $this->assertEquals('test', $testBooking->getCode());
@@ -69,7 +66,7 @@ class BookingMysqlRepositoryTest extends TestCase
 
     public function testFind()
     {
-        $id = $this->bookingRepository->add($this->testBooking);
+        $id = $this->bookingRepository->add($this->booking);
         $testBooking = $this->bookingRepository->find($id);
         $this->bookingRepository->delete($id);
         $this->assertInstanceOf(Booking::class, ($testBooking));
@@ -77,7 +74,7 @@ class BookingMysqlRepositoryTest extends TestCase
 
     public function testFindBy()
     {
-        $id = $this->bookingRepository->add($this->testBooking);
+        $id = $this->bookingRepository->add($this->booking);
         $testBookings = $this->bookingRepository->findBy(['id' => $id]);
         $this->bookingRepository->delete($id);
         $testBooking = $testBookings[0];
@@ -88,7 +85,7 @@ class BookingMysqlRepositoryTest extends TestCase
 
     public function testDelete()
     {
-        $id = $this->bookingRepository->add($this->testBooking);
+        $id = $this->bookingRepository->add($this->booking);
         $this->bookingRepository->delete($id);
         $result = $this->bookingRepository->find($id);
         $this->assertNull($result);

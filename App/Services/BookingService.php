@@ -36,8 +36,8 @@ class BookingService
 
         return (new Booking())
             ->setName($guestName)
-            ->setCheckInDate($this->prepareDate($checkInDate))
-            ->setCheckOutDate($this->prepareDate($checkOutDate))
+            ->setCheckInDate($this->prepareDate($checkInDate)->modify('14:00'))
+            ->setCheckOutDate($this->prepareDate($checkOutDate)->modify('12:00'))
             ->setOrderId($orderId)
             ->setProperty($property);
     }

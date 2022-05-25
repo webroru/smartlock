@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Logger;
+use App\Repository\BookingRepositoryInterface;
+use App\Repository\LockRepositoryInterface;
 use App\Services\BookingService;
 use App\Services\LockService;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,14 +14,23 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiController
 {
-    private LockService $lockService;
     private BookingService $bookingService;
+    private BookingRepositoryInterface $bookingRepository;
+    private LockService $lockService;
+    private LockRepositoryInterface $lockRepository;
     private string $token;
 
-    public function __construct(LockService $lockService, BookingService $bookingService, string $token)
-    {
-        $this->lockService = $lockService;
+    public function __construct(
+        BookingService $bookingService,
+        BookingRepositoryInterface $bookingRepository,
+        LockService $lockService,
+        LockRepositoryInterface $lockRepository,
+        string $token
+    ) {
         $this->bookingService = $bookingService;
+        $this->bookingRepository = $bookingRepository;
+        $this->lockService = $lockService;
+        $this->lockRepository = $lockRepository;
         $this->token = $token;
     }
 
@@ -50,13 +61,16 @@ class ApiController
         }
 
         try {
-            $password = $this->lockService->addRandomPasscode($booking);
+            $lock = $this->lockService->addRandomPasscode($booking);
+            $lockId = $this->lockRepository->add($lock);
+            $lock->setId($lockId);
+            $booking->setLock($lock);
+            $this->bookingRepository->add($booking);
             Logger::log(
-                "For {$booking->getName()} have been added password: {$password} valid from " .
+                "For {$booking->getName()} have been added password: {$lock->getPasscode()} valid from " .
                 "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
                 "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
             );
-            $booking->setCode($password);
             $this->bookingService->updateCode($booking);
         } catch (\Exception $e) {
             $error = "Couldn't register new passcode for the booking. Error: {$e->getMessage()}. " .

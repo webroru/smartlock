@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace tests\App\Unit\Services;
 
 use App\Entity\Booking;
+use App\Entity\Lock;
 use App\Services\BookingService;
 use tests\App\Unit\UnitTestCase;
 
@@ -21,8 +22,8 @@ class BookingServiceTest extends UnitTestCase
     {
         $booking = (new Booking())
             ->setOrderId('30641419')
-            ->setCode('222')
-            ->setProperty('159459');
+            ->setProperty('159459')
+            ->setLock((new Lock())->setPasscode('222'));
         $this->bookingService->updateCode($booking);
     }
 

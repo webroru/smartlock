@@ -19,7 +19,7 @@ class LockRepositoryTest extends UnitTestCase
         $this->lock = (new Lock())
             ->setName('test')
             ->setPasscode('0000')
-            ->setPasscodeId('0')
+            ->setPasscodeId(42)
             ->setStartDate(new \DateTime())
             ->setEndDate(new \DateTime('+1 year'));
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Booking;
+use App\Entity\Lock;
 use App\Logger;
 use App\Providers\Sciener\Client\Client;
 
@@ -56,20 +57,19 @@ class LockService
         }
     }
 
-    public function addRandomPasscode(Booking $booking): string
+    public function addRandomPasscode(Booking $booking): Lock
     {
         $name = $this->prepareName($booking->getName());
         $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
         $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
-
-        for ($i = 0; $i < self::PASSCODE_ATTEMPTS; $i++) {
-            $password = sprintf('%04d', mt_rand(0, 9999));
-            if ($this->scienerApi->addPasscode($name, $password, $startDate, $endDate)) {
-                return $password;
-            }
-        }
-
-        throw new \Exception('All attempts are spent.');
+        $password = sprintf('%04d', mt_rand(0, 9999));
+        $passcodeId = $this->scienerApi->addPasscode($name, $password, $startDate, $endDate);
+        return (new Lock())
+            ->setName($name)
+            ->setStartDate($booking->getCheckInDate())
+            ->setEndDate($booking->getCheckInDate())
+            ->setPasscode($password)
+            ->setPasscodeId($passcodeId);
     }
 
     private function prepareName(string $name): string

@@ -28,8 +28,10 @@ services:
   App\Controller\ApiController:
     class: App\Controller\ApiController
     arguments:
-      - '@App\Services\LockService'
       - '@App\Services\BookingService'
+      - '@App\Repository\BookingRepositoryInterface'
+      - '@App\Services\LockService'
+      - '@App\Repository\LockRepositoryInterface'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
     arguments:

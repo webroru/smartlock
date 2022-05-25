@@ -38,32 +38,15 @@ class BookingRepositoryTest extends UnitTestCase
         $this->assertIsString($id);
     }
 
-    public function testGetUnregisteredBookingsByDateRange()
-    {
-        $id = $this->bookingRepository->add($this->booking);
-        $date = new \DateTime('+1 year');
-        /** @var Booking[] $bookings */
-        $bookings = $this->bookingRepository->getUnregisteredBookingsByDateRange($date);
-        $testBooking = null;
-        foreach ($bookings as $booking) {
-            if ($booking->getName() === self::NAME && $booking->getEmail() === self::MAIL) {
-                $testBooking = $booking;
-                break;
-            }
-        }
-        $this->bookingRepository->delete($id);
-        $this->assertInstanceOf(Booking::class, ($testBooking));
-    }
-
     public function testUpdate()
     {
         $id = $this->bookingRepository->add($this->booking);
         $this->booking->setId($id);
-        $this->booking->setCode('test');
+        $this->booking->setName('test');
         $this->bookingRepository->update($this->booking);
         $testBooking = $this->bookingRepository->find($id);
         $this->bookingRepository->delete($id);
-        $this->assertEquals('test', $testBooking->getCode());
+        $this->assertEquals('test', $testBooking->getName());
     }
 
     public function testFind()

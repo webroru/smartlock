@@ -18,15 +18,13 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
     public function add(Booking $booking): string
     {
         $sql = 'INSERT INTO booking
-            VALUES (NULL, :name, :check_in_date, :check_out_date, :email, :code, :order_id, :property, :lock_id)';
+            VALUES (NULL, :name, :check_in_date, :check_out_date, :order_id, :property, :lock_id)';
 
         $this->client->prepare($sql)
             ->execute([
                 'name' => $booking->getName(),
                 'check_in_date' => $booking->getCheckInDate()->format('Y-m-d H:i:s'),
                 'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
-                'email' => $booking->getEmail(),
-                'code' => $booking->getCode(),
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
                 'lock_id' => $booking->getLock()?->getId(),
@@ -49,8 +47,6 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 name = :name,
                 check_in_date = :check_in_date,
                 check_out_date = :check_out_date,
-                email = :email,
-                code = :code,
                 order_id = :order_id,
                 property = :property,
                 lock_id = :lock_id
@@ -62,8 +58,6 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'name' => $booking->getName(),
                 'check_in_date' => $booking->getCheckInDate()->format('Y-m-d H:i:s'),
                 'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
-                'email' => $booking->getEmail(),
-                'code' => $booking->getCode(),
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
                 'lock_id' => $booking->getLock()?->getId(),
@@ -96,15 +90,6 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
         $this->client->prepare('DELETE FROM booking WHERE id = ?')->execute([$id]);
     }
 
-    public function getUnregisteredBookingsByDateRange(\DateTime $checkInDate): array
-    {
-        $sql = 'SELECT * FROM booking where check_in_date <= :check_in_date AND code IS NULL';
-        $statement = $this->client->prepare($sql);
-        $statement->execute(['check_in_date' => $checkInDate->format('Y-m-d H:i:s')]);
-        $rows = $statement->fetchAll();
-        return array_map([$this, 'toEntity'], $rows);
-    }
-
     private function toEntity(array $row): Booking
     {
         $booking = (new Booking())
@@ -113,7 +98,6 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->setCheckOutDate(new \DateTime($row['check_out_date']))
             ->setEmail($row['email'])
             ->setName($row['name'])
-            ->setCode($row['code'])
             ->setOrderId($row['order_id'])
             ->setProperty($row['property']);
 

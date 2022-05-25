@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Services\LockService;
-
 class Booking
 {
     private int $id;
@@ -11,7 +9,6 @@ class Booking
     private \DateTime $checkInDate;
     private \DateTime $checkOutDate;
     private string $email;
-    private ?string $code = null;
     private string $orderId;
     private string $property;
     private ?Lock $lock = null;
@@ -68,17 +65,6 @@ class Booking
     public function setEmail($email): self
     {
         $this->email = $email;
-        return $this;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(?string $code): self
-    {
-        $this->code = $code;
         return $this;
     }
 

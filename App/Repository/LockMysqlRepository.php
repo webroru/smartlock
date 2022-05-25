@@ -17,7 +17,7 @@ class LockMysqlRepository implements LockRepositoryInterface
     public function add(Lock $lock): int
     {
         $sql = "INSERT INTO `$this->table`
-            VALUES (NULL, :name, :passcode_id, :passcode, :start_date, :end_date)";
+            VALUES (NULL, :passcode_id, :passcode, :name, :start_date, :end_date)";
 
         $this->client->prepare($sql)
             ->execute([

@@ -37,7 +37,7 @@ class Client
         $this->token = $this->getAccessToken($appSecret, $user, $password);
     }
 
-    public function addPasscode(string $name, string $password, int $startDate, int $endDate): bool
+    public function addPasscode(string $name, string $password, int $startDate, int $endDate): int
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/keyboardPwd/add',
@@ -62,11 +62,11 @@ class Client
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode'])) {
             if ($result['errcode'] === self::SAME_PASSCODE_EXISTS) {
-                return false;
+                throw new \Exception("Passcode $password already exists");
             }
             throw new \Exception("Error during passcode generation for $name: {$result['errmsg']}");
         }
-        return isset($result['keyboardPwdId']);
+        return $result['keyboardPwdId'];
     }
 
     public function generatePasscode(string $name, int $startDate, int $endDate): string

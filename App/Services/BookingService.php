@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Booking;
-use App\Logger;
 use App\Providers\Beds24\Client\ClientV1;
-use Symfony\Component\HttpFoundation\Response;
 
 class BookingService
 {
@@ -44,7 +42,7 @@ class BookingService
 
     public function updateCode(Booking $booking): void
     {
-        if (!$booking->getCode()) {
+        if (!$booking->getLock()?->getPasscode()) {
             throw new \Exception('The booking code is empty');
         }
 
@@ -58,7 +56,7 @@ class BookingService
             'infoItems' => [
                 [
                     'code' => self::CODELOCK,
-                    'text' => "Passcode: #{$booking->getCode()}#",
+                    'text' => "Passcode: #{$booking->getLock()?->getPasscode()}#",
                 ]
             ],
         ];

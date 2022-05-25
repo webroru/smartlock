@@ -7,7 +7,7 @@ namespace App\Entity;
 class Lock
 {
     private int $id;
-    private string $passcodeId;
+    private int $passcodeId;
     private string $passcode;
     private string $name;
     private \DateTime $startDate;
@@ -24,12 +24,12 @@ class Lock
         return $this;
     }
 
-    public function getPasscodeId(): string
+    public function getPasscodeId(): int
     {
         return $this->passcodeId;
     }
 
-    public function setPasscodeId(string $passcodeId): Lock
+    public function setPasscodeId(int $passcodeId): Lock
     {
         $this->passcodeId = $passcodeId;
         return $this;

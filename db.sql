@@ -16,8 +16,6 @@ create table if not exists booking
     name varchar(200) not null,
     check_in_date datetime not null,
     check_out_date datetime not null,
-    email varchar(200) null,
-    code varchar(10) null,
     order_id varchar(15) null,
     property varchar(15) null,
     lock_id int default null null,

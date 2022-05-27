@@ -8,7 +8,7 @@ class Booking
     private string $name;
     private \DateTime $checkInDate;
     private \DateTime $checkOutDate;
-    private string $email;
+    private ?string $phone;
     private string $orderId;
     private string $property;
     private ?Lock $lock = null;
@@ -57,14 +57,14 @@ class Booking
         return $this;
     }
 
-    public function getEmail(): string
+    public function getPhone(): ?string
     {
-        return $this->email;
+        return $this->phone;
     }
 
-    public function setEmail($email): self
+    public function setPhone(?string $phone): self
     {
-        $this->email = $email;
+        $this->phone = $phone;
         return $this;
     }
 

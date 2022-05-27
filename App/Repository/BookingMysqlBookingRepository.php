@@ -18,11 +18,12 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
     public function add(Booking $booking): string
     {
         $sql = 'INSERT INTO booking
-            VALUES (NULL, :name, :check_in_date, :check_out_date, :order_id, :property, :lock_id)';
+            VALUES (NULL, :name, :phone, :check_in_date, :check_out_date, :order_id, :property, :lock_id)';
 
         $this->client->prepare($sql)
             ->execute([
                 'name' => $booking->getName(),
+                'phone' => $booking->getPhone(),
                 'check_in_date' => $booking->getCheckInDate()->format('Y-m-d H:i:s'),
                 'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
                 'order_id' => $booking->getOrderId(),
@@ -45,6 +46,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
         $sql = 'UPDATE booking
             SET
                 name = :name,
+                phone = :phone,
                 check_in_date = :check_in_date,
                 check_out_date = :check_out_date,
                 order_id = :order_id,
@@ -56,6 +58,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->execute([
                 'id' => $booking->getId(),
                 'name' => $booking->getName(),
+                'phone' => $booking->getPhone(),
                 'check_in_date' => $booking->getCheckInDate()->format('Y-m-d H:i:s'),
                 'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
                 'order_id' => $booking->getOrderId(),
@@ -96,8 +99,8 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->setId($row['id'])
             ->setCheckInDate(new \DateTime($row['check_in_date']))
             ->setCheckOutDate(new \DateTime($row['check_out_date']))
-            ->setEmail($row['email'])
             ->setName($row['name'])
+            ->setPhone($row['phone'])
             ->setOrderId($row['order_id'])
             ->setProperty($row['property']);
 

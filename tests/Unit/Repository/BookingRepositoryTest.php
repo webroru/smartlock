@@ -9,7 +9,7 @@ use tests\App\Unit\UnitTestCase;
 class BookingRepositoryTest extends UnitTestCase
 {
     private const NAME = 'test name';
-    private const MAIL = 'test@mail.net';
+    private const PHONE = '+7 (987) 654-32-10';
     private const ORDER_ID = 'test-123';
     private const PROPERTY_ID = '1111';
 
@@ -24,7 +24,7 @@ class BookingRepositoryTest extends UnitTestCase
         $checkOutDate = new \DateTime('12:00 +1 year + 1 day');
         $this->booking = (new Booking())
             ->setName(self::NAME)
-            ->setEmail(self::MAIL)
+            ->setPhone(self::PHONE)
             ->setCheckInDate($checkInDate)
             ->setCheckOutDate($checkOutDate)
             ->setProperty(self::PROPERTY_ID)

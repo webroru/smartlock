@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Helpers\PhoneHepler;
 use App\Logger;
 use App\Repository\BookingRepositoryInterface;
 use App\Repository\LockRepositoryInterface;
@@ -139,6 +140,53 @@ class ApiController
 
         return new Response(
             'The Booking has been processed',
+            Response::HTTP_OK,
+            ['content-type' => 'text/html']
+        );
+    }
+
+    public function clearPhoneNumber(Request $request): Response
+    {
+        $authorizationHeader = $request->headers->get('authorization', '');
+        $token = explode(' ', $authorizationHeader)[1] ?? '';
+        if (!$this->validateToken($token)) {
+            Logger::log("Authorization is not valid: Token is $token");
+            return new Response(
+                'Authorization is not valid',
+                Response::HTTP_UNAUTHORIZED,
+                ['content-type' => 'text/html']
+            );
+        }
+
+        $data = $request->toArray();
+
+        try {
+            $booking = $this->bookingService->create($data);
+        } catch (\Exception $e) {
+            Logger::log($e->getMessage());
+            return new Response(
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                ['content-type' => 'text/html']
+            );
+        }
+
+        $phone = PhoneHepler::clear($data['phone']);
+        $booking->setPhone($phone);
+
+        try {
+            $this->bookingService->updatePhone($booking);
+        } catch (\Exception $e) {
+            Logger::log($e->getMessage());
+            return new Response(
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                ['content-type' => 'text/html']
+            );
+        }
+
+        return new Response(
+            'Phone number has been cleared',
             Response::HTTP_OK,
             ['content-type' => 'text/html']
         );

@@ -14,6 +14,7 @@ create table if not exists booking
     id int auto_increment
         primary key,
     name varchar(200) not null,
+    phone varchar(20) null,
     check_in_date datetime not null,
     check_out_date datetime not null,
     order_id varchar(15) null,

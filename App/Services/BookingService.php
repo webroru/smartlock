@@ -25,6 +25,7 @@ class BookingService
         $checkInDate = $data['checkindate'] ?? null;
         $checkOutDate = $data['checkoutdate'] ?? null;
         $guestName = $data['guestname'] ?? null;
+        $phone = $data['phone'] ?? null;
         $orderId = $data['order_id'] ?? null;
         $property = $data['property'] ?? null;
 
@@ -34,6 +35,7 @@ class BookingService
 
         return (new Booking())
             ->setName($guestName)
+            ->setPhone($phone)
             ->setCheckInDate($this->prepareDate($checkInDate)->modify('14:00'))
             ->setCheckOutDate($this->prepareDate($checkOutDate)->modify('12:00'))
             ->setOrderId($orderId)
@@ -59,6 +61,24 @@ class BookingService
                     'text' => "Passcode: #{$booking->getLock()?->getPasscode()}#",
                 ]
             ],
+        ];
+        $this->beds24Api->setBooking($requestData);
+    }
+
+    public function updatePhone(Booking $booking): void
+    {
+        if (!$booking->getProperty()) {
+            throw new \Exception('The booking property is empty');
+        }
+
+        if (!$booking->getPhone()) {
+            throw new \Exception('The booking phone is empty');
+        }
+
+        $this->beds24Api->setPropKey($this->getPropKey($booking->getProperty()));
+        $requestData = [
+            'bookId' => $booking->getOrderId(),
+            'guestPhone' => $booking->getPhone(),
         ];
         $this->beds24Api->setBooking($requestData);
     }

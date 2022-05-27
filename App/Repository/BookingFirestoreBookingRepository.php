@@ -82,7 +82,6 @@ class BookingFirestoreBookingRepository implements BookingRepositoryInterface
             ->setId($document->id())
             ->setCheckInDate(new \DateTime($document->get('CheckInDate')))
             ->setCheckOutDate(new \DateTime($document->get('CheckOutDate')))
-            ->setEmail($document->get('Email'))
             ->setName($document->get('Name'))
             ->setOrderId($document->get('OrderId'))
             ->setProperty($document->get('Property'));

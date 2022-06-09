@@ -25,6 +25,7 @@ class ClientV1Test extends UnitTestCase
             ],
         ];
         $beds24Api = $this->performTestMethod();
+        $beds24Api->setPropKey('test');
         $beds24Api->setBooking($requestData);
     }
 

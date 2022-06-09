@@ -4,13 +4,14 @@ namespace App\Entity;
 
 class Booking
 {
-    private $id;
-    private $name;
-    private $checkInDate;
-    private $checkOutDate;
-    private $email;
-    private $code;
-    private $orderId;
+    private int $id;
+    private string $name;
+    private \DateTime $checkInDate;
+    private \DateTime $checkOutDate;
+    private ?string $phone;
+    private string $orderId;
+    private string $property;
+    private ?Lock $lock = null;
 
     public function getId(): ?string
     {
@@ -56,25 +57,14 @@ class Booking
         return $this;
     }
 
-    public function getEmail(): string
+    public function getPhone(): ?string
     {
-        return $this->email;
+        return $this->phone;
     }
 
-    public function setEmail($email): self
+    public function setPhone(?string $phone): self
     {
-        $this->email = $email;
-        return $this;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(?string $code): self
-    {
-        $this->code = $code;
+        $this->phone = $phone;
         return $this;
     }
 
@@ -86,6 +76,28 @@ class Booking
     public function setOrderId(string $orderId): self
     {
         $this->orderId = $orderId;
+        return $this;
+    }
+
+    public function getProperty(): string
+    {
+        return $this->property;
+    }
+
+    public function setProperty(string $property): self
+    {
+        $this->property = $property;
+        return $this;
+    }
+
+    public function getLock(): ?Lock
+    {
+        return $this->lock;
+    }
+
+    public function setLock(Lock $lock): self
+    {
+        $this->lock = $lock;
         return $this;
     }
 }

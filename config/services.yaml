@@ -1,38 +1,63 @@
 parameters:
   beds24.apikey: '%env(BEDS24_APIKEY)%'
-  beds24.propkey: '%env(BEDS24_PROPKEY)%'
   beds24.token: '%env(BEDS24_DIGEST_TOKEN)%'
+  beds24.props:
+    156799: '%env(BEDS24_PROP_APARTMENTS)%'
+    156424: '%env(BEDS24_PROP_GUESTHOUSE)%'
+    156798: '%env(BEDS24_PROP_HOSTEL)%'
+    159459: '%env(BEDS24_PROP_TEST)%'
+
   mysql.host: '%env(MYSQL_HOST)%'
   mysql.db: '%env(MYSQL_DB)%'
   mysql.user: '%env(MYSQL_USER)%'
   mysql.pass: '%env(MYSQL_PASS)%'
   mysql.charset: 'utf8mb4'
 
+  sciener.app_id: '%env(SCIENER_APP_ID)%'
+  sciener.lock_id: '%env(SCIENER_LOCK_ID)%'
+  sciener.app_secret: '%env(SCIENER_APP_SECRET)%'
+  sciener.user: '%env(SCIENER_USER)%'
+  sciener.password: '%env(SCIENER_PASSWORD)%'
+
 services:
   _defaults:
     autowire: true
     autoconfigure: true
     public: true
+  App\Commands\RemoveExpiredPasscodes: ~    
   App\Controller\ApiController:
     class: App\Controller\ApiController
     arguments:
-      - '@App\Services\LockService'
       - '@App\Services\BookingService'
+      - '@App\Repository\BookingRepositoryInterface'
+      - '@App\Services\LockService'
+      - '@App\Repository\LockRepositoryInterface'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
-    class: App\Providers\Beds24\Client\ClientV1
     arguments:
       - '@GuzzleHttp\ClientInterface'
       - '%beds24.apikey%'
-      - '%beds24.propkey%'
+  App\Providers\Sciener\Client\Client:
+    arguments:
+      - '@GuzzleHttp\ClientInterface'
+      - '%sciener.app_id%'
+      - '%sciener.lock_id%'
+      - '%sciener.app_secret%'
+      - '%sciener.user%'
+      - '%sciener.password%'
+  App\Repository\BookingMysqlBookingRepository: ~
+  App\Repository\BookingRepositoryInterface: '@App\Repository\BookingMysqlBookingRepository'
+  App\Repository\LockMysqlRepository: ~
+  App\Repository\LockRepositoryInterface: '@App\Repository\LockMysqlRepository'
   App\Repository\TokenMysqlRepository:
-    class: App\Repository\TokenMysqlRepository
     arguments:
       - '@PDO'
-  App\Services\BookingService: ~
-  App\Services\LockService: ~
-  App\Services\ScienerApi: ~
   App\Repository\TokenRepositoryInterface: '@App\Repository\TokenMysqlRepository'
+  App\Services\BookingService:
+    arguments:
+      - '@App\Providers\Beds24\Client\ClientV1'
+      - '%beds24.props%'
+  App\Services\LockService: ~
   GuzzleHttp\Client: ~
   GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'
   PDO:

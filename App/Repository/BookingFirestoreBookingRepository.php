@@ -23,9 +23,8 @@ class BookingFirestoreBookingRepository implements BookingRepositoryInterface
             'Name' => $booking->getName(),
             'CheckInDate' => $booking->getCheckInDate(),
             'CheckOutDate' => $booking->getCheckOutDate(),
-            'Email' => $booking->getEmail(),
-            'Code' => $booking->getCode(),
             'OrderId' => $booking->getOrderId(),
+            'Property' => $booking->getProperty(),
         ])->id();
     }
 
@@ -41,9 +40,8 @@ class BookingFirestoreBookingRepository implements BookingRepositoryInterface
             ['path' => 'Name', 'value' => $booking->getName()],
             ['path' => 'CheckInDate', 'value' => $booking->getCheckInDate()],
             ['path' => 'CheckOutDate', 'value' => $booking->getCheckOutDate()],
-            ['path' => 'Email', 'value' => $booking->getEmail()],
-            ['path' => 'Code', 'value' => $booking->getCode()],
             ['path' => 'OrderId', 'value' => $booking->getOrderId()],
+            ['path' => 'Property', 'value' => $booking->getProperty()],
         ]);
     }
 
@@ -84,9 +82,8 @@ class BookingFirestoreBookingRepository implements BookingRepositoryInterface
             ->setId($document->id())
             ->setCheckInDate(new \DateTime($document->get('CheckInDate')))
             ->setCheckOutDate(new \DateTime($document->get('CheckOutDate')))
-            ->setEmail($document->get('Email'))
             ->setName($document->get('Name'))
-            ->setCode($document->get('Code'))
-            ->setOrderId($document->get('OrderId'));
+            ->setOrderId($document->get('OrderId'))
+            ->setProperty($document->get('Property'));
     }
 }

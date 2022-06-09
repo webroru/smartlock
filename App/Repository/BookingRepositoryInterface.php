@@ -13,5 +13,4 @@ interface BookingRepositoryInterface
     public function update(Booking $booking): void;
     public function findBy(array $params): array;
     public function delete($id): void;
-    public function getUnregisteredBookingsByDateRange(\DateTime $checkInDate): array;
 }

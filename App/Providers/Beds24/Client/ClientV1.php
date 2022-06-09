@@ -16,11 +16,15 @@ class ClientV1 implements Beds24ClientInterface
     private string $propKey;
     private ClientInterface $client;
 
-    public function __construct(ClientInterface $client, string $apiKey, string $propKey)
+    public function __construct(ClientInterface $client, string $apiKey)
     {
         $this->apiKey = $apiKey;
-        $this->propKey = $propKey;
         $this->client = $client;
+    }
+
+    public function setPropKey(string $propKey): void
+    {
+        $this->propKey = $propKey;
     }
 
     public function setBooking(array $requestData): void
@@ -38,7 +42,7 @@ class ClientV1 implements Beds24ClientInterface
 
         $content = $response->getBody()->getContents();
         $message = json_decode($content, true);
-        if ($message['error']) {
+        if (isset($message['error'])) {
             throw new \Exception($message['error']);
         }
     }

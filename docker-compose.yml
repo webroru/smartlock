@@ -48,6 +48,11 @@ services:
     links:
       - php
 
+  rabbitmq:
+    image: rabbitmq:3.10-alpine
+    ports:
+      - "15673:15672"
+
   certbot:
     image: certbot/certbot:latest
     volumes:

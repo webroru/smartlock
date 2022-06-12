@@ -13,6 +13,11 @@ parameters:
   mysql.pass: '%env(MYSQL_PASS)%'
   mysql.charset: 'utf8mb4'
 
+  rabbitmq.host: '%env(RABBITMQ_HOST)%'
+  rabbitmq.port: '%env(RABBITMQ_DEFAULT_PORT, 5672)%'
+  rabbitmq.user: '%env(RABBITMQ_DEFAULT_USER)%'
+  rabbitmq.password: '%env(RABBITMQ_DEFAULT_PASS)%'
+
   sciener.app_id: '%env(SCIENER_APP_ID)%'
   sciener.lock_id: '%env(SCIENER_LOCK_ID)%'
   sciener.app_secret: '%env(SCIENER_APP_SECRET)%'
@@ -26,7 +31,6 @@ services:
     public: true
   App\Commands\RemoveExpiredPasscodes: ~    
   App\Controller\ApiController:
-    class: App\Controller\ApiController
     arguments:
       - '@App\Services\BookingService'
       - '@App\Repository\BookingRepositoryInterface'
@@ -67,3 +71,9 @@ services:
       - '%mysql.user%'
       - '%mysql.pass%'
       - { 3: 2, 19: 2, 20: false }
+  PhpAmqpLib\Connection\AMQPStreamConnection:
+    arguments:
+      - '%rabbitmq.host%'
+      - '%rabbitmq.port%'
+      - '%rabbitmq.user%'
+      - '%rabbitmq.password%'

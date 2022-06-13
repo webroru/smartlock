@@ -35,7 +35,7 @@ services:
       - '@App\Services\BookingService'
       - '@App\Repository\BookingRepositoryInterface'
       - '@App\Services\LockService'
-      - '@App\Repository\LockRepositoryInterface'
+      - '@App\Services\Queue'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
     arguments:
@@ -49,6 +49,7 @@ services:
       - '%sciener.app_secret%'
       - '%sciener.user%'
       - '%sciener.password%'
+  App\Queue\GetPasscodeHandler: ~
   App\Repository\BookingMysqlBookingRepository: ~
   App\Repository\BookingRepositoryInterface: '@App\Repository\BookingMysqlBookingRepository'
   App\Repository\LockMysqlRepository: ~
@@ -62,6 +63,7 @@ services:
       - '@App\Providers\Beds24\Client\ClientV1'
       - '%beds24.props%'
   App\Services\LockService: ~
+  App\Services\Queue: ~
   GuzzleHttp\Client: ~
   GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'
   PDO:

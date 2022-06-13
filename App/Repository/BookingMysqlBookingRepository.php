@@ -15,7 +15,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
         $this->lockRepository = $lockRepository;
     }
 
-    public function add(Booking $booking): string
+    public function add(Booking $booking): int
     {
         $sql = 'INSERT INTO booking
             VALUES (NULL, :name, :phone, :check_in_date, :check_out_date, :order_id, :property, :lock_id)';
@@ -33,7 +33,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
         return $this->client->lastInsertId();
     }
 
-    public function find(string $id): ?Booking
+    public function find(int $id): ?Booking
     {
         $statement = $this->client->prepare('SELECT * FROM booking WHERE id = ?');
         $statement->execute([$id]);

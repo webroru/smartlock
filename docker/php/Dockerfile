@@ -7,18 +7,21 @@ RUN apk add --no-cache \
     bash \
     curl \
     git \
-    mysql-client
+    mysql-client \
+    rabbitmq-c-dev
 
 # Install PECL and PEAR extensions
-RUN pecl install xdebug
+RUN pecl install xdebug amqp
 
 # Install and enable php extensions
 RUN docker-php-ext-enable xdebug
 
 RUN docker-php-ext-install \
+    bcmath \
     mbstring \
     pdo \
-    pdo_mysql
+    pdo_mysql \
+    sockets
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

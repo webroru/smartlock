@@ -13,6 +13,13 @@ parameters:
   mysql.pass: '%env(MYSQL_PASS)%'
   mysql.charset: 'utf8mb4'
 
+  rabbitmq.host: '%env(RABBITMQ_HOST)%'
+  rabbitmq.port: '%env(RABBITMQ_PORT)%'
+  rabbitmq.user: '%env(RABBITMQ_DEFAULT_USER)%'
+  rabbitmq.password: '%env(RABBITMQ_DEFAULT_PASS)%'
+
+  queue.name: '%env(QUEUE_NAME)%'
+
   sciener.app_id: '%env(SCIENER_APP_ID)%'
   sciener.lock_id: '%env(SCIENER_LOCK_ID)%'
   sciener.app_secret: '%env(SCIENER_APP_SECRET)%'
@@ -24,14 +31,14 @@ services:
     autowire: true
     autoconfigure: true
     public: true
-  App\Commands\RemoveExpiredPasscodes: ~    
+  App\Commands\RemoveExpiredPasscodes: ~
+  App\Commands\ConsumeQueue: ~
   App\Controller\ApiController:
-    class: App\Controller\ApiController
     arguments:
       - '@App\Services\BookingService'
       - '@App\Repository\BookingRepositoryInterface'
       - '@App\Services\LockService'
-      - '@App\Repository\LockRepositoryInterface'
+      - '@App\Queue\RabbitMQ\Dispatcher'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
     arguments:
@@ -45,6 +52,22 @@ services:
       - '%sciener.app_secret%'
       - '%sciener.user%'
       - '%sciener.password%'
+  App\Queue\RabbitMQ\Consumer:
+    arguments:
+      - '@PhpAmqpLib\Connection\AMQPStreamConnection'
+      - '@App\Queue\HandlerResolver'
+      - '%queue.name%'
+  App\Queue\RabbitMQ\Dispatcher:
+    arguments:
+      - '@PhpAmqpLib\Connection\AMQPStreamConnection'
+      - '%queue.name%'
+  App\Queue\HandlerResolver:
+    arguments:
+      $handlers:
+          - '@App\Queue\Handlers\GetPasscodeHandler'
+          - '@App\Queue\Handlers\SendPasscodeHandler'
+  App\Queue\Handlers\GetPasscodeHandler: ~
+  App\Queue\Handlers\SendPasscodeHandler: ~
   App\Repository\BookingMysqlBookingRepository: ~
   App\Repository\BookingRepositoryInterface: '@App\Repository\BookingMysqlBookingRepository'
   App\Repository\LockMysqlRepository: ~
@@ -53,6 +76,7 @@ services:
     arguments:
       - '@PDO'
   App\Repository\TokenRepositoryInterface: '@App\Repository\TokenMysqlRepository'
+  Symfony\Component\DependencyInjection\ContainerBuilder: ~
   App\Services\BookingService:
     arguments:
       - '@App\Providers\Beds24\Client\ClientV1'
@@ -67,3 +91,9 @@ services:
       - '%mysql.user%'
       - '%mysql.pass%'
       - { 3: 2, 19: 2, 20: false }
+  PhpAmqpLib\Connection\AMQPStreamConnection:
+    arguments:
+      - '%rabbitmq.host%'
+      - '%rabbitmq.port%'
+      - '%rabbitmq.user%'
+      - '%rabbitmq.password%'

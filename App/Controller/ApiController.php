@@ -6,8 +6,9 @@ namespace App\Controller;
 
 use App\Helpers\PhoneHepler;
 use App\Logger;
+use App\Queue\Job\GetPasscode;
+use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
-use App\Repository\LockRepositoryInterface;
 use App\Services\BookingService;
 use App\Services\LockService;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,24 +16,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiController
 {
-    private BookingService $bookingService;
-    private BookingRepositoryInterface $bookingRepository;
-    private LockService $lockService;
-    private LockRepositoryInterface $lockRepository;
-    private string $token;
-
     public function __construct(
-        BookingService $bookingService,
-        BookingRepositoryInterface $bookingRepository,
-        LockService $lockService,
-        LockRepositoryInterface $lockRepository,
-        string $token
+        private readonly BookingService $bookingService,
+        private readonly BookingRepositoryInterface $bookingRepository,
+        private readonly LockService $lockService,
+        private readonly Dispatcher $dispatcher,
+        private readonly string $token
     ) {
-        $this->bookingService = $bookingService;
-        $this->bookingRepository = $bookingRepository;
-        $this->lockService = $lockService;
-        $this->lockRepository = $lockRepository;
-        $this->token = $token;
     }
 
     public function create(Request $request): Response
@@ -52,42 +42,17 @@ class ApiController
 
         try {
             $booking = $this->bookingService->create($data);
+            $bookingId = $this->bookingRepository->add($booking);
+            $this->dispatcher->add(new GetPasscode($bookingId));
+            Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
-            Logger::log($e->getMessage());
+            Logger::error($e->getMessage());
             return new Response(
                 $e->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR,
                 ['content-type' => 'text/html']
             );
         }
-
-        try {
-            $lock = $this->lockService->addRandomPasscode($booking);
-            $lockId = $this->lockRepository->add($lock);
-            $lock->setId($lockId);
-            $booking->setLock($lock);
-            $this->bookingRepository->add($booking);
-            Logger::log(
-                "For {$booking->getName()} have been added password: {$lock->getPasscode()} valid from " .
-                "{$booking->getCheckInDate()->format('Y-m-d H:i')} " .
-                "to {$booking->getCheckOutDate()->format('Y-m-d H:i')}"
-            );
-            $this->bookingService->updateCode($booking);
-        } catch (\Exception $e) {
-            $error = "Couldn't register new passcode for the booking. Error: {$e->getMessage()}. " .
-                "Guest: {$booking->getName()}, " .
-                "Reservation: {$booking->getCheckInDate()->format('Y-m-d H:i')} — " .
-                "{$booking->getCheckOutDate()->format('Y-m-d H:i')}, " .
-                "Order №: {$booking->getOrderId()}.";
-
-            Logger::log($error);
-            return new Response(
-                $error,
-                Response::HTTP_INTERNAL_SERVER_ERROR,
-                ['content-type' => 'text/html']
-            );
-        }
-
         return new Response(
             'The Booking has been processed',
             Response::HTTP_OK,

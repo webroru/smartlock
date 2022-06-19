@@ -35,6 +35,16 @@ services:
       - ./:/var/www/:rw
       - ./docker/php/conf.d:/usr/local/etc/php/conf.d/:ro
 
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: ["php", "-f", "command.php", "queue:consume"]
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/:rw
+      - ./docker/php/conf.d:/usr/local/etc/php/conf.d/:ro
+
   nginx:
     image: nginx:alpine
     ports:
@@ -47,6 +57,11 @@ services:
       - ./certbot/conf/:/etc/nginx/ssl/:ro
     links:
       - php
+
+  rabbitmq:
+    image: rabbitmq:3.10-alpine
+    volumes:
+      - ./temp/dev/rabbitmq/data:/var/lib/rabbitmq/:rw
 
   certbot:
     image: certbot/certbot:latest

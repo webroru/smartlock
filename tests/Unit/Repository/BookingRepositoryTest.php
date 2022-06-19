@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Repository;
+namespace tests\App\Unit\Repository;
 
 use App\Entity\Booking;
 use App\Repository\BookingRepositoryInterface;
@@ -35,7 +35,7 @@ class BookingRepositoryTest extends UnitTestCase
     {
         $id = $this->bookingRepository->add($this->booking);
         $this->bookingRepository->delete($id);
-        $this->assertIsString($id);
+        $this->assertIsInt($id);
     }
 
     public function testUpdate()

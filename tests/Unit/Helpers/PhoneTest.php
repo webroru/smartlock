@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unit\Helpers;
+namespace tests\App\Unit\Helpers;
 
 use App\Helpers\PhoneHepler;
 use PHPUnit\Framework\TestCase;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unit\Providers\Beds24\Sciener\Client;
+namespace tests\App\Unit\Providers\Beds24\Sciener\Client;
 
 use App\Providers\Sciener\Client\Client;
 use tests\App\Unit\UnitTestCase;

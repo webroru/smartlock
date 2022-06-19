@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Repository;
+namespace tests\App\Unit\Repository;
 
 use App\Entity\Token;
 use App\Repository\TokenRepositoryInterface;

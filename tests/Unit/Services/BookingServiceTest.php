@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\App\Unit\Services;
+namespace tests\App\tests\App\Unit\Services;
 
 use App\Entity\Booking;
 use App\Entity\Lock;

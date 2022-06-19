@@ -7,33 +7,22 @@ namespace App\Controller;
 use App\Helpers\PhoneHepler;
 use App\Logger;
 use App\Queue\Job\GetPasscode;
+use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
 use App\Services\BookingService;
 use App\Services\LockService;
-use App\Services\Queue;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiController
 {
-    private BookingService $bookingService;
-    private BookingRepositoryInterface $bookingRepository;
-    private LockService $lockService;
-    private Queue $queue;
-    private string $token;
-
     public function __construct(
-        BookingService $bookingService,
-        BookingRepositoryInterface $bookingRepository,
-        LockService $lockService,
-        Queue $queue,
-        string $token
+        private readonly BookingService $bookingService,
+        private readonly BookingRepositoryInterface $bookingRepository,
+        private readonly LockService $lockService,
+        private readonly Dispatcher $dispatcher,
+        private readonly string $token
     ) {
-        $this->bookingService = $bookingService;
-        $this->bookingRepository = $bookingRepository;
-        $this->lockService = $lockService;
-        $this->token = $token;
-        $this->queue = $queue;
     }
 
     public function create(Request $request): Response
@@ -54,7 +43,7 @@ class ApiController
         try {
             $booking = $this->bookingService->create($data);
             $bookingId = $this->bookingRepository->add($booking);
-            $this->queue->add(new GetPasscode($bookingId));
+            $this->dispatcher->add(new GetPasscode($bookingId));
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
             Logger::error($e->getMessage());

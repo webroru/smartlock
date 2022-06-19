@@ -10,6 +10,7 @@
     }
   },
   "require": {
+    "ext-sockets": "*",
     "ext-json": "*",
     "ext-pdo": "*",
     "guzzlehttp/guzzle": "~6.0",
@@ -19,7 +20,7 @@
     "symfony/dependency-injection": "^5.4",
     "symfony/yaml": "^5.4",
     "symfony/config": "^5.4",
-    "php-amqplib/php-amqplib": "^2.0"
+    "php-amqplib/php-amqplib": "^3.2"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",

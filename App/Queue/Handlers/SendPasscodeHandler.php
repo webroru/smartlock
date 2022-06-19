@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Queue;
+namespace App\Queue\Handlers;
 
 use App\Logger;
+use App\Queue\Job\JobInterface;
 use App\Queue\Job\SendPasscode;
+use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
 use App\Services\BookingService;
 
@@ -14,10 +16,14 @@ class SendPasscodeHandler implements HandlerInterface
     public function __construct(
         private readonly BookingService $bookingService,
         private readonly BookingRepositoryInterface $bookingRepository,
+        private readonly Dispatcher $dispatcher,
     ) {
     }
 
-    public function __invoke(SendPasscode $job): void
+    /**
+     * @param SendPasscode $job
+     */
+    public function handle(JobInterface $job): void
     {
         $bookingId = $job->getBookingId();
         $booking = $this->bookingRepository->find($bookingId);
@@ -42,6 +48,10 @@ class SendPasscodeHandler implements HandlerInterface
                 "Order №: {$booking->getOrderId()}.";
 
             Logger::error($error);
+
+            if (--$job->attempts > 0) {
+                $this->dispatcher->add($job);
+            }
         }
     }
 }

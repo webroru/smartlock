@@ -6,4 +6,5 @@ namespace App\Queue\Job;
 
 interface JobInterface
 {
+    public function getHandlerFQCN(): string;
 }

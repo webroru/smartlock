@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Commands\ConsumeQueue;
 use App\Commands\RemoveExpiredPasscodes;
 use App\Logger;
 use Symfony\Component\Config\FileLocator;
@@ -21,14 +22,12 @@ if (!isset($argv)) {
 }
 
 try {
-    switch ($argv[1]) {
-        case 'expiredPasscodesRemover':
-            $removeExpiredPasscodes = $containerBuilder->get(RemoveExpiredPasscodes::class);
-            $removeExpiredPasscodes->execute();
-            break;
-        default:
-            throw new Exception('run parameter not specified');
-    }
+    $command = match ($argv[1]) {
+        'expiredPasscodesRemover' => $containerBuilder->get(RemoveExpiredPasscodes::class),
+        'queue:consume' => $containerBuilder->get(ConsumeQueue::class),
+        default => throw new Exception('run parameter not specified'),
+    };
+    $command->execute();
 } catch (\Exception $e) {
     Logger::error($e->getMessage());
 }

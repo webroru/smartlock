@@ -14,9 +14,11 @@ parameters:
   mysql.charset: 'utf8mb4'
 
   rabbitmq.host: '%env(RABBITMQ_HOST)%'
-  rabbitmq.port: '%env(RABBITMQ_DEFAULT_PORT, 5672)%'
+  rabbitmq.port: '%env(RABBITMQ_PORT)%'
   rabbitmq.user: '%env(RABBITMQ_DEFAULT_USER)%'
   rabbitmq.password: '%env(RABBITMQ_DEFAULT_PASS)%'
+
+  queue.name: '%env(QUEUE_NAME)%'
 
   sciener.app_id: '%env(SCIENER_APP_ID)%'
   sciener.lock_id: '%env(SCIENER_LOCK_ID)%'
@@ -29,13 +31,14 @@ services:
     autowire: true
     autoconfigure: true
     public: true
-  App\Commands\RemoveExpiredPasscodes: ~    
+  App\Commands\RemoveExpiredPasscodes: ~
+  App\Commands\ConsumeQueue: ~
   App\Controller\ApiController:
     arguments:
       - '@App\Services\BookingService'
       - '@App\Repository\BookingRepositoryInterface'
       - '@App\Services\LockService'
-      - '@App\Services\Queue'
+      - '@App\Queue\RabbitMQ\Dispatcher'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
     arguments:
@@ -49,7 +52,22 @@ services:
       - '%sciener.app_secret%'
       - '%sciener.user%'
       - '%sciener.password%'
-  App\Queue\GetPasscodeHandler: ~
+  App\Queue\RabbitMQ\Consumer:
+    arguments:
+      - '@PhpAmqpLib\Connection\AMQPStreamConnection'
+      - '@App\Queue\HandlerResolver'
+      - '%queue.name%'
+  App\Queue\RabbitMQ\Dispatcher:
+    arguments:
+      - '@PhpAmqpLib\Connection\AMQPStreamConnection'
+      - '%queue.name%'
+  App\Queue\HandlerResolver:
+    arguments:
+      $handlers:
+          - '@App\Queue\Handlers\GetPasscodeHandler'
+          - '@App\Queue\Handlers\SendPasscodeHandler'
+  App\Queue\Handlers\GetPasscodeHandler: ~
+  App\Queue\Handlers\SendPasscodeHandler: ~
   App\Repository\BookingMysqlBookingRepository: ~
   App\Repository\BookingRepositoryInterface: '@App\Repository\BookingMysqlBookingRepository'
   App\Repository\LockMysqlRepository: ~
@@ -58,12 +76,12 @@ services:
     arguments:
       - '@PDO'
   App\Repository\TokenRepositoryInterface: '@App\Repository\TokenMysqlRepository'
+  Symfony\Component\DependencyInjection\ContainerBuilder: ~
   App\Services\BookingService:
     arguments:
       - '@App\Providers\Beds24\Client\ClientV1'
       - '%beds24.props%'
   App\Services\LockService: ~
-  App\Services\Queue: ~
   GuzzleHttp\Client: ~
   GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'
   PDO:

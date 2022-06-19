@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Unit\Providers\Beds24\Client;
+namespace tests\App\Unit\Providers\Beds24\Client;
 
 use App\Providers\Beds24\Client\ClientV1;
 use tests\App\Unit\UnitTestCase;

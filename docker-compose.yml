@@ -59,7 +59,9 @@ services:
       - php
 
   rabbitmq:
-    image: rabbitmq:3.10-alpine
+    build:
+      context: .
+      dockerfile: docker/rabbitmq/Dockerfile
     volumes:
       - ./temp/dev/rabbitmq/data:/var/lib/rabbitmq/:rw
 

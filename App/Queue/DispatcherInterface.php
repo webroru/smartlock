@@ -8,5 +8,5 @@ use App\Queue\Job\JobInterface;
 
 interface DispatcherInterface
 {
-    public function add(JobInterface $job): void;
+    public function add(JobInterface $job, int $delay = 0): void;
 }

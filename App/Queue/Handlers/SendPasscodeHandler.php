@@ -13,6 +13,9 @@ use App\Services\BookingService;
 
 class SendPasscodeHandler implements HandlerInterface
 {
+    private const DELAY = 5 * 60;
+    private const ATTEMPTS_LIMIT = 10;
+
     public function __construct(
         private readonly BookingService $bookingService,
         private readonly BookingRepositoryInterface $bookingRepository,
@@ -49,8 +52,8 @@ class SendPasscodeHandler implements HandlerInterface
 
             Logger::error($error);
 
-            if (--$job->attempts > 0) {
-                $this->dispatcher->add($job);
+            if (++$job->attempts < self::ATTEMPTS_LIMIT) {
+                $this->dispatcher->add($job, $job->attempts * self::DELAY);
             }
         }
     }

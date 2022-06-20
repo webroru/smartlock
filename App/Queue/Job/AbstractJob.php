@@ -6,5 +6,5 @@ namespace App\Queue\Job;
 
 abstract class AbstractJob implements JobInterface
 {
-    public int $attempts = 10;
+    public int $attempts = 0;
 }

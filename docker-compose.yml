@@ -21,7 +21,7 @@ services:
       - ./:/var/www/:rw
     environment:
       PHP_IDE_CONFIG: "serverName=xdebug-docker"
-      XDEBUG_CONFIG: "client_host=172.21.0.1"
+      XDEBUG_CONFIG: "client_host=172.22.0.1"
       XDEBUG_MODE: "debug"
       XDEBUG_SESSION: "PHPSTORM"
 
@@ -33,7 +33,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/var/www/:rw
-      - ./docker/php/conf.d:/usr/local/etc/php/conf.d/:ro
 
   worker:
     build:
@@ -43,7 +42,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/var/www/:rw
-      - ./docker/php/conf.d:/usr/local/etc/php/conf.d/:ro
+    depends_on:
+      - rabbitmq
 
   nginx:
     image: nginx:alpine

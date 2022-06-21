@@ -40,6 +40,49 @@ class LockService
         }
     }
 
+    public function removeDuplicates(): void
+    {
+        $passCodes = $this->scienerApi->getAllPasscodes();
+        $guppedByNameAndDate = [];
+
+        foreach ($passCodes as $passCode) {
+            if (!isset($passCode['keyboardPwdName'])) {
+                continue;
+            }
+
+            $key = $passCode['keyboardPwdName'] .
+                '_' . $passCode['startDate'] .
+                '_' . $passCode['endDate'];
+
+            if (!isset($guppedByNameAndDate[$key]['maxId'])) {
+                $guppedByNameAndDate[$key]['maxId'] = $passCode['keyboardPwdId'];
+            } else {
+                if ($guppedByNameAndDate[$key]['maxId'] > $passCode['keyboardPwdId']) {
+                    $guppedByNameAndDate[$key]['ids'][] = $passCode['keyboardPwdId'];
+                } else {
+                    $guppedByNameAndDate[$key]['ids'][] = $guppedByNameAndDate[$key]['maxId'];
+                    $guppedByNameAndDate[$key]['maxId'] = $passCode['keyboardPwdId'];
+                }
+            }
+        }
+
+        $ids = [];
+        foreach ($guppedByNameAndDate as $item) {
+            if (isset($item['ids']) && count($item['ids']) > 1) {
+                $ids = array_merge($ids, $item['ids']);
+            }
+        }
+
+        //var_dump($ids);
+        foreach ($ids as $id) {
+            try {
+                $this->scienerApi->deletePasscode($id);
+            } catch (\Exception $e) {
+                Logger::error("{$e->getMessage()}");
+            }
+        }
+    }
+
     public function removePasscode(Booking $booking): void
     {
         $name = $this->prepareName($booking->getName());
@@ -67,7 +110,7 @@ class LockService
         return (new Lock())
             ->setName($name)
             ->setStartDate($booking->getCheckInDate())
-            ->setEndDate($booking->getCheckInDate())
+            ->setEndDate($booking->getCheckOutDate())
             ->setPasscode($password)
             ->setPasscodeId($passcodeId);
     }

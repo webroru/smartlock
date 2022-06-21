@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Commands\ConsumeQueue;
+use App\Commands\RemoveDuplicates;
 use App\Commands\RemoveExpiredPasscodes;
 use App\Logger;
 use Symfony\Component\Config\FileLocator;
@@ -25,6 +26,7 @@ try {
     $command = match ($argv[1]) {
         'expiredPasscodesRemover' => $containerBuilder->get(RemoveExpiredPasscodes::class),
         'queue:consume' => $containerBuilder->get(ConsumeQueue::class),
+        'passcodes:remove_duplicates' => $containerBuilder->get(RemoveDuplicates::class),
         default => throw new Exception('run parameter not specified'),
     };
     $command->execute();

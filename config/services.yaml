@@ -31,6 +31,7 @@ services:
     autowire: true
     autoconfigure: true
     public: true
+  App\Commands\RemoveDuplicates: ~
   App\Commands\RemoveExpiredPasscodes: ~
   App\Commands\ConsumeQueue: ~
   App\Controller\ApiController:

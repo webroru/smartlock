@@ -35,6 +35,7 @@ class Consumer implements ConsumerInterface
     private function handleMessage(AMQPMessage $message): void
     {
         try {
+            $message->ack();
             /** @var JobInterface $job */
             $job = unserialize($message->getBody());
             $this->resolver->resolve($job->getHandlerFQCN())->handle($job);

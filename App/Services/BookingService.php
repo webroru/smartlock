@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Entity\Booking;
 use App\Providers\Beds24\Client\ClientV1;
+use DateTimeZone;
 
 class BookingService
 {
@@ -36,8 +37,8 @@ class BookingService
         return (new Booking())
             ->setName($guestName)
             ->setPhone($phone)
-            ->setCheckInDate($this->prepareDate($checkInDate)->modify('14:00'))
-            ->setCheckOutDate($this->prepareDate($checkOutDate)->modify('12:00'))
+            ->setCheckInDate($this->prepareCheckinDate($checkInDate))
+            ->setCheckOutDate($this->prepareCheckoutDate($checkOutDate))
             ->setOrderId($orderId)
             ->setProperty($property);
     }
@@ -92,8 +93,13 @@ class BookingService
         return $this->beds24Props[$property];
     }
 
-    private function prepareDate(string $date): \DateTime
+    private function prepareCheckinDate(string $date): \DateTime
     {
-        return new \DateTime($date, new \DateTimeZone('Europe/Vienna'));
+        return (new \DateTime($date))->modify('12:00');
+    }
+
+    private function prepareCheckoutDate(string $date): \DateTime
+    {
+        return (new \DateTime($date))->modify('10:00');
     }
 }

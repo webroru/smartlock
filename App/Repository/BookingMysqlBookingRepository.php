@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Booking;
+use PDO;
 
 class BookingMysqlBookingRepository implements BookingRepositoryInterface
 {
@@ -12,6 +13,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
     public function __construct(\PDO $client, LockRepositoryInterface $lockRepository)
     {
         $this->client = $client;
+        $this->client->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
         $this->lockRepository = $lockRepository;
     }
 

@@ -40,7 +40,7 @@ class Consumer implements ConsumerInterface
             $job = unserialize($message->getBody());
             $this->resolver->resolve($job->getHandlerFQCN())->handle($job);
         } catch (\Exception $e) {
-            Logger::error("Can't handle the job: {$message->getBody()}");
+            Logger::error("Can't handle the job: {$message->getBody()}. Error: {$e->getMessage()}");
         }
     }
 }

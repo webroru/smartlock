@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Queue\Handlers;
 
 use App\Logger;
-use App\Queue\Job\GetPasscode;
 use App\Queue\Job\JobInterface;
-use App\Queue\Job\SendPasscode;
+use App\Queue\Job\RemovePasscode;
 use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
 use App\Repository\LockRepositoryInterface;
@@ -27,7 +26,7 @@ class RemovePasscodeHandler implements HandlerInterface
     }
 
     /**
-     * @param GetPasscode $job
+     * @param RemovePasscode $job
      */
     public function handle(JobInterface $job): void
     {
@@ -41,8 +40,12 @@ class RemovePasscodeHandler implements HandlerInterface
 
             $this->lockService->removePasscode($booking);
             $lock = $booking->getLock();
-            $booking->setLock(null);
-            $this->bookingRepository->update($booking);
+            if ($job->removeBooking()) {
+                $this->bookingRepository->delete($booking->getId());
+            } else {
+                $booking->setLock(null);
+                $this->bookingRepository->update($booking);
+            }
             $this->lockRepository->delete($lock->getId());
             Logger::log("For {$booking->getName()} have been removed passcode: {$lock->getPasscode()}");
         } catch (\Exception $e) {

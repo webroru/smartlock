@@ -22,9 +22,12 @@ services:
       - ./:/var/www/:rw
     environment:
       PHP_IDE_CONFIG: "serverName=xdebug-docker"
-      XDEBUG_CONFIG: "client_host=172.22.0.1"
+      XDEBUG_CONFIG: "client_host=host.docker.internal"
       XDEBUG_MODE: "debug"
       XDEBUG_SESSION: "PHPSTORM"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 
   cron:
     build:
@@ -60,11 +63,15 @@ services:
       - php
 
   rabbitmq:
+    env_file: .env
+    hostname: rabbitmq
     build:
       context: .
       dockerfile: docker/rabbitmq/Dockerfile
+    ports:
+      - "15672:15672"
     volumes:
-      - ./temp/dev/rabbitmq/data:/var/lib/rabbitmq/:rw
+      - ./temp/dev/rabbitmq/data:/var/lib/rabbitmq/mnesia/:rw
 
   certbot:
     image: certbot/certbot:latest

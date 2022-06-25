@@ -31,14 +31,14 @@ class GetPasscodeHandler implements HandlerInterface
      */
     public function handle(JobInterface $job): void
     {
-        $bookingId = $job->getBookingId();
-        $booking = $this->bookingRepository->find($bookingId);
-        if (!$booking) {
-            Logger::error("Can't find Booking with Id: $bookingId");
-            return;
-        }
-
         try {
+            $bookingId = $job->getBookingId();
+            $booking = $this->bookingRepository->find($bookingId);
+            if (!$booking) {
+                Logger::error("Can't find Booking with Id: $bookingId");
+                return;
+            }
+
             $lock = $this->lockService->addRandomPasscode($booking);
             $lockId = $this->lockRepository->add($lock);
             $lock->setId($lockId);
@@ -48,17 +48,12 @@ class GetPasscodeHandler implements HandlerInterface
             $this->dispatcher->add(new SendPasscode($bookingId));
             Logger::log("New SendPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
-            $error = "Couldn't register new passcode for the booking. Error: {$e->getMessage()}. " .
-                "Guest: {$booking->getName()}, " .
-                "Reservation: {$booking->getCheckInDate()->format('Y-m-d H:i')} — " .
-                "{$booking->getCheckOutDate()->format('Y-m-d H:i')}, " .
-                "Order №: {$booking->getOrderId()}.";
-
-            Logger::error($error);
-
+            $error = "Couldn't register new passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";
             if (++$job->attempts < self::ATTEMPTS_LIMIT) {
+                $error .= " The Job has been added to the queue. Attempt № $job->attempts";
                 $this->dispatcher->add($job, $job->attempts * self::DELAY);
             }
+            Logger::error($error);
         }
     }
 }

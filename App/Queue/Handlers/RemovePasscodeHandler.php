@@ -13,10 +13,10 @@ use App\Repository\BookingRepositoryInterface;
 use App\Repository\LockRepositoryInterface;
 use App\Services\LockService;
 
-class GetPasscodeHandler implements HandlerInterface
+class RemovePasscodeHandler implements HandlerInterface
 {
-    private const DELAY = 60;
-    private const ATTEMPTS_LIMIT = 25;
+    private const DELAY = 5 * 60;
+    private const ATTEMPTS_LIMIT = 10;
 
     public function __construct(
         private readonly LockService $lockService,
@@ -39,16 +39,14 @@ class GetPasscodeHandler implements HandlerInterface
                 return;
             }
 
-            $lock = $this->lockService->addRandomPasscode($booking);
-            $lockId = $this->lockRepository->add($lock);
-            $lock->setId($lockId);
-            $booking->setLock($lock);
+            $this->lockService->removePasscode($booking);
+            $lock = $booking->getLock();
+            $booking->setLock(null);
             $this->bookingRepository->update($booking);
-            Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
-            $this->dispatcher->add(new SendPasscode($bookingId));
-            Logger::log("New SendPasscode Job added For {$booking->getName()} reservation");
+            $this->lockRepository->delete($lock->getId());
+            Logger::log("For {$booking->getName()} have been removed passcode: {$lock->getPasscode()}");
         } catch (\Exception $e) {
-            $error = "Couldn't register new passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";
+            $error = "Couldn't remove passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";
             if (++$job->attempts < self::ATTEMPTS_LIMIT) {
                 $error .= " The Job has been added to the queue. Attempt № $job->attempts";
                 $this->dispatcher->add($job, $job->attempts * self::DELAY);

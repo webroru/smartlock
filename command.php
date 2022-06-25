@@ -6,6 +6,7 @@ use App\Commands\AddBooking;
 use App\Commands\ConsumeQueue;
 use App\Commands\RemoveDuplicates;
 use App\Commands\RemoveExpiredPasscodes;
+use App\Commands\RemovePasscode;
 use App\Logger;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -29,6 +30,7 @@ try {
         'queue:consume' => $containerBuilder->get(ConsumeQueue::class),
         'passcodes:remove_duplicates' => $containerBuilder->get(RemoveDuplicates::class),
         'booking:add' => $containerBuilder->get(AddBooking::class),
+        'passcode:remove' => $containerBuilder->get(RemovePasscode::class),
         default => throw new Exception('run parameter not specified'),
     };
     $command->execute(array_slice($argv, 2));

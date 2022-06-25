@@ -73,7 +73,6 @@ class LockService
             }
         }
 
-        //var_dump($ids);
         foreach ($ids as $id) {
             try {
                 $this->scienerApi->deletePasscode($id);
@@ -85,19 +84,12 @@ class LockService
 
     public function removePasscode(Booking $booking): void
     {
-        $name = $this->prepareName($booking->getName());
-        $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
-        $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
-        $passCodes = $this->scienerApi->getAllPasscodes();
-
-        foreach ($passCodes as $passCode) {
-            //if (($passCode['keyboardPwdId'] === $passcodeId);
-            try {
-                $this->scienerApi->deletePasscode($passCode['keyboardPwdId']);
-            } catch (\Exception $e) {
-                Logger::error("{$e->getMessage()}");
-            }
+        $passcodeId = $booking->getLock()?->getPasscodeId();
+        if (!$passcodeId) {
+            throw new \Exception("Passcode isn't set for {$booking->getName()} (id {$booking->getId()})");
         }
+
+        $this->scienerApi->deletePasscode($passcodeId);
     }
 
     public function addRandomPasscode(Booking $booking): Lock

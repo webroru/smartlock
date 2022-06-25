@@ -32,9 +32,10 @@ services:
     autoconfigure: true
     public: true
   App\Commands\AddBooking: ~
+  App\Commands\ConsumeQueue: ~
   App\Commands\RemoveDuplicates: ~
   App\Commands\RemoveExpiredPasscodes: ~
-  App\Commands\ConsumeQueue: ~
+  App\Commands\RemovePasscode: ~
   App\Controller\ApiController:
     arguments:
       - '@App\Services\BookingService'
@@ -68,7 +69,9 @@ services:
       $handlers:
           - '@App\Queue\Handlers\GetPasscodeHandler'
           - '@App\Queue\Handlers\SendPasscodeHandler'
+          - '@App\Queue\Handlers\RemovePasscodeHandler'
   App\Queue\Handlers\GetPasscodeHandler: ~
+  App\Queue\Handlers\RemovePasscodeHandler: ~
   App\Queue\Handlers\SendPasscodeHandler: ~
   App\Repository\BookingMysqlBookingRepository: ~
   App\Repository\BookingRepositoryInterface: '@App\Repository\BookingMysqlBookingRepository'

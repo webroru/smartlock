@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Commands\AddBooking;
 use App\Commands\ConsumeQueue;
 use App\Commands\RemoveDuplicates;
 use App\Commands\RemoveExpiredPasscodes;
@@ -27,9 +28,10 @@ try {
         'expiredPasscodesRemover' => $containerBuilder->get(RemoveExpiredPasscodes::class),
         'queue:consume' => $containerBuilder->get(ConsumeQueue::class),
         'passcodes:remove_duplicates' => $containerBuilder->get(RemoveDuplicates::class),
+        'booking:add' => $containerBuilder->get(AddBooking::class),
         default => throw new Exception('run parameter not specified'),
     };
-    $command->execute();
+    $command->execute(array_slice($argv, 2));
 } catch (\Exception $e) {
     Logger::error($e->getMessage());
 }

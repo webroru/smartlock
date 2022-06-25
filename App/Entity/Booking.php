@@ -13,7 +13,7 @@ class Booking
     private string $property;
     private ?Lock $lock = null;
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -95,7 +95,7 @@ class Booking
         return $this->lock;
     }
 
-    public function setLock(Lock $lock): self
+    public function setLock(?Lock $lock): self
     {
         $this->lock = $lock;
         return $this;

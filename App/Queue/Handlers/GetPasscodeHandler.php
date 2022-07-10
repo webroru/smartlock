@@ -17,6 +17,7 @@ class GetPasscodeHandler implements HandlerInterface
 {
     private const DELAY = 60;
     private const ATTEMPTS_LIMIT = 107; // 4 days
+    private const CRITICAL_ATTEMPTS_LEVEL = 21; // 4 hours
 
     public function __construct(
         private readonly LockService $lockService,
@@ -53,7 +54,11 @@ class GetPasscodeHandler implements HandlerInterface
                 $error .= " The Job has been added to the queue. Attempt № $job->attempts";
                 $this->dispatcher->add($job, $job->attempts * self::DELAY);
             }
-            Logger::error($error);
+            if ($job->attempts < self::CRITICAL_ATTEMPTS_LEVEL) {
+                Logger::error($error);
+            } else {
+                Logger::critical($error);
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ use App\Services\LockService;
 class GetPasscodeHandler implements HandlerInterface
 {
     private const DELAY = 60;
-    private const ATTEMPTS_LIMIT = 25;
+    private const ATTEMPTS_LIMIT = 107; // 4 days
 
     public function __construct(
         private readonly LockService $lockService,

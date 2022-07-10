@@ -1,5 +1,6 @@
 version: '3'
 
+# PDO ATTR_PERSISTENT + wait_timeout
 services:
   mysql:
     image: mysql:8
@@ -27,7 +28,6 @@ services:
       XDEBUG_SESSION: "PHPSTORM"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
 
   cron:
     build:

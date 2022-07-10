@@ -26,6 +26,9 @@ parameters:
   sciener.user: '%env(SCIENER_USER)%'
   sciener.password: '%env(SCIENER_PASSWORD)%'
 
+  telegram.bot.api.key: '%env(TELEGRAM_BOT_API_KEY)%'
+  telegram.bot.username: '%env(TELEGRAM_BOT_USERNAME)%'
+
 services:
   _defaults:
     autowire: true
@@ -87,8 +90,13 @@ services:
       - '@App\Providers\Beds24\Client\ClientV1'
       - '%beds24.props%'
   App\Services\LockService: ~
+  App\Services\Telegram: ~
   GuzzleHttp\Client: ~
   GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'
+  Longman\TelegramBot\Telegram:
+    arguments:
+      - '%telegram.bot.api.key%'
+      - '%telegram.bot.username%'
   PDO:
     class: PDO
     arguments:

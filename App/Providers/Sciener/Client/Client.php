@@ -9,7 +9,7 @@ use GuzzleHttp\ClientInterface;
 
 class Client
 {
-    private const BASE_URL = 'https://api.sciener.cn';
+    private const BASE_URL = 'https://euapi.sciener.com';
     private const GRANT_TYPE = 'password';
     private const REDIRECT_URI = 'test.com';
     private const GATEWAY = 2;

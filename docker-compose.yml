@@ -28,6 +28,8 @@ services:
       XDEBUG_SESSION: "PHPSTORM"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:9000:9000"
 
   cron:
     build:
@@ -53,7 +55,6 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./:/var/www
       - ./docker/nginx/hosts:/etc/nginx/conf.d/:ro
@@ -72,10 +73,3 @@ services:
       - "15672:15672"
     volumes:
       - ./temp/dev/rabbitmq/data:/var/lib/rabbitmq/mnesia/:rw
-
-  certbot:
-    image: certbot/certbot:latest
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-      - /temp/dev/certbot/logs:/var/log/letsencrypt

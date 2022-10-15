@@ -18,19 +18,19 @@ class ClientTest extends UnitTestCase
 
     public function testGeneratePasscode()
     {
-        $passcode = $this->client->generatePasscode('Test', time() * 1000, (time() + 60 * 60 * 24) * 1000);
+        $passcode = $this->client->generatePasscode('Test', time() * 1000, (time() + 60 * 60 * 24) * 1000, '6525677');
         $this->assertIsString($passcode);
     }
 
     public function testGetAllPasscodes()
     {
-        $passcodes = $this->client->getAllPasscodes();
+        $passcodes = $this->client->getAllPasscodes('6525677');
         $this->assertIsArray($passcodes);
     }
 
     public function testAddPasscode()
     {
-        $result = $this->client->addPasscode('Test', '0101', time() * 1000, (time() + 60 * 60 * 24) * 1000);
+        $result = $this->client->addPasscode('Test', '0101', time() * 1000, (time() + 60 * 60 * 24) * 1000, '6525677');
         $this->assertIsInt($result);
     }
 }

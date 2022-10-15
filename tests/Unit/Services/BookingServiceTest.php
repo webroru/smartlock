@@ -22,9 +22,12 @@ class BookingServiceTest extends UnitTestCase
     {
         $booking = (new Booking())
             ->setOrderId('30641419')
-            ->setProperty('159459')
-            ->setLock((new Lock())->setPasscode('222'));
-        $this->bookingService->updateCode($booking);
+            ->setProperty('159459');
+
+        $lock = (new Lock())->setPasscode('222')
+            ->setBooking($booking);
+
+        $this->bookingService->updateCode($lock);
     }
 
     public function testCreate()

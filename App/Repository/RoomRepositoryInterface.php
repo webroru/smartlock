@@ -14,5 +14,6 @@ interface RoomRepositoryInterface
     public function findBy(array $params): array;
     public function findByNumber(string $number): ?Room;
     public function getMainRoom(): Room;
+    public function getAll(): array;
     public function delete($id): void;
 }

@@ -88,7 +88,16 @@ class RoomMysqlRepository implements RoomRepositoryInterface
     {
         $statement = $this->client->prepare("SELECT * FROM $this->table WHERE number = 'main'");
         $statement->execute();
-        return $statement->fetch();
+        $row = $statement->fetch();
+        return $this->toEntity($row);
+    }
+
+    public function getAll(): array
+    {
+        $statement = $this->client->prepare("SELECT * FROM $this->table");
+        $statement->execute();
+        $rows = $statement->fetchAll();
+        return array_map([$this, 'toEntity'], $rows);
     }
 
     public function delete($id): void

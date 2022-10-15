@@ -35,8 +35,9 @@ class BookingService
         $phone = $data['phone'] ?? null;
         $orderId = $data['order_id'] ?? null;
         $property = $data['property'] ?? null;
+        $room = $data['room'] ?? null;
 
-        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property) {
+        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property || !$room) {
             throw new \Exception("Data is not valid: $data");
         }
 
@@ -46,26 +47,23 @@ class BookingService
             ->setCheckInDate($this->prepareCheckinDate($checkInDate))
             ->setCheckOutDate($this->prepareCheckoutDate($checkOutDate))
             ->setOrderId($orderId)
-            ->setProperty($property);
+            ->setProperty($property)
+            ->setRoom($room);
     }
 
-    public function updateCode(Booking $booking): void
+    public function updateCode(Lock $lock): void
     {
-        if (!$booking->getLock()?->getPasscode()) {
-            throw new \Exception('The booking code is empty');
-        }
-
-        if (!$booking->getProperty()) {
+        if (!$lock->getBooking()->getProperty()) {
             throw new \Exception('The booking property is empty');
         }
 
-        $this->beds24Api->setPropKey($this->getPropKey($booking->getProperty()));
+        $this->beds24Api->setPropKey($this->getPropKey($lock->getBooking()->getProperty()));
         $requestData = [
-            'bookId' => $booking->getOrderId(),
+            'bookId' => $lock->getBooking()->getOrderId(),
             'infoItems' => [
                 [
                     'code' => self::CODELOCK,
-                    'text' => "Passcode: #{$booking->getLock()?->getPasscode()}#",
+                    'text' => "Passcode: #{$lock->getPasscode()}#",
                 ]
             ],
         ];
@@ -90,6 +88,13 @@ class BookingService
         $this->beds24Api->setBooking($requestData);
     }
 
+    public function queueGettingPassCode(Booking $booking): void
+    {
+        foreach ($this->getLockIdByRoom($booking->getRoom()) as $lockId) {
+            $this->dispatcher->add(new GetPasscode($booking->getId(), $lockId));
+        }
+    }
+
     private function getPropKey(string $property): string
     {
         if (!isset($this->beds24Props[$property])) {
@@ -107,5 +112,12 @@ class BookingService
     private function prepareCheckoutDate(string $date): \DateTime
     {
         return (new \DateTime($date))->modify('10:00');
+    }
+
+    private function getLockIdByRoom(int $room): array
+    {
+        return isset($this->locks[$room])
+            ? [$this->locks['main'], $this->locks[$room]]
+            : [$this->locks['main']];
     }
 }

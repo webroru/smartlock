@@ -8,13 +8,13 @@ use App\Queue\Handlers\SendPasscodeHandler;
 
 class SendPasscode extends AbstractJob
 {
-    public function __construct(private readonly int $bookingId)
+    public function __construct(private readonly int $lockId)
     {
     }
 
-    public function getBookingId(): int
+    public function getLockId(): int
     {
-        return $this->bookingId;
+        return $this->lockId;
     }
 
     public function getHandlerFQCN(): string

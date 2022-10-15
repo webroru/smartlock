@@ -11,6 +11,7 @@ use App\Queue\Job\SendPasscode;
 use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
 use App\Repository\LockRepositoryInterface;
+use App\Repository\RoomRepositoryInterface;
 use App\Services\LockService;
 
 class GetPasscodeHandler implements HandlerInterface
@@ -22,6 +23,7 @@ class GetPasscodeHandler implements HandlerInterface
     public function __construct(
         private readonly LockService $lockService,
         private readonly BookingRepositoryInterface $bookingRepository,
+        private readonly RoomRepositoryInterface $roomRepository,
         private readonly LockRepositoryInterface $lockRepository,
         private readonly Dispatcher $dispatcher,
     ) {
@@ -40,13 +42,17 @@ class GetPasscodeHandler implements HandlerInterface
                 return;
             }
 
-            $lock = $this->lockService->addRandomPasscode($booking);
-            $lockId = $this->lockRepository->add($lock);
-            $lock->setId($lockId);
-            $booking->setLock($lock);
-            $this->bookingRepository->update($booking);
+            $roomId = $job->getRoomId();
+            $room = $this->roomRepository->find($roomId);
+            if (!$room) {
+                Logger::error("Can't find Room with Id: $roomId");
+                return;
+            }
+
+            $lock = $this->lockService->addRandomPasscode($booking, $room);
+            $this->lockRepository->add($lock);
             Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
-            $this->dispatcher->add(new SendPasscode($bookingId));
+            $this->dispatcher->add(new SendPasscode($lock->getId()));
             Logger::log("New SendPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
             $error = "Couldn't register new passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";

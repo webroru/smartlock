@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Providers\Sciener\Client;
 
-use App\Logger;
 use GuzzleHttp\ClientInterface;
 
 class Client
@@ -20,24 +19,21 @@ class Client
     private ClientInterface $client;
     private string $token;
     private string $appId;
-    private string $lockId;
 
     public function __construct(
         ClientInterface $client,
         string $appId,
-        string $lockId,
         string $appSecret,
         string $user,
         string $password
     ) {
         $this->client = $client;
         $this->appId = $appId;
-        $this->lockId = $lockId;
 
         $this->token = $this->getAccessToken($appSecret, $user, $password);
     }
 
-    public function addPasscode(string $name, string $password, int $startDate, int $endDate): int
+    public function addPasscode(string $name, string $password, int $startDate, int $endDate, string $lockId): int
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/keyboardPwd/add',
@@ -45,7 +41,7 @@ class Client
                 'form_params' => [
                     'clientId' => $this->appId,
                     'accessToken' => $this->token,
-                    'lockId' => $this->lockId,
+                    'lockId' => $lockId,
                     'keyboardPwd' => $password,
                     'keyboardPwdName' => $name,
                     'startDate' => $startDate,
@@ -69,7 +65,7 @@ class Client
         return $result['keyboardPwdId'];
     }
 
-    public function generatePasscode(string $name, int $startDate, int $endDate): string
+    public function generatePasscode(string $name, int $startDate, int $endDate, string $lockId): string
     {
         $name = implode(' ', array_slice(explode(' ', $name), 0, 2));
         $response = $this->client->post(
@@ -78,7 +74,7 @@ class Client
                 'form_params' => [
                     'clientId' => $this->appId,
                     'accessToken' => $this->token,
-                    'lockId' => $this->lockId,
+                    'lockId' => $lockId,
                     'keyboardPwdVersion' => self::KEYBOARD_PWD_VERSION,
                     'keyboardPwdType' => self::KEYBOARD_PWD_TYPE['period'],
                     'keyboardPwdName' => $name,
@@ -99,7 +95,7 @@ class Client
         return $result['keyboardPwd'];
     }
 
-    public function getAllPasscodes(int $pageNo = 1): array
+    public function getAllPasscodes(string $lockId, int $pageNo = 1): array
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/lock/listKeyboardPwd ',
@@ -107,7 +103,7 @@ class Client
                 'form_params' => [
                     'clientId' => $this->appId,
                     'accessToken' => $this->token,
-                    'lockId' => $this->lockId,
+                    'lockId' => $lockId,
                     'pageNo' => $pageNo,
                     'pageSize' => 100,
                     'date' => time() * 1000,
@@ -122,13 +118,13 @@ class Client
         $result = json_decode($response->getBody()->getContents(), true);
         $list = $result['list'];
         if ($pageNo !== $result['pages']) {
-            $list = array_merge($list, $this->getAllPasscodes(++$pageNo));
+            $list = array_merge($list, $this->getAllPasscodes($lockId, ++$pageNo));
         }
 
         return $list;
     }
 
-    public function deletePasscode(int $keyboardPwdId): void
+    public function deletePasscode(int $keyboardPwdId, string $lockId): void
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/keyboardPwd/delete ',
@@ -136,7 +132,7 @@ class Client
                 'form_params' => [
                     'clientId' => $this->appId,
                     'accessToken' => $this->token,
-                    'lockId' => $this->lockId,
+                    'lockId' => $lockId,
                     'keyboardPwdId' => $keyboardPwdId,
                     'deleteType' => self::GATEWAY,
                     'date' => time() * 1000,

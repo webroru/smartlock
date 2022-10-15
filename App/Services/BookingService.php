@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Booking;
+use App\Entity\Lock;
 use App\Providers\Beds24\Client\ClientV1;
-use DateTimeZone;
 
 class BookingService
 {
@@ -31,7 +31,7 @@ class BookingService
         $property = $data['property'] ?? null;
 
         if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property) {
-            throw new \Exception("Data is not valid: $data");
+            throw new \Exception('Data is not valid:' . implode(', ', $data));
         }
 
         return (new Booking())
@@ -43,23 +43,19 @@ class BookingService
             ->setProperty($property);
     }
 
-    public function updateCode(Booking $booking): void
+    public function updateCode(Lock $lock): void
     {
-        if (!$booking->getLock()?->getPasscode()) {
-            throw new \Exception('The booking code is empty');
-        }
-
-        if (!$booking->getProperty()) {
+        if (!$lock->getBooking()->getProperty()) {
             throw new \Exception('The booking property is empty');
         }
 
-        $this->beds24Api->setPropKey($this->getPropKey($booking->getProperty()));
+        $this->beds24Api->setPropKey($this->getPropKey($lock->getBooking()->getProperty()));
         $requestData = [
-            'bookId' => $booking->getOrderId(),
+            'bookId' => $lock->getBooking()->getOrderId(),
             'infoItems' => [
                 [
-                    'code' => self::CODELOCK,
-                    'text' => "Passcode: #{$booking->getLock()?->getPasscode()}#",
+                    'code' => self::CODELOCK . "_{$lock->getRoom()->getNumber()}",
+                    'text' => "Passcode: #{$lock->getPasscode()}#",
                 ]
             ],
         ];

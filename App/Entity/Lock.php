@@ -12,6 +12,8 @@ class Lock
     private string $name;
     private \DateTime $startDate;
     private \DateTime $endDate;
+    private Booking $booking;
+    private Room $room;
 
     public function getId(): int
     {
@@ -76,6 +78,28 @@ class Lock
     public function setEndDate(\DateTime $endDate): self
     {
         $this->endDate = $endDate;
+        return $this;
+    }
+
+    public function getBooking(): Booking
+    {
+        return $this->booking;
+    }
+
+    public function setBooking(Booking $booking): self
+    {
+        $this->booking = $booking;
+        return $this;
+    }
+
+    public function getRoom(): Room
+    {
+        return $this->room;
+    }
+
+    public function setRoom(Room $room): self
+    {
+        $this->room = $room;
         return $this;
     }
 }

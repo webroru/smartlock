@@ -8,10 +8,10 @@ class Booking
     private string $name;
     private \DateTime $checkInDate;
     private \DateTime $checkOutDate;
-    private ?string $phone;
+    private ?string $phone = null;
     private string $orderId;
     private string $property;
-    private ?Lock $lock = null;
+    private int $room;
 
     public function getId(): ?int
     {
@@ -90,14 +90,8 @@ class Booking
         return $this;
     }
 
-    public function getLock(): ?Lock
+    public function getRoom(): int
     {
-        return $this->lock;
-    }
-
-    public function setLock(?Lock $lock): self
-    {
-        $this->lock = $lock;
-        return $this;
+        return $this->room;
     }
 }

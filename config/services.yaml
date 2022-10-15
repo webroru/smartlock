@@ -21,7 +21,6 @@ parameters:
   queue.name: '%env(QUEUE_NAME)%'
 
   sciener.app_id: '%env(SCIENER_APP_ID)%'
-  sciener.lock_id: '%env(SCIENER_LOCK_ID)%'
   sciener.app_secret: '%env(SCIENER_APP_SECRET)%'
   sciener.user: '%env(SCIENER_USER)%'
   sciener.password: '%env(SCIENER_PASSWORD)%'
@@ -43,7 +42,8 @@ services:
     arguments:
       - '@App\Services\BookingService'
       - '@App\Repository\BookingRepositoryInterface'
-      - '@App\Services\LockService'
+      - '@App\Repository\LockRepositoryInterface'
+      - '@App\Repository\RoomRepositoryInterface'
       - '@App\Queue\RabbitMQ\Dispatcher'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
@@ -54,7 +54,6 @@ services:
     arguments:
       - '@GuzzleHttp\ClientInterface'
       - '%sciener.app_id%'
-      - '%sciener.lock_id%'
       - '%sciener.app_secret%'
       - '%sciener.user%'
       - '%sciener.password%'
@@ -80,9 +79,9 @@ services:
   App\Repository\BookingRepositoryInterface: '@App\Repository\BookingMysqlBookingRepository'
   App\Repository\LockMysqlRepository: ~
   App\Repository\LockRepositoryInterface: '@App\Repository\LockMysqlRepository'
+  App\Repository\RoomMysqlRepository:
+  App\Repository\RoomRepositoryInterface: '@App\Repository\RoomMysqlRepository'
   App\Repository\TokenMysqlRepository:
-    arguments:
-      - '@PDO'
   App\Repository\TokenRepositoryInterface: '@App\Repository\TokenMysqlRepository'
   Symfony\Component\DependencyInjection\ContainerBuilder: ~
   App\Services\BookingService:

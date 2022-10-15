@@ -18,6 +18,9 @@ class BookingServiceTest extends UnitTestCase
         $this->bookingService = $this->getContainer()->get(BookingService::class);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testUpdateCode()
     {
         $booking = (new Booking())

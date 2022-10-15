@@ -39,8 +39,7 @@ class LockRepositoryTest extends UnitTestCase
             ->setCheckInDate(new \DateTime())
             ->setCheckOutDate(new \DateTime('+1 year'))
             ->setProperty('test')
-            ->setOrderId('test')
-            ->setRoom(42);
+            ->setOrderId('test');
 
         $bookingId = $this->bookingRepository->add($this->booking);
         $this->booking->setId($bookingId);

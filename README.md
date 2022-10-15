@@ -7,12 +7,12 @@
 2. Install [Docker Compose](https://docs.docker.com/compose/install/)
 3. Run the project: `docker-compose up -d`
 4. Instal dependencies: `docker-compose run php composer install`
-5. Import MySql table: `mysql -uroot -h 0.0.0.0 smartlock < db.sql`
+5. Import MySql table: `cat ./migrations/*.sql | mysql -uroot -h 0.0.0.0 smartlock`
 
 ### Select data storage ###
 You can use MySql or Google Firebase.
 — For Firebase: Download firebase-credentials.json from https://console.firebase.google.com/
-— For Mysql Import MySql table: `mysql -uroot -h 0.0.0.0 smartlock < db.sql`
+— For Mysql Import MySql table: `mysql -uroot -h 0.0.0.0 smartlock < 1_init.sql`
 
 ### Production ###
 1. Set variables in the .env

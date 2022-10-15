@@ -8,16 +8,32 @@ class LockMysqlRepository implements LockRepositoryInterface
 {
     private string $table = 'lock';
     private \PDO $client;
+    private BookingRepositoryInterface $bookingRepository;
+    private RoomRepositoryInterface $roomRepository;
 
-    public function __construct(\PDO $client)
-    {
+    public function __construct(
+        \PDO $client,
+        BookingRepositoryInterface $bookingRepository,
+        RoomRepositoryInterface $roomRepository
+    ) {
         $this->client = $client;
+        $this->bookingRepository = $bookingRepository;
+        $this->roomRepository = $roomRepository;
     }
 
     public function add(Lock $lock): int
     {
         $sql = "INSERT INTO `$this->table`
-            VALUES (NULL, :passcode_id, :passcode, :name, :start_date, :end_date)";
+            VALUES (
+                NULL,
+                :passcode_id,
+                :passcode,
+                :name,
+                :start_date,
+                :end_date,
+                :booking_id,
+                :room_id
+            )";
 
         $this->client->prepare($sql)
             ->execute([
@@ -26,6 +42,8 @@ class LockMysqlRepository implements LockRepositoryInterface
                 'passcode' => $lock->getPasscode(),
                 'start_date' => $lock->getStartDate()->format('Y-m-d H:i:s'),
                 'end_date' => $lock->getEndDate()->format('Y-m-d H:i:s'),
+                'booking_id' => $lock->getBooking()->getId(),
+                'room_id' => $lock->getRoom()->getId(),
             ]);
         return $this->client->lastInsertId();
     }
@@ -46,7 +64,9 @@ class LockMysqlRepository implements LockRepositoryInterface
                 passcode_id = :passcode_id,
                 passcode = :passcode,
                 start_date = :start_date,
-                end_date = :end_date
+                end_date = :end_date,
+                booking_id = :booking_id,
+                room_id = :room_id
             WHERE id = :id";
 
         $this->client->prepare($sql)
@@ -57,6 +77,8 @@ class LockMysqlRepository implements LockRepositoryInterface
                 'passcode' => $lock->getPasscode(),
                 'start_date' => $lock->getStartDate()->format('Y-m-d H:i:s'),
                 'end_date' => $lock->getEndDate()->format('Y-m-d H:i:s'),
+                'booking_id' => $lock->getBooking()->getId(),
+                'room_id' => $lock->getRoom()->getId(),
             ]);
     }
 
@@ -98,6 +120,8 @@ class LockMysqlRepository implements LockRepositoryInterface
             ->setPasscodeId($row['passcode_id'])
             ->setPasscode($row['passcode'])
             ->setStartDate(new \DateTime($row['start_date']))
-            ->setEndDate(new \DateTime($row['end_date']));
+            ->setEndDate(new \DateTime($row['end_date']))
+            ->setBooking($this->bookingRepository->find($row['booking_id']))
+            ->setRoom($this->roomRepository->find($row['room_id']));
     }
 }

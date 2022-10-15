@@ -25,8 +25,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 :check_in_date,
                 :check_out_date,
                 :order_id,
-                :property,
-                :room
+                :property
             )';
 
         $this->client->prepare($sql)
@@ -37,7 +36,6 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
-                'room' => $booking->getRoom(),
             ]);
         return $this->client->lastInsertId();
     }
@@ -59,8 +57,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 check_in_date = :check_in_date,
                 check_out_date = :check_out_date,
                 order_id = :order_id,
-                property = :property,
-                room = :room
+                property = :property
             WHERE id = :id';
 
         $this->client->prepare($sql)
@@ -72,7 +69,6 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'check_out_date' => $booking->getCheckOutDate()->format('Y-m-d H:i:s'),
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
-                'room' => $booking->getRoom(),
             ]);
     }
 
@@ -111,7 +107,6 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->setName($row['name'])
             ->setPhone($row['phone'])
             ->setOrderId($row['order_id'])
-            ->setProperty($row['property'])
-            ->setRoom($row['room']);
+            ->setProperty($row['property']);
     }
 }

@@ -12,6 +12,7 @@ class BookingRepositoryTest extends UnitTestCase
     private const PHONE = '+7 (987) 654-32-10';
     private const ORDER_ID = 'test-123';
     private const PROPERTY_ID = '1111';
+    private const ROOM = 42;
 
     private BookingRepositoryInterface $bookingRepository;
     private Booking $booking;
@@ -28,7 +29,8 @@ class BookingRepositoryTest extends UnitTestCase
             ->setCheckInDate($checkInDate)
             ->setCheckOutDate($checkOutDate)
             ->setProperty(self::PROPERTY_ID)
-            ->setOrderId(self::ORDER_ID);
+            ->setOrderId(self::ORDER_ID)
+            ->setRoom(self::ROOM);
     }
 
     public function testAdd()

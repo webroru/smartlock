@@ -76,6 +76,21 @@ class RoomMysqlRepository implements RoomRepositoryInterface
         return array_map([$this, 'toEntity'], $rows);
     }
 
+    public function findByNumber(string $number): ?Room
+    {
+        $statement = $this->client->prepare("SELECT * FROM $this->table WHERE number = ? limit 1");
+        $statement->execute([$number]);
+        $row = $statement->fetch();
+        return $row ? $this->toEntity($row) : null;
+    }
+
+    public function getMainRoom(): Room
+    {
+        $statement = $this->client->prepare("SELECT * FROM $this->table WHERE number = 'main'");
+        $statement->execute();
+        return $statement->fetch();
+    }
+
     public function delete($id): void
     {
         $this->client->prepare("DELETE FROM $this->table WHERE id = ?")->execute([$id]);

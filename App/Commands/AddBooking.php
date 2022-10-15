@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Commands;
 
 use App\Logger;
+use App\Queue\Job\GetPasscode;
+use App\Queue\RabbitMQ\Dispatcher;
+use App\Repository\RoomRepositoryInterface;
 use App\Services\BookingService;
 
 /**
@@ -15,6 +18,8 @@ class AddBooking
 {
     public function __construct(
         private readonly BookingService $bookingService,
+        private readonly RoomRepositoryInterface $roomRepository,
+        private readonly Dispatcher $dispatcher,
     ) {
     }
 
@@ -32,7 +37,16 @@ class AddBooking
 
         try {
             $booking = $this->bookingService->create($data);
-            $this->bookingService->queueGettingPassCode($booking);
+
+            $room = $this->roomRepository->findByNumber($data['room']);
+            $mainRoom = $this->roomRepository->getMainRoom();
+
+            if ($room) {
+                $this->dispatcher->add(new GetPasscode($booking->getId(), $room->getLockId()));
+            }
+
+            $this->dispatcher->add(new GetPasscode($booking->getId(), $mainRoom->getLockId()));
+
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
             Logger::error($e->getMessage());

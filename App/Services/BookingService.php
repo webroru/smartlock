@@ -7,8 +7,6 @@ namespace App\Services;
 use App\Entity\Booking;
 use App\Entity\Lock;
 use App\Providers\Beds24\Client\ClientV1;
-use App\Queue\Job\GetPasscode;
-use App\Queue\RabbitMQ\Dispatcher;
 
 class BookingService
 {
@@ -16,15 +14,11 @@ class BookingService
 
     private ClientV1 $beds24Api;
     private array $beds24Props;
-    private array $locks;
-    private Dispatcher $dispatcher;
 
-    public function __construct(ClientV1 $beds24Api, Dispatcher $dispatcher, array $beds24Props, array $locks)
+    public function __construct(ClientV1 $beds24Api, array $beds24Props)
     {
         $this->beds24Api = $beds24Api;
-        $this->dispatcher = $dispatcher;
         $this->beds24Props = $beds24Props;
-        $this->locks = $locks;
     }
 
     public function create(array $data): Booking
@@ -88,13 +82,6 @@ class BookingService
         $this->beds24Api->setBooking($requestData);
     }
 
-    public function queueGettingPassCode(Booking $booking): void
-    {
-        foreach ($this->getLockIdByRoom($booking->getRoom()) as $lockId) {
-            $this->dispatcher->add(new GetPasscode($booking->getId(), $lockId));
-        }
-    }
-
     private function getPropKey(string $property): string
     {
         if (!isset($this->beds24Props[$property])) {
@@ -112,12 +99,5 @@ class BookingService
     private function prepareCheckoutDate(string $date): \DateTime
     {
         return (new \DateTime($date))->modify('10:00');
-    }
-
-    private function getLockIdByRoom(int $room): array
-    {
-        return isset($this->locks[$room])
-            ? [$this->locks['main'], $this->locks[$room]]
-            : [$this->locks['main']];
     }
 }

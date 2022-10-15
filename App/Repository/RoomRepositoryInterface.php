@@ -12,5 +12,7 @@ interface RoomRepositoryInterface
     public function find($id): ?Room;
     public function update(Room $token): void;
     public function findBy(array $params): array;
+    public function findByNumber(string $number): ?Room;
+    public function getMainRoom(): Room;
     public function delete($id): void;
 }

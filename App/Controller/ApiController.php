@@ -7,10 +7,12 @@ namespace App\Controller;
 use App\Entity\Booking;
 use App\Helpers\PhoneHepler;
 use App\Logger;
+use App\Queue\Job\GetPasscode;
 use App\Queue\Job\RemovePasscode as RemovePasscodeJob;
 use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
 use App\Repository\LockRepositoryInterface;
+use App\Repository\RoomRepositoryInterface;
 use App\Services\BookingService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +23,7 @@ class ApiController
         private readonly BookingService $bookingService,
         private readonly BookingRepositoryInterface $bookingRepository,
         private readonly LockRepositoryInterface $lockRepository,
+        private readonly RoomRepositoryInterface $roomRepository,
         private readonly Dispatcher $dispatcher,
         private readonly string $token
     ) {
@@ -43,7 +46,15 @@ class ApiController
 
         try {
             $booking = $this->bookingService->create($data);
-            $this->bookingService->queueGettingPassCode($booking);
+            $room = $this->roomRepository->findByNumber($data['room']);
+            $mainRoom = $this->roomRepository->getMainRoom();
+
+            if ($room) {
+                $this->dispatcher->add(new GetPasscode($booking->getId(), $room->getLockId()));
+            }
+
+            $this->dispatcher->add(new GetPasscode($booking->getId(), $mainRoom->getLockId()));
+
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
             Logger::error($e->getMessage());

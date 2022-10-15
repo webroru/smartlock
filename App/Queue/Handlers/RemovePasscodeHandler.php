@@ -31,25 +31,25 @@ class RemovePasscodeHandler implements HandlerInterface
     public function handle(JobInterface $job): void
     {
         try {
-            $bookingId = $job->getBookingId();
-            $booking = $this->bookingRepository->find($bookingId);
-            if (!$booking) {
-                Logger::error("Can't find Booking with Id: $bookingId");
+            $lockId = $job->getLockId();
+            $lock = $this->lockRepository->find($lockId);
+            if (!$lock) {
+                Logger::error("Can't find Lock with Id: $lockId");
                 return;
             }
 
-            $this->lockService->removePasscode($booking);
-            $lock = $booking->getLock();
-            if ($job->removeBooking()) {
-                $this->bookingRepository->delete($booking->getId());
-            } else {
-                $booking->setLock(null);
-                $this->bookingRepository->update($booking);
-            }
+            $this->lockService->removePasscode($lock);
             $this->lockRepository->delete($lock->getId());
-            Logger::log("For {$booking->getName()} have been removed passcode: {$lock->getPasscode()}");
+            Logger::log("For {$lock->getBooking()->getName()} has been removed passcode: {$lock->getPasscode()}");
+
+            $locks = $this->lockRepository->findBy(['booking_id' => $lock->getBooking()->getId()]);
+
+            if ($job->removeBooking() && count($locks) === 0) {
+                $this->bookingRepository->delete($lock->getBooking()->getId());
+                Logger::log("Booking Order Id {$lock->getBooking()->getOrderId()} has been removed");
+            }
         } catch (\Exception $e) {
-            $error = "Couldn't remove passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";
+            $error = "Couldn't remove passcode for the lock id {$job->getLockId()}. Error: {$e->getMessage()}.";
             if (++$job->attempts < self::ATTEMPTS_LIMIT) {
                 $error .= " The Job has been added to the queue. Attempt № $job->attempts";
                 $this->dispatcher->add($job, $job->attempts * self::DELAY);

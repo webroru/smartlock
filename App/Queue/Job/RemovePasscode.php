@@ -9,14 +9,14 @@ use App\Queue\Handlers\RemovePasscodeHandler;
 class RemovePasscode extends AbstractJob
 {
     public function __construct(
-        private readonly int $bookingId,
+        private readonly int $lockId,
         private readonly bool $removeBooking = false,
     ) {
     }
 
-    public function getBookingId(): int
+    public function getLockId(): int
     {
-        return $this->bookingId;
+        return $this->lockId;
     }
 
     public function removeBooking(): bool

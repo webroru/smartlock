@@ -11,6 +11,7 @@ use App\Queue\Job\SendPasscode;
 use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
 use App\Repository\LockRepositoryInterface;
+use App\Repository\RoomRepositoryInterface;
 use App\Services\LockService;
 
 class GetPasscodeHandler implements HandlerInterface
@@ -22,6 +23,7 @@ class GetPasscodeHandler implements HandlerInterface
     public function __construct(
         private readonly LockService $lockService,
         private readonly BookingRepositoryInterface $bookingRepository,
+        private readonly RoomRepositoryInterface $roomRepository,
         private readonly LockRepositoryInterface $lockRepository,
         private readonly Dispatcher $dispatcher,
     ) {
@@ -40,7 +42,14 @@ class GetPasscodeHandler implements HandlerInterface
                 return;
             }
 
-            $lock = $this->lockService->addRandomPasscode($booking, $job->getLockId());
+            $roomId = $job->getRoomId();
+            $room = $this->roomRepository->find($roomId);
+            if (!$room) {
+                Logger::error("Can't find Room with Id: $roomId");
+                return;
+            }
+
+            $lock = $this->lockService->addRandomPasscode($booking, $room);
             $this->lockRepository->add($lock);
             Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
             $this->dispatcher->add(new SendPasscode($lock->getId()));

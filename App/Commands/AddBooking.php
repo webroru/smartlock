@@ -42,10 +42,10 @@ class AddBooking
             $mainRoom = $this->roomRepository->getMainRoom();
 
             if ($room) {
-                $this->dispatcher->add(new GetPasscode($booking->getId(), $room->getLockId()));
+                $this->dispatcher->add(new GetPasscode($booking->getId(), $room->getId()));
             }
 
-            $this->dispatcher->add(new GetPasscode($booking->getId(), $mainRoom->getLockId()));
+            $this->dispatcher->add(new GetPasscode($booking->getId(), $mainRoom->getId()));
 
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {

@@ -8,7 +8,7 @@ class Booking
     private string $name;
     private \DateTime $checkInDate;
     private \DateTime $checkOutDate;
-    private ?string $phone;
+    private ?string $phone = null;
     private string $orderId;
     private string $property;
     private int $room;

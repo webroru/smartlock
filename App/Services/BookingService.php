@@ -29,10 +29,9 @@ class BookingService
         $phone = $data['phone'] ?? null;
         $orderId = $data['order_id'] ?? null;
         $property = $data['property'] ?? null;
-        $room = $data['room'] ?? null;
 
-        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property || !$room) {
-            throw new \Exception("Data is not valid: $data");
+        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property) {
+            throw new \Exception('Data is not valid:' . implode(', ', $data));
         }
 
         return (new Booking())
@@ -41,8 +40,7 @@ class BookingService
             ->setCheckInDate($this->prepareCheckinDate($checkInDate))
             ->setCheckOutDate($this->prepareCheckoutDate($checkOutDate))
             ->setOrderId($orderId)
-            ->setProperty($property)
-            ->setRoom($room);
+            ->setProperty($property);
     }
 
     public function updateCode(Lock $lock): void
@@ -56,7 +54,7 @@ class BookingService
             'bookId' => $lock->getBooking()->getOrderId(),
             'infoItems' => [
                 [
-                    'code' => self::CODELOCK,
+                    'code' => self::CODELOCK . "_{$lock->getRoom()->getNumber()}",
                     'text' => "Passcode: #{$lock->getPasscode()}#",
                 ]
             ],

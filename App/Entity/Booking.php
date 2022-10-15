@@ -94,10 +94,4 @@ class Booking
     {
         return $this->room;
     }
-
-    public function setRoom(int $room): self
-    {
-        $this->room = $room;
-        return $this;
-    }
 }

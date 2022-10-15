@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Booking;
+use App\Entity\Lock;
 use App\Providers\Beds24\Client\ClientV1;
-use DateTimeZone;
+use App\Queue\Job\GetPasscode;
+use App\Queue\RabbitMQ\Dispatcher;
 
 class BookingService
 {
@@ -14,11 +16,15 @@ class BookingService
 
     private ClientV1 $beds24Api;
     private array $beds24Props;
+    private array $locks;
+    private Dispatcher $dispatcher;
 
-    public function __construct(ClientV1 $beds24Api, array $beds24Props)
+    public function __construct(ClientV1 $beds24Api, Dispatcher $dispatcher, array $beds24Props, array $locks)
     {
         $this->beds24Api = $beds24Api;
+        $this->dispatcher = $dispatcher;
         $this->beds24Props = $beds24Props;
+        $this->locks = $locks;
     }
 
     public function create(array $data): Booking

@@ -40,13 +40,10 @@ class GetPasscodeHandler implements HandlerInterface
                 return;
             }
 
-            $lock = $this->lockService->addRandomPasscode($booking);
-            $lockId = $this->lockRepository->add($lock);
-            $lock->setId($lockId);
-            $booking->setLock($lock);
-            $this->bookingRepository->update($booking);
+            $lock = $this->lockService->addRandomPasscode($booking, $job->getLockId());
+            $this->lockRepository->add($lock);
             Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
-            $this->dispatcher->add(new SendPasscode($bookingId));
+            $this->dispatcher->add(new SendPasscode($lock->getId()));
             Logger::log("New SendPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
             $error = "Couldn't register new passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";

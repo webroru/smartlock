@@ -13,4 +13,5 @@ interface LockRepositoryInterface
     public function update(Lock $lock): void;
     public function findBy(array $params): array;
     public function delete($id): void;
+    public function getExpired(): array;
 }

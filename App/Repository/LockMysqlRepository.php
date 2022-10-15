@@ -107,6 +107,14 @@ class LockMysqlRepository implements LockRepositoryInterface
         return array_map([$this, 'toEntity'], $rows);
     }
 
+    public function getExpired(): array
+    {
+        $statement = $this->client->prepare("select * from `lock` l where l.end_date < CURDATE()");
+        $statement->execute();
+        $rows = $statement->fetchAll();
+        return array_map([$this, 'toEntity'], $rows);
+    }
+
     public function delete($id): void
     {
         $this->client->prepare("DELETE FROM `$this->table` WHERE id = ?")->execute([$id]);

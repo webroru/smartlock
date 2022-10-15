@@ -11,7 +11,7 @@ class Booking
     private ?string $phone;
     private string $orderId;
     private string $property;
-    private ?Lock $lock = null;
+    private int $room;
 
     public function getId(): ?int
     {
@@ -90,14 +90,14 @@ class Booking
         return $this;
     }
 
-    public function getLock(): ?Lock
+    public function getRoom(): int
     {
-        return $this->lock;
+        return $this->room;
     }
 
-    public function setLock(?Lock $lock): self
+    public function setRoom(int $room): self
     {
-        $this->lock = $lock;
+        $this->room = $room;
         return $this;
     }
 }

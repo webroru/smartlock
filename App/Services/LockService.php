@@ -98,17 +98,22 @@ class LockService
 
     public function addRandomPasscode(Booking $booking, Room $room): Lock
     {
+        $passcode = sprintf('%06d', mt_rand(0, 999999));
+        return $this->addPasscode($booking, $room, $passcode);
+    }
+
+    public function addPasscode(Booking $booking, Room $room, string $passcode): Lock
+    {
         $name = $this->prepareName($booking->getName());
         $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
         $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
-        $password = sprintf('%04d', mt_rand(0, 9999));
         $lockId = $room->getLockId();
-        $passcodeId = $this->scienerApi->addPasscode($name, $password, $startDate, $endDate, $lockId);
+        $passcodeId = $this->scienerApi->addPasscode($name, $passcode, $startDate, $endDate, $lockId);
         return (new Lock())
             ->setName($name)
             ->setStartDate($booking->getCheckInDate())
             ->setEndDate($booking->getCheckOutDate())
-            ->setPasscode($password)
+            ->setPasscode($passcode)
             ->setPasscodeId($passcodeId)
             ->setBooking($booking)
             ->setRoom($room);

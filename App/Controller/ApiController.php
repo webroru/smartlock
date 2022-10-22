@@ -46,14 +46,16 @@ class ApiController
 
         try {
             $booking = $this->bookingService->create($data);
+            $bookingId = $this->bookingRepository->add($booking);
             $room = $this->roomRepository->findByNumber($data['room']);
             $mainRoom = $this->roomRepository->getMainRoom();
 
+            $rooms = [$mainRoom->getId()];
             if ($room) {
-                $this->dispatcher->add(new GetPasscode($booking->getId(), $room->getId()));
+                $rooms[] = $room->getId();
             }
 
-            $this->dispatcher->add(new GetPasscode($booking->getId(), $mainRoom->getId()));
+            $this->dispatcher->add(new GetPasscode($bookingId, $rooms));
 
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {

@@ -28,6 +28,15 @@ You can use MySql or Google Firebase.
 1. `cp .env.dev .env`
 2. Set variables in the .env
 
+## API
+```shell
+curl "http://127.0.0.1/api/create" \
+-H 'Accept: application/json' \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer ${BEDS24_DIGEST_TOKEN}" \
+--request POST -d '{"order_id":"42","checkindate":"2000-01-01","checkoutdate":"2100-01-01","guestname":"John Doe","property":"123","room":"111"}'
+```
+
 ## Tests ##
 Run all tests `docker-compose run php ./composer.phar test`
 

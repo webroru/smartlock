@@ -102,7 +102,11 @@ services:
       - 'mysql:host=%mysql.host%;dbname=%mysql.db%;charset=%mysql.charset%'
       - '%mysql.user%'
       - '%mysql.pass%'
-      - { 3: 2, 19: 2, 20: false }
+      - { 3: 2, 19: 2, 20: false, 12: true}
+  # 3 — ATTR_ERRMODE
+  # 19 — ATTR_DEFAULT_FETCH_MODE
+  # 20 — ATTR_EMULATE_PREPARES
+  # 12 — ATTR_PERSISTENT
   PhpAmqpLib\Connection\AMQPStreamConnection:
     arguments:
       - '%rabbitmq.host%'

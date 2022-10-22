@@ -6,7 +6,7 @@
 1. Install [Docker](https://docs.docker.com/engine/installation/linux/ubuntu/)
 2. Install [Docker Compose](https://docs.docker.com/compose/install/)
 3. Run the project: `docker-compose up -d`
-4. Instal dependencies: `docker-compose run php composer install`
+4. Install dependencies: `docker-compose run php composer install`
 5. Import MySql table: `cat ./migrations/*.sql | mysql -uroot -h 0.0.0.0 smartlock`
 
 ### Select data storage ###
@@ -30,7 +30,7 @@ You can use MySql or Google Firebase.
 
 ## API
 ```shell
-curl "http://127.0.0.1/api/create" \
+curl "http://127.0.0.1:8080/api/create" \
 -H 'Accept: application/json' \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer ${BEDS24_DIGEST_TOKEN}" \

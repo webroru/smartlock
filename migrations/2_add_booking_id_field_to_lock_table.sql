@@ -1,3 +1,6 @@
+alter table `lock`
+add booking_id int not null;
+
 update `lock` l
 inner join booking b on l.id = b.lock_id
 set l.booking_id = b.id

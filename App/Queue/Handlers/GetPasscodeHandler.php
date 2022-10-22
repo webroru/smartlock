@@ -42,18 +42,30 @@ class GetPasscodeHandler implements HandlerInterface
                 return;
             }
 
-            $roomId = $job->getRoomId();
+            $rooms = $job->getRooms();
+            $roomId = array_pop($rooms);
             $room = $this->roomRepository->find($roomId);
             if (!$room) {
                 Logger::error("Can't find Room with Id: $roomId");
                 return;
             }
 
-            $lock = $this->lockService->addRandomPasscode($booking, $room);
-            $this->lockRepository->add($lock);
+            $passcode = $job->getPasscode();
+            if ($passcode) {
+                $lock = $this->lockService->addPasscode($booking, $room, $passcode);
+            } else {
+                $lock = $this->lockService->addRandomPasscode($booking, $room);
+            }
+
+            $lockId = $this->lockRepository->add($lock);
             Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
-            $this->dispatcher->add(new SendPasscode($lock->getId()));
-            Logger::log("New SendPasscode Job added For {$booking->getName()} reservation");
+
+            if ($rooms) {
+                $this->dispatcher->add(new GetPasscode($bookingId, $rooms, $lock->getPasscode()));
+            } else {
+                $this->dispatcher->add(new SendPasscode($lockId));
+                Logger::log("New SendPasscode Job added For {$booking->getName()} reservation");
+            }
         } catch (\Exception $e) {
             $error = "Couldn't register new passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";
             if (++$job->attempts < self::ATTEMPTS_LIMIT) {

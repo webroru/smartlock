@@ -54,7 +54,7 @@ class BookingService
             'bookId' => $lock->getBooking()->getOrderId(),
             'infoItems' => [
                 [
-                    'code' => self::CODELOCK . "_{$lock->getRoom()->getNumber()}",
+                    'code' => self::CODELOCK,
                     'text' => "Passcode: #{$lock->getPasscode()}#",
                 ]
             ],

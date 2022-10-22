@@ -8,8 +8,11 @@ use App\Queue\Handlers\GetPasscodeHandler;
 
 class GetPasscode extends AbstractJob
 {
-    public function __construct(private readonly int $bookingId, private readonly int $roomId)
-    {
+    public function __construct(
+        private readonly int $bookingId,
+        private readonly array $rooms,
+        private readonly ?string $passcode = null,
+    ) {
     }
 
     public function getBookingId(): int
@@ -17,13 +20,18 @@ class GetPasscode extends AbstractJob
         return $this->bookingId;
     }
 
-    public function getRoomId(): int
+    public function getRooms(): array
     {
-        return $this->roomId;
+        return $this->rooms;
     }
 
     public function getHandlerFQCN(): string
     {
         return GetPasscodeHandler::class;
+    }
+
+    public function getPasscode(): ?string
+    {
+        return $this->passcode;
     }
 }

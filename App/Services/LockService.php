@@ -98,7 +98,7 @@ class LockService
 
     public function addRandomPasscode(Booking $booking, Room $room): Lock
     {
-        $passcode = sprintf('%06d', mt_rand(0, 999999));
+        $passcode = sprintf('%06d', mt_rand(0, 9999));
         return $this->addPasscode($booking, $room, $passcode);
     }
 

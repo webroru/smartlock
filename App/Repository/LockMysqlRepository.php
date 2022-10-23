@@ -37,9 +37,9 @@ class LockMysqlRepository implements LockRepositoryInterface
 
         $this->client->prepare($sql)
             ->execute([
-                'name' => $lock->getName(),
                 'passcode_id' => $lock->getPasscodeId(),
                 'passcode' => $lock->getPasscode(),
+                'name' => $lock->getName(),
                 'start_date' => $lock->getStartDate()->format('Y-m-d H:i:s'),
                 'end_date' => $lock->getEndDate()->format('Y-m-d H:i:s'),
                 'booking_id' => $lock->getBooking()->getId(),

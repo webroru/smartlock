@@ -91,11 +91,11 @@ class BookingService
 
     private function prepareCheckinDate(string $date): \DateTime
     {
-        return (new \DateTime($date))->modify('12:00');
+        return (new \DateTime($date, new \DateTimeZone('Europe/Prague')))->modify('14:00');
     }
 
     private function prepareCheckoutDate(string $date): \DateTime
     {
-        return (new \DateTime($date))->modify('10:00');
+        return (new \DateTime($date, new \DateTimeZone('Europe/Prague')))->modify('12:00');
     }
 }

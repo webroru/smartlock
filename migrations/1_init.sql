@@ -20,7 +20,6 @@ create table if not exists booking
     order_id varchar(15) null,
     property varchar(15) null,
     lock_id int default null null,
-    room int not null,
     FOREIGN KEY (lock_id) REFERENCES `lock`(id)
 ) COLLATE='utf8_general_ci';
 

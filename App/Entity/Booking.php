@@ -11,7 +11,6 @@ class Booking
     private ?string $phone = null;
     private string $orderId;
     private string $property;
-    private int $room;
 
     public function getId(): ?int
     {

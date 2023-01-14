@@ -25,7 +25,7 @@ class BookingService
     {
         $checkInDate = $data['checkindate'] ?? null;
         $checkOutDate = $data['checkoutdate'] ?? null;
-        $guestName = $data['guestname'] ?? null;
+        $guestName = $data['guestname'] ?? 'Guest';
         $phone = $data['phone'] ?? null;
         $orderId = $data['order_id'] ?? null;
         $property = $data['property'] ?? null;

@@ -73,10 +73,12 @@ class LockRepositoryTest extends UnitTestCase
         $id = $this->lockRepository->add($this->lock);
         $this->lock->setId($id);
         $this->lock->setPasscode('1111');
+        $this->lock->setDeleted(true);
         $this->lockRepository->update($this->lock);
         $lock = $this->lockRepository->find($id);
         $this->lockRepository->delete($id);
         $this->assertEquals('1111', $lock->getPasscode());
+        $this->assertEquals(true, $lock->getDeleted());
     }
 
     public function testFind()

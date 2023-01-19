@@ -40,6 +40,8 @@ class LockService
 
             try {
                 $this->scienerApi->deletePasscode($lock->getPasscodeId(), $lock->getRoom()->getLockId());
+                $lock->setDeleted(true);
+                $this->lockRepository->update($lock);
             } catch (\Exception $e) {
                 Logger::error("{$e->getMessage()}");
             }

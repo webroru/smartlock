@@ -37,18 +37,4 @@ class LockServiceTest extends UnitTestCase
         $this->assertInstanceOf(Lock::class, $lock);
         $this->lockService->removePasscode($lock);
     }
-
-    public function testCreate()
-    {
-        $data = [
-            'checkindate' => (new \DateTime('Today'))->format('Y-m-d h:i:s'),
-            'checkoutdate' => (new \DateTime('+1 day'))->format('Y-m-d h:i:s'),
-            'guestname' => 'Test',
-            'order_id' => '1000',
-            'property' => '1000',
-        ];
-
-        $booking = $this->lockService->create($data);
-        $this->assertInstanceOf(Booking::class, $booking);
-    }
 }

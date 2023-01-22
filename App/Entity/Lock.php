@@ -14,6 +14,7 @@ class Lock
     private \DateTime $endDate;
     private Booking $booking;
     private Room $room;
+    private bool $deleted = false;
 
     public function getId(): int
     {
@@ -100,6 +101,17 @@ class Lock
     public function setRoom(Room $room): self
     {
         $this->room = $room;
+        return $this;
+    }
+
+    public function getDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): self
+    {
+        $this->deleted = $deleted;
         return $this;
     }
 }

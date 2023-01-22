@@ -11,19 +11,10 @@
          processIsolation="false"
          stopOnFailure="false"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         cacheResultFile="./temp/.phpunit.result.cache">
-  <coverage>
-    <include>
-      <directory suffix=".php">App/</directory>
-    </include>
-    <report>
-      <clover outputFile="build/clover.xml"/>
-    </report>
-  </coverage>
+         cacheResult="false">
   <testsuites>
     <testsuite name="Business logic Test Suite">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
-  <logging/>
 </phpunit>

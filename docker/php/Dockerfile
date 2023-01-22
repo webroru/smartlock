@@ -8,7 +8,8 @@ RUN apk add --no-cache \
     curl \
     git \
     mysql-client \
-    rabbitmq-c-dev
+    rabbitmq-c-dev \
+    linux-headers
 
 # Install PECL and PEAR extensions
 RUN pecl install xdebug amqp

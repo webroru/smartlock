@@ -32,7 +32,8 @@ class LockMysqlRepository implements LockRepositoryInterface
                 :start_date,
                 :end_date,
                 :booking_id,
-                :room_id
+                :room_id,
+                :deleted
             )";
 
         $this->client->prepare($sql)
@@ -44,6 +45,7 @@ class LockMysqlRepository implements LockRepositoryInterface
                 'end_date' => $lock->getEndDate()->format('Y-m-d H:i:s'),
                 'booking_id' => $lock->getBooking()->getId(),
                 'room_id' => $lock->getRoom()->getId(),
+                'deleted' => $lock->getDeleted() ? 1 : 0,
             ]);
         return $this->client->lastInsertId();
     }
@@ -66,7 +68,8 @@ class LockMysqlRepository implements LockRepositoryInterface
                 start_date = :start_date,
                 end_date = :end_date,
                 booking_id = :booking_id,
-                room_id = :room_id
+                room_id = :room_id,
+                deleted = :deleted
             WHERE id = :id";
 
         $this->client->prepare($sql)
@@ -79,6 +82,7 @@ class LockMysqlRepository implements LockRepositoryInterface
                 'end_date' => $lock->getEndDate()->format('Y-m-d H:i:s'),
                 'booking_id' => $lock->getBooking()->getId(),
                 'room_id' => $lock->getRoom()->getId(),
+                'deleted' => $lock->getDeleted() ? 1 : 0,
             ]);
     }
 
@@ -109,7 +113,7 @@ class LockMysqlRepository implements LockRepositoryInterface
 
     public function getExpired(): array
     {
-        $statement = $this->client->prepare("select * from `lock` l where l.end_date < CURDATE()");
+        $statement = $this->client->prepare("select * from `lock` l where l.end_date < CURDATE() and l.deleted = 0");
         $statement->execute();
         $rows = $statement->fetchAll();
         return array_map([$this, 'toEntity'], $rows);
@@ -130,6 +134,7 @@ class LockMysqlRepository implements LockRepositoryInterface
             ->setStartDate(new \DateTime($row['start_date']))
             ->setEndDate(new \DateTime($row['end_date']))
             ->setBooking($this->bookingRepository->find($row['booking_id']))
-            ->setRoom($this->roomRepository->find($row['room_id']));
+            ->setRoom($this->roomRepository->find($row['room_id']))
+            ->setDeleted((bool) $row['deleted']);
     }
 }

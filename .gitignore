@@ -1,6 +1,7 @@
 .env
 .idea
 certbot
+logs/*
 temp
 vendor
 firebase-credentials.json

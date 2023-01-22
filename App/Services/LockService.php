@@ -40,6 +40,19 @@ class LockService
 
             try {
                 $this->scienerApi->deletePasscode($lock->getPasscodeId(), $lock->getRoom()->getLockId());
+                Logger::log("Lock removed:
+                    'id' => {$lock->getId()},
+                    'name' => {$lock->getName()},
+                    'passcode_id' => {$lock->getPasscodeId()},
+                    'passcode' => {$lock->getPasscode()},
+                    'start_date' => {$lock->getStartDate()->format('Y-m-d H:i:s')},
+                    'end_date' => {$lock->getEndDate()->format('Y-m-d H:i:s')},
+                    'booking_id' => {$lock->getBooking()->getId()},
+                    'room_id' => {$lock->getRoom()->getId()},
+                    'deleted' => {$lock->getDeleted()} ,
+                ]);");
+                $lock->setDeleted(true);
+                $this->lockRepository->update($lock);
             } catch (\Exception $e) {
                 Logger::error("{$e->getMessage()}");
             }

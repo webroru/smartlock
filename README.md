@@ -29,12 +29,23 @@ You can use MySql or Google Firebase.
 2. Set variables in the .env
 
 ## API
+
+### Create Booking
 ```shell
 curl "http://127.0.0.1:8080/api/create" \
 -H 'Accept: application/json' \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer ${BEDS24_DIGEST_TOKEN}" \
 --request POST -d '{"order_id":"42","checkindate":"2000-01-01","checkoutdate":"2100-01-01","guestname":"John Doe","property":"123","room":"111"}'
+```
+
+### Update Booking
+```shell
+curl "http://127.0.0.1:8080/api/update" \
+-H 'Accept: application/json' \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer ${BEDS24_DIGEST_TOKEN}" \
+--request POST -d '{"order_id":"42","checkindate":"2000-01-01","checkoutdate":"2200-01-01","guestname":"John Doe","property":"123","room":"111"}'
 ```
 
 ## Tests ##

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Booking;
+use App\Entity\Lock;
 use App\Helpers\PhoneHepler;
 use App\Logger;
+use App\Queue\Job\ChangeLockEndDate;
 use App\Queue\Job\GetPasscode;
 use App\Queue\Job\RemovePasscode as RemovePasscodeJob;
 use App\Queue\RabbitMQ\Dispatcher;
@@ -58,6 +60,55 @@ class ApiController
             $this->dispatcher->add(new GetPasscode($bookingId, $rooms));
 
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
+        } catch (\Exception $e) {
+            Logger::error($e->getMessage());
+            return new Response(
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                ['content-type' => 'text/html']
+            );
+        }
+        return new Response(
+            'The Booking has been processed',
+            Response::HTTP_OK,
+            ['content-type' => 'text/html']
+        );
+    }
+
+    public function update(Request $request): Response
+    {
+        $authorizationHeader = $request->headers->get('authorization', '');
+        $token = explode(' ', $authorizationHeader)[1] ?? '';
+        if (!$this->validateToken($token)) {
+            Logger::log("Authorization is not valid: Token is $token");
+            return new Response(
+                'Authorization is not valid',
+                Response::HTTP_UNAUTHORIZED,
+                ['content-type' => 'text/html']
+            );
+        }
+
+        $data = $request->toArray();
+
+        try {
+            $bookings = $this->bookingRepository->findBy(['order_id' => $data['order_id']]);
+            if (!$bookings) {
+                throw new \Exception("Booking ID {$data['order_id']} not found");
+            }
+
+            /** @var Booking $booking */
+            $booking = $bookings[0];
+            $newBooking = $this->bookingService->create($data);
+            $newBooking->setId($booking->getId());
+            $this->bookingRepository->update($newBooking);
+            $locks = $this->lockRepository->findBy(['booking_id' => $booking->getId()]);
+            /** @var Lock $lock */
+            foreach ($locks as $lock) {
+                $lock->setEndDate($newBooking->getCheckOutDate());
+                $this->lockRepository->update($lock);
+                $this->dispatcher->add(new ChangeLockEndDate($lock->getId()));
+                Logger::log("New ChangeLockEndDate Job added For {$newBooking->getName()} reservation");
+            }
         } catch (\Exception $e) {
             Logger::error($e->getMessage());
             return new Response(

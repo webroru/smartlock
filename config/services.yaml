@@ -72,6 +72,8 @@ services:
           - '@App\Queue\Handlers\GetPasscodeHandler'
           - '@App\Queue\Handlers\SendPasscodeHandler'
           - '@App\Queue\Handlers\RemovePasscodeHandler'
+          - '@App\Queue\Handlers\ChangeLockEndDateHandler'
+  App\Queue\Handlers\ChangeLockEndDateHandler: ~
   App\Queue\Handlers\GetPasscodeHandler: ~
   App\Queue\Handlers\RemovePasscodeHandler: ~
   App\Queue\Handlers\SendPasscodeHandler: ~

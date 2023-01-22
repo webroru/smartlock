@@ -65,6 +65,37 @@ class Client
         return $result['keyboardPwdId'];
     }
 
+    public function changePasscode(string $name, int $passwordId, int $startDate, int $endDate, string $lockId): void
+    {
+        $response = $this->client->post(
+            self::BASE_URL . '/v3/keyboardPwd/change',
+            [
+                'form_params' => [
+                    'clientId' => $this->appId,
+                    'accessToken' => $this->token,
+                    'lockId' => $lockId,
+                    'keyboardPwdId' => $passwordId,
+                    'keyboardPwdName' => $name,
+                    'startDate' => $startDate,
+                    'changeType' => self::GATEWAY,
+                    'endDate' => $endDate,
+                    'date' => time() * 1000,
+                ],
+            ],
+        );
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception("Can't generate passcode for $name");
+        }
+        $result = json_decode($response->getBody()->getContents(), true);
+        if (isset($result['errcode'])) {
+            if ($result['errcode'] === self::SAME_PASSCODE_EXISTS) {
+                throw new \Exception("Passcode already exists");
+            }
+            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']}");
+        }
+    }
+
     public function generatePasscode(string $name, int $startDate, int $endDate, string $lockId): string
     {
         $name = implode(' ', array_slice(explode(' ', $name), 0, 2));

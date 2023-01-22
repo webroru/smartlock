@@ -30,7 +30,28 @@ class ClientTest extends UnitTestCase
 
     public function testAddPasscode()
     {
-        $result = $this->client->addPasscode('Test', '123456', time() * 1000, (time() + 60 * 60 * 24) * 1000, '6755296');
-        $this->assertIsInt($result);
+        $start = time() * 1000;
+        $end = (time() + 60 * 60 * 24) * 1000;
+        $name = 'Test';
+        $password = sprintf('%06d', rand(0, 9999));
+        $lockId = '6755296';
+        $passwordId = $this->client->addPasscode($name, $password, $start, $end, $lockId);
+        $this->client->deletePasscode($passwordId, $lockId);
+        $this->assertIsInt($passwordId);
+    }
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testChangePasscode()
+    {
+        $start = time() * 1000;
+        $end = (time() + 60 * 60 * 24) * 1000;
+        $name = 'Test';
+        $password = sprintf('%06d', rand(0, 9999));
+        $lockId = '6755296';
+        $passwordId = $this->client->addPasscode($name, $password, $start, $end, $lockId);
+        $this->client->changePasscode($name, $passwordId, $start, $end, $lockId);
+        $this->client->deletePasscode($passwordId, $lockId);
     }
 }

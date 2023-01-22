@@ -119,6 +119,16 @@ class LockService
             ->setRoom($room);
     }
 
+    public function updatePasscode(Lock $lock): void
+    {
+        $name = $this->prepareName($lock->getBooking()->getName());
+        $startDate = $lock->getStartDate()->getTimestamp() * 1000;
+        $endDate = $lock->getEndDate()->getTimestamp() * 1000;
+        $lockId = $lock->getRoom()->getLockId();
+        $passcodeId = $lock->getPasscodeId();
+        $this->scienerApi->changePasscode($name, $passcodeId, $startDate, $endDate, $lockId);
+    }
+
     private function prepareName(string $name): string
     {
         return implode(' ', array_slice(explode(' ', $name), 0, 2));

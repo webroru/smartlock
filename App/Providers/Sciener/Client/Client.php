@@ -88,7 +88,7 @@ class Client
             throw new \Exception("Can't generate passcode for $name");
         }
         $result = json_decode($response->getBody()->getContents(), true);
-        if (isset($result['errcode'])) {
+        if (isset($result['errcode']) && $result['errcode'] !== 0) {
             if ($result['errcode'] === self::SAME_PASSCODE_EXISTS) {
                 throw new \Exception("Passcode already exists");
             }

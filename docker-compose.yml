@@ -70,6 +70,6 @@ services:
       context: .
       dockerfile: docker/rabbitmq/Dockerfile
     ports:
-      - "15672:15672"
+      - "127.0.0.1:15672:15672"
     volumes:
       - ./temp/dev/rabbitmq/data:/var/lib/rabbitmq/mnesia/:rw

@@ -29,7 +29,6 @@ class Client
     ) {
         $this->client = $client;
         $this->appId = $appId;
-
         $this->token = $this->getAccessToken($appSecret, $user, $password);
     }
 

@@ -102,8 +102,8 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
     {
         return (new Booking())
             ->setId($row['id'])
-            ->setCheckInDate(new \DateTime($row['check_in_date']))
-            ->setCheckOutDate(new \DateTime($row['check_out_date']))
+            ->setCheckInDate(new \DateTime($row['check_in_date'], new \DateTimeZone('Europe/Prague')))
+            ->setCheckOutDate(new \DateTime($row['check_out_date'], new \DateTimeZone('Europe/Prague')))
             ->setName($row['name'])
             ->setPhone($row['phone'])
             ->setOrderId($row['order_id'])

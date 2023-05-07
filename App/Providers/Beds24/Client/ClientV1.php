@@ -47,6 +47,28 @@ class ClientV1 implements Beds24ClientInterface
         }
     }
 
+    public function getInvoices(array $requestData): array
+    {
+        $requestData['authentication'] = $this->getAuth();
+
+        $response = $this->client->request(
+            'POST',
+            self::HOST . '/' . self::DATA_TYPE . '/getInvoices',
+            [
+                RequestOptions::JSON => $requestData,
+                'http_errors' => false,
+            ]
+        );
+
+        $content = $response->getBody()->getContents();
+        $message = json_decode($content, true);
+        if (isset($message['error'])) {
+            throw new \Exception($message['error']);
+        }
+
+        return $message;
+    }
+
     private function getAuth(): array
     {
         return [

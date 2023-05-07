@@ -80,6 +80,47 @@ class BookingService
         $this->beds24Api->setBooking($requestData);
     }
 
+    public function addInvoice(string $bookingId, string $property, float $amount, int $qty): void
+    {
+        $requestData = [
+            'bookId' => $bookingId,
+            'invoice' => [
+                [
+                    'description' => 'Auto action payment',
+                    'qty' => $qty,
+                    'price' => $amount,
+                ],
+            ]
+        ];
+        $this->beds24Api->setPropKey($this->getPropKey($property));
+        $this->beds24Api->setBooking($requestData);
+    }
+
+    public function addPayment(string $bookingId, string $property, float $amount): void {
+        $this->addInvoice($bookingId, $property, $amount, -1);
+    }
+
+    public function getInvoices(string $orderId, string $property): array
+    {
+        $this->beds24Api->setPropKey($this->getPropKey($property));
+        return $this->beds24Api->getInvoices(['bookId' => $orderId]);
+    }
+
+    public function getDebtWithoutCityTax(string $orderId, string $property): float
+    {
+        $invoices = $this->getInvoices($orderId, $property);
+        $debt = 0;
+
+        foreach ($invoices[0] as $invoice) {
+            if (stripos($invoice['description'], 'city tax') !== false) {
+                continue;
+            }
+            $debt += $invoice['qty'] * $invoice['price'];
+        }
+
+        return $debt;
+    }
+
     private function getPropKey(string $property): string
     {
         if (!isset($this->beds24Props[$property])) {

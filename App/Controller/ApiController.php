@@ -229,6 +229,36 @@ class ApiController
         );
     }
 
+    public function addPayment(Request $request): Response
+    {
+        $authorizationHeader = $request->headers->get('authorization', '');
+        $token = explode(' ', $authorizationHeader)[1] ?? '';
+        if (!$this->validateToken($token)) {
+            Logger::log("Authorization is not valid: Token is $token");
+            return new Response(
+                'Authorization is not valid',
+                Response::HTTP_UNAUTHORIZED,
+                ['content-type' => 'text/html']
+            );
+        }
+
+        $data = $request->toArray();
+
+        if ($data['referrer'] ?? '' === 'Airbnb') {
+            $property = $data['property'] ?? '';
+            $orderId = $data['order_id']  ?? '';
+            $debt = $this->bookingService->getDebtWithoutCityTax($orderId, $property);
+            $this->bookingService->addPayment($orderId, $property, $debt);
+            Logger::log("Payment has been added for booking id $orderId with amount $debt");
+        }
+
+        return new Response(
+            'Invoice has been updated',
+            Response::HTTP_OK,
+            ['content-type' => 'text/html']
+        );
+    }
+
     private function validateToken(string $token): bool
     {
         return $token === $this->token;

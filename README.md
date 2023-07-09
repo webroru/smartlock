@@ -7,12 +7,12 @@
 2. Install [Docker Compose](https://docs.docker.com/compose/install/)
 3. Run the project: `docker-compose up -d`
 4. Install dependencies: `docker-compose run php composer install`
-5. Import MySql table: `cat ./migrations/*.sql | mysql -uroot -h 0.0.0.0 smartlock`
+5. Import MySql table: `docker-compose exec php bash -c 'cat ./migrations/*.sql | mysql -usmartlock -psmartlock -h mysql smartlock'`
 
 ### Select data storage ###
 You can use MySql or Google Firebase.
 — For Firebase: Download firebase-credentials.json from https://console.firebase.google.com/
-— For Mysql Import MySql table: `mysql -uroot -h 0.0.0.0 smartlock < 1_init.sql`
+— For Mysql Import MySql table: `docker-compose exec php bash -c 'mysql -usmartlock -psmartlock -h mysql smartlock < ./migrations/1_init.sql'`
 
 ### Production ###
 1. Set variables in the .env
@@ -52,3 +52,12 @@ curl "http://127.0.0.1:8080/api/update" \
 Run all tests `docker-compose run php ./composer.phar test`
 
 Run specific test:  `docker-compose run php ./vendor/bin/phpunit --filter [test method] [path to test class]`, example: `docker-compose run php ./vendor/bin/phpunit --filter testGetCheckInDate tests/ParserTest.php`
+
+## Troubleshooting ##
+
+### ERROR 1156 (08S01): Plugin caching_sha2_password could not be loaded ###
+Error during mysql connection: `ERROR 1156 (08S01): Plugin caching_sha2_password could not be loaded: Error loading shared library /usr/lib/mariadb/plugin/caching_sha2_password.so: No such file or directory`
+Fix:
+1. `docker-compose exec mysql bash`
+2. `mysql -uroot`
+3. `ALTER USER 'smartlock' IDENTIFIED WITH mysql_native_password BY 'smartlock'`

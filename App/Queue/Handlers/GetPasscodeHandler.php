@@ -43,7 +43,7 @@ class GetPasscodeHandler implements HandlerInterface
             }
 
             $rooms = $job->getRooms();
-            $roomId = array_pop($rooms);
+            $roomId = array_shift($rooms);
             $room = $this->roomRepository->find($roomId);
             if (!$room) {
                 Logger::error("Can't find Room with Id: $roomId");

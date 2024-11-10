@@ -2,6 +2,7 @@
 .idea
 certbot
 logs/*
+!logs/.gitkeep
 temp
 vendor
 firebase-credentials.json

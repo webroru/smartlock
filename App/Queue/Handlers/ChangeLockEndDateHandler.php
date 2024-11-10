@@ -38,7 +38,7 @@ class ChangeLockEndDateHandler implements HandlerInterface
             }
 
             $this->lockService->updatePasscode($lock);
-            Logger::log("For {$lock->getName()} ({$lock->getId()}) have been changed endDate: {$lock->getEndDate()}");
+            Logger::log("For {$lock->getName()} ({$lock->getId()}) have been changed endDate: {$lock->getEndDate()->format('Y-m-d H:i:s')}");
         } catch (\Exception $e) {
             $error = "Couldn't register new passcode for the booking id {$job->getLockId()}. Error: {$e->getMessage()}.";
             if (++$job->attempts < self::ATTEMPTS_LIMIT) {

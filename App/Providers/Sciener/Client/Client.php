@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Sciener\Client;
 
+use App\Logger;
 use GuzzleHttp\ClientInterface;
 
 class Client
@@ -15,6 +16,28 @@ class Client
     private const KEYBOARD_PWD_VERSION = 4;
     private const KEYBOARD_PWD_TYPE = ['period' => 3];
     private const SAME_PASSCODE_EXISTS = -3007;
+    private const NERVE_USED_PASSWORD = -3008;
+    private const RUN_OUT_OF_MEMORY = -4056;
+    private const NO_SPACE = -3009;
+    private const NO_GATEWAY_CONNECTION = -2012;
+    private const GATEWAY_OFFLINE = -3002;
+    private const GATEWAY_BUSY = -3003;
+    private const GATEWAY_NOT_CONFIGURED = -3034;
+    private const GATEWAY_WIFI = -3035;
+    private const LOCK_OFFLINE = -3036;
+    private const LOCK_BUSY = -3037;
+    private const GATEWAY_ERRORS = [
+        self::NERVE_USED_PASSWORD,
+        self::RUN_OUT_OF_MEMORY,
+        self::NO_SPACE,
+        self::NO_GATEWAY_CONNECTION,
+        self::GATEWAY_OFFLINE,
+        self::GATEWAY_BUSY,
+        self::GATEWAY_NOT_CONFIGURED,
+        self::GATEWAY_WIFI,
+        self::LOCK_OFFLINE,
+        self::LOCK_BUSY,
+    ];
 
     private ClientInterface $client;
     private string $token;
@@ -55,11 +78,12 @@ class Client
             throw new \Exception("Can't generate passcode for $name");
         }
         $result = json_decode($response->getBody()->getContents(), true);
-        if (isset($result['errcode'])) {
-            if ($result['errcode'] === self::SAME_PASSCODE_EXISTS) {
-                throw new \Exception("Passcode $password already exists");
+        if (isset($result['errcode']) && $result['errcode'] < 0) {
+            $message = "Error during passcode generation for $name: {$result['errmsg']}";
+            if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new \Exception($message);
             }
-            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']}");
+            Logger::error($message);
         }
         return $result['keyboardPwdId'];
     }
@@ -87,11 +111,12 @@ class Client
             throw new \Exception("Can't generate passcode for $name");
         }
         $result = json_decode($response->getBody()->getContents(), true);
-        if (isset($result['errcode']) && $result['errcode'] !== 0) {
-            if ($result['errcode'] === self::SAME_PASSCODE_EXISTS) {
-                throw new \Exception("Passcode already exists");
+        if (isset($result['errcode']) && $result['errcode'] < 0) {
+            $message = "Error during passcode generation for $name: {$result['errmsg']}";
+            if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new \Exception($message);
             }
-            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']}");
+            Logger::error($message);
         }
     }
 
@@ -119,7 +144,7 @@ class Client
             throw new \Exception("Can't generate passcode for $name");
         }
         $result = json_decode($response->getBody()->getContents(), true);
-        if (isset($result['errcode'])) {
+        if (isset($result['errcode']) && $result['errcode'] < 0) {
             throw new \Exception("Error during passcode generation for $name: {$result['errmsg']} {$result['description']}");
         }
         return $result['keyboardPwd'];
@@ -175,10 +200,11 @@ class Client
         }
 
         $result = json_decode($response->getBody()->getContents(), true);
-        if ($result['errcode']) {
-            throw new \Exception("Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}");
+        $message = "Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}";
+        if (in_array($result, self::GATEWAY_ERRORS)) {
+            throw new \Exception($message);
         }
-    }
+        Logger::error($message);    }
 
     private function getAccessToken(string $clientSecret, string $username, string $password): ?string
     {

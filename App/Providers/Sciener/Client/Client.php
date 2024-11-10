@@ -145,8 +145,13 @@ class Client
         }
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
-            throw new \Exception("Error during passcode generation for $name: {$result['errmsg']} {$result['description']}");
+            $message = "Error during passcode generation for $name: {$result['errmsg']}";
+            if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new \Exception($message);
+            }
+            Logger::error($message);
         }
+
         return $result['keyboardPwd'];
     }
 
@@ -200,11 +205,14 @@ class Client
         }
 
         $result = json_decode($response->getBody()->getContents(), true);
-        $message = "Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}";
-        if (in_array($result, self::GATEWAY_ERRORS)) {
-            throw new \Exception($message);
+        if (isset($result['errcode']) && $result['errcode'] < 0) {
+            $message = "Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}";
+            if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new \Exception($message);
+            }
+            Logger::error($message);
         }
-        Logger::error($message);    }
+    }
 
     private function getAccessToken(string $clientSecret, string $username, string $password): ?string
     {

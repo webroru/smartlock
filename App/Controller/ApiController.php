@@ -79,6 +79,7 @@ class ApiController
     {
         $authorizationHeader = $request->headers->get('authorization', '');
         $token = explode(' ', $authorizationHeader)[1] ?? '';
+        $mainRoom = $this->roomRepository->getMainRoom();
         if (!$this->validateToken($token)) {
             Logger::log("Authorization is not valid: Token is $token");
             return new Response(
@@ -98,16 +99,24 @@ class ApiController
 
             /** @var Booking $booking */
             $booking = $bookings[0];
+            $bookingId = $booking->getId();
             $newBooking = $this->bookingService->create($data);
-            $newBooking->setId($booking->getId());
+            $newBooking->setId($bookingId);
             $this->bookingRepository->update($newBooking);
-            $locks = $this->lockRepository->findBy(['booking_id' => $booking->getId()]);
+            $locks = $this->lockRepository->findBy(['booking_id' => $bookingId]);
             /** @var Lock $lock */
             foreach ($locks as $lock) {
-                $lock->setEndDate($newBooking->getCheckOutDate());
-                $this->lockRepository->update($lock);
-                $this->dispatcher->add(new ChangeLockEndDate($lock->getId()));
-                Logger::log("New ChangeLockEndDate Job added For {$newBooking->getName()} reservation");
+                if ($lock->getRoom()->getNumber() !== $mainRoom->getNumber() && $lock->getRoom()->getNumber() !== $data['room']) {
+                    $room = $this->roomRepository->findByNumber($data['room']);
+                    $this->dispatcher->add(new GetPasscode($bookingId, [$room->getId()], $lock->getPasscode()));
+                    $this->dispatcher->add(new RemovePasscodeJob($lock->getId()));
+                    Logger::log("New Code will be generated for Room {$data['room']}. This code will be removed for {$lock->getRoom()->getNumber()} for {$newBooking->getName()} reservation.");
+                } else {
+                    $lock->setEndDate($newBooking->getCheckOutDate());
+                    $this->lockRepository->update($lock);
+                    $this->dispatcher->add(new ChangeLockEndDate($lock->getId()));
+                    Logger::log("Code expiration date will be changed for {$newBooking->getName()} reservation");
+                }
             }
         } catch (\Exception $e) {
             Logger::error($e->getMessage());

@@ -53,11 +53,7 @@ Run all tests `docker compose run php ./composer.phar test`
 
 Run specific test:  `docker compose run php ./vendor/bin/phpunit --filter [test method] [path to test class]`, example: `docker-compose run php ./vendor/bin/phpunit --filter testGetCheckInDate tests/ParserTest.php`
 
-## Troubleshooting ##
+## Links
 
-### ERROR 1156 (08S01): Plugin caching_sha2_password could not be loaded ###
-Error during mysql connection: `ERROR 1156 (08S01): Plugin caching_sha2_password could not be loaded: Error loading shared library /usr/lib/mariadb/plugin/caching_sha2_password.so: No such file or directory`
-Fix:
-1. `docker-compose exec mysql bash`
-2. `mysql -uroot`
-3. `ALTER USER 'smartlock' IDENTIFIED WITH mysql_native_password BY 'smartlock'`
+Lock admin panel: http://lock.sciener.cn
+Lock API panel: https://euapi.sciener.com

@@ -5,14 +5,14 @@
 ### Docker ###
 1. Install [Docker](https://docs.docker.com/engine/installation/linux/ubuntu/)
 2. Install [Docker Compose](https://docs.docker.com/compose/install/)
-3. Run the project: `docker-compose up -d`
-4. Install dependencies: `docker-compose run php composer install`
-5. Import MySql table: `docker-compose exec php bash -c 'cat ./migrations/*.sql | mysql -usmartlock -psmartlock -h mysql smartlock'`
+3. Run the project: `docker compose up -d`
+4. Install dependencies: `docker compose run php composer install`
+5. Import MySql table: `docker compose exec php bash -c 'cat ./migrations/*.sql | mysql -usmartlock -psmartlock -h mysql smartlock'`
 
 ### Select data storage ###
 You can use MySql or Google Firebase.
 — For Firebase: Download firebase-credentials.json from https://console.firebase.google.com/
-— For Mysql Import MySql table: `docker-compose exec php bash -c 'mysql -usmartlock -psmartlock -h mysql smartlock < ./migrations/1_init.sql'`
+— For Mysql Import MySql table: `docker compose exec php bash -c 'mysql -usmartlock -psmartlock -h mysql smartlock < ./migrations/1_init.sql'`
 
 ### Production ###
 1. Set variables in the .env
@@ -49,9 +49,9 @@ curl "http://127.0.0.1:8080/api/update" \
 ```
 
 ## Tests ##
-Run all tests `docker-compose run php ./composer.phar test`
+Run all tests `docker compose run php ./composer.phar test`
 
-Run specific test:  `docker-compose run php ./vendor/bin/phpunit --filter [test method] [path to test class]`, example: `docker-compose run php ./vendor/bin/phpunit --filter testGetCheckInDate tests/ParserTest.php`
+Run specific test:  `docker compose run php ./vendor/bin/phpunit --filter [test method] [path to test class]`, example: `docker-compose run php ./vendor/bin/phpunit --filter testGetCheckInDate tests/ParserTest.php`
 
 ## Troubleshooting ##
 

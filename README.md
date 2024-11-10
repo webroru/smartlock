@@ -55,5 +55,5 @@ Run specific test:  `docker compose run php ./vendor/bin/phpunit --filter [test 
 
 ## Links
 
-Lock admin panel: http://lock.sciener.cn
+Lock admin panel: https://lock.sciener.cn
 Lock API panel: https://euapi.sciener.com

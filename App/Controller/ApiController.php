@@ -104,10 +104,10 @@ class ApiController
             $newBooking->setId($bookingId);
             $this->bookingRepository->update($newBooking);
             $locks = $this->lockRepository->findBy(['booking_id' => $bookingId]);
+            $room = $this->roomRepository->findByNumber($data['room']);
             /** @var Lock $lock */
             foreach ($locks as $lock) {
-                if ($lock->getRoom()->getNumber() !== $mainRoom->getNumber() && $lock->getRoom()->getNumber() !== $data['room']) {
-                    $room = $this->roomRepository->findByNumber($data['room']);
+                if ($lock->getRoom()->getNumber() !== $mainRoom->getNumber() && $lock->getRoom()->getLockId() !== $room->getLockId()) {
                     $this->dispatcher->add(new GetPasscode($bookingId, [$room->getId()], $lock->getPasscode()));
                     $this->dispatcher->add(new RemovePasscodeJob($lock->getId()));
                     Logger::log("New Code will be generated for Room {$data['room']}. This code will be removed for {$lock->getRoom()->getNumber()} for {$newBooking->getName()} reservation.");

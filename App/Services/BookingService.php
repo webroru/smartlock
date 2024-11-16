@@ -137,6 +137,6 @@ class BookingService
 
     private function prepareCheckoutDate(string $date): \DateTime
     {
-        return (new \DateTime($date, new \DateTimeZone('Europe/Prague')))->modify('12:00');
+        return (new \DateTime($date, new \DateTimeZone('Europe/Prague')))->modify('11:00');
     }
 }

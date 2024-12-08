@@ -117,7 +117,7 @@ class LockService
 
     public function addPasscode(Booking $booking, Room $room, string $passcode): Lock
     {
-        $name = $this->prepareName($booking->getName());
+        $name = $this->prepareName($booking->getName(), $room->getNumber());
         $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
         $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
         $lockId = $room->getLockId();
@@ -134,7 +134,7 @@ class LockService
 
     public function updatePasscode(Lock $lock): void
     {
-        $name = $this->prepareName($lock->getBooking()->getName());
+        $name = $this->prepareName($lock->getBooking()->getName(), $lock->getRoom()->getNumber());
         $startDate = $lock->getStartDate()->getTimestamp() * 1000;
         $endDate = $lock->getEndDate()->getTimestamp() * 1000;
         $lockId = $lock->getRoom()->getLockId();
@@ -142,8 +142,8 @@ class LockService
         $this->scienerApi->changePasscode($name, $passcodeId, $startDate, $endDate, $lockId);
     }
 
-    private function prepareName(string $name): string
+    private function prepareName(string $name, string $room): string
     {
-        return implode(' ', array_slice(explode(' ', $name), 0, 2));
+        return $room . ' ' . implode(' ', array_slice(explode(' ', $name), 0, 2));
     }
 }

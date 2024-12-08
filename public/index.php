@@ -21,7 +21,6 @@ $path = parse_url($request->getUri(), PHP_URL_PATH);
 
 $response = match ($path) {
     '/api/create' => $apiController->create($request),
-    '/api/update' => $apiController->update($request),
     '/api/addPayment' => $apiController->addPayment($request),
     default => new Response(
         'Page not valid',

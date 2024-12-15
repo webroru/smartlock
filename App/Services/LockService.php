@@ -49,8 +49,8 @@ class LockService
                     'end_date' => {$lock->getEndDate()->format('Y-m-d H:i:s')},
                     'booking_id' => {$lock->getBooking()->getId()},
                     'room_id' => {$lock->getRoom()->getId()},
-                    'deleted' => {$lock->getDeleted()} ,
-                ]);");
+                    'deleted' => {$lock->getDeleted()},
+                ");
                 $lock->setDeleted(true);
                 $this->lockRepository->update($lock);
             } catch (\Exception $e) {
@@ -117,7 +117,7 @@ class LockService
 
     public function addPasscode(Booking $booking, Room $room, string $passcode): Lock
     {
-        $name = $this->prepareName($booking->getName(), $room->getNumber());
+        $name = $this->prepareName($room->getNumber(), $booking);
         $startDate = $booking->getCheckInDate()->getTimestamp() * 1000;
         $endDate = $booking->getCheckOutDate()->getTimestamp() * 1000;
         $lockId = $room->getLockId();
@@ -134,7 +134,7 @@ class LockService
 
     public function updatePasscode(Lock $lock): void
     {
-        $name = $this->prepareName($lock->getBooking()->getName(), $lock->getRoom()->getNumber());
+        $name = $this->prepareName($lock->getRoom()->getNumber(), $lock->getBooking());
         $startDate = $lock->getStartDate()->getTimestamp() * 1000;
         $endDate = $lock->getEndDate()->getTimestamp() * 1000;
         $lockId = $lock->getRoom()->getLockId();
@@ -142,8 +142,18 @@ class LockService
         $this->scienerApi->changePasscode($name, $passcodeId, $startDate, $endDate, $lockId);
     }
 
-    private function prepareName(string $name, string $room): string
+    private function prepareName(string $room, Booking $booking): string
     {
-        return $room . ' ' . implode(' ', array_slice(explode(' ', $name), 0, 2));
+        if ($room === 'main') {
+            $room = implode(', ', $this->getRoomsNumbersByBooking($booking));
+        }
+
+        return $room . ' ' . implode(' ', array_slice(explode(' ', $booking->getName()), 0, 2));
+    }
+
+    private function getRoomsNumbersByBooking(Booking $booking): array
+    {
+        $rooms = array_filter($booking->getRooms(), fn(Room $room) => $room->getNumber() !== 'main');
+        return array_map(fn (Room $room) => $room->getNumber(), $rooms);
     }
 }

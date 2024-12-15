@@ -11,6 +11,7 @@ class Booking
     private ?string $phone = null;
     private string $orderId;
     private string $property;
+    private array $rooms;
 
     public function getId(): ?int
     {
@@ -89,8 +90,20 @@ class Booking
         return $this;
     }
 
-    public function getRoom(): int
+    /**
+     * @return Room[]
+     */
+    public function getRooms(): array
     {
-        return $this->room;
+        return $this->rooms;
+    }
+
+    /**
+     * @param Room[] $rooms
+     */
+    public function setRooms(array $rooms): self
+    {
+        $this->rooms = $rooms;
+        return $this;
     }
 }

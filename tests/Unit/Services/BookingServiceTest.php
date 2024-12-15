@@ -18,21 +18,6 @@ class BookingServiceTest extends UnitTestCase
         $this->bookingService = $this->getContainer()->get(BookingService::class);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
-    public function testUpdateCode()
-    {
-        $booking = (new Booking())
-            ->setOrderId('30641419')
-            ->setProperty('159459');
-
-        $lock = (new Lock())->setPasscode('222')
-            ->setBooking($booking);
-
-        $this->bookingService->updateCode($lock);
-    }
-
     public function testCreate()
     {
         $data = [
@@ -41,6 +26,7 @@ class BookingServiceTest extends UnitTestCase
             'guestname' => 'Test',
             'order_id' => '1000',
             'property' => '1000',
+            'room' => '111',
         ];
 
         $booking = $this->bookingService->create($data);

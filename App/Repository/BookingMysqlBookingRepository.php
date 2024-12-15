@@ -8,10 +8,12 @@ use PDO;
 class BookingMysqlBookingRepository implements BookingRepositoryInterface
 {
     private \PDO $client;
+    private RoomRepositoryInterface $roomRepository;
 
-    public function __construct(\PDO $client)
+    public function __construct(\PDO $client, RoomRepositoryInterface $roomRepository)
     {
         $this->client = $client;
+        $this->roomRepository = $roomRepository;
         $this->client->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
     }
 
@@ -37,7 +39,14 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
             ]);
-        return $this->client->lastInsertId();
+
+        $bookingId = $this->client->lastInsertId();
+
+        foreach ($booking->getRooms() as $room) {
+            $this->addRoom($room->getId(), $bookingId);
+        }
+
+        return $bookingId;
     }
 
     public function find(int $id): ?Booking
@@ -70,6 +79,10 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'order_id' => $booking->getOrderId(),
                 'property' => $booking->getProperty(),
             ]);
+
+        foreach ($booking->getRooms() as $room) {
+            $this->setRoom($room->getId(), $booking->getId());
+        }
     }
 
     public function findBy(array $params): array
@@ -107,6 +120,28 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->setName($row['name'])
             ->setPhone($row['phone'])
             ->setOrderId($row['order_id'])
-            ->setProperty($row['property']);
+            ->setProperty($row['property'])
+            ->setRooms($this->getRooms($row['id']))
+        ;
+    }
+
+    private function addRoom(int $roomId, int $bookingId): void
+    {
+        $this->client->prepare('INSERT INTO booking_has_room VALUES (?, ?)')
+            ->execute([$bookingId, $roomId]);
+    }
+
+    private function setRoom(int $roomId, int $bookingId): void
+    {
+        $this->client->prepare('UPDATE booking_has_room SET room_id = ? WHERE booking_id = ?')
+            ->execute([$roomId, $bookingId]);
+    }
+
+    private function getRooms(int $bookingId): array
+    {
+        $statement = $this->client->prepare('SELECT room_id FROM booking_has_room WHERE booking_id = ?');
+        $statement->execute([$bookingId]);
+        $rows = $statement->fetchAll();
+        return array_map(fn($row) => $this->roomRepository->find($row['room_id']), $rows);
     }
 }

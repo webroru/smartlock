@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Entity\Booking;
 use App\Entity\Lock;
 use App\Providers\Beds24\Client\ClientV1;
+use App\Repository\RoomRepositoryInterface;
 
 class BookingService
 {
@@ -14,11 +15,13 @@ class BookingService
 
     private ClientV1 $beds24Api;
     private array $beds24Props;
+    private RoomRepositoryInterface $roomRepository;
 
-    public function __construct(ClientV1 $beds24Api, array $beds24Props)
+    public function __construct(ClientV1 $beds24Api, array $beds24Props, RoomRepositoryInterface $roomRepository)
     {
         $this->beds24Api = $beds24Api;
         $this->beds24Props = $beds24Props;
+        $this->roomRepository = $roomRepository;
     }
 
     public function create(array $data): Booking
@@ -29,10 +32,13 @@ class BookingService
         $phone = $data['phone'] ?? null;
         $orderId = $data['order_id'] ?? null;
         $property = $data['property'] ?? null;
+        $room = $data['room'] ?? null;
 
-        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property) {
+        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property || !$room) {
             throw new \Exception('Data is not valid:' . implode(', ', $data));
         }
+
+        $rooms = [$this->roomRepository->findByNumber($room), $this->roomRepository->getMainRoom()];
 
         return (new Booking())
             ->setName($guestName)
@@ -40,7 +46,9 @@ class BookingService
             ->setCheckInDate($this->prepareCheckinDate($checkInDate))
             ->setCheckOutDate($this->prepareCheckoutDate($checkOutDate))
             ->setOrderId($orderId)
-            ->setProperty($property);
+            ->setProperty($property)
+            ->setRooms($rooms)
+        ;
     }
 
     public function updateCode(Lock $lock): void

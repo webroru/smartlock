@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Queue\Handlers;
 
+use App\Exceptions\GatewayException;
 use App\Logger;
 use App\Queue\Job\GetPasscode;
 use App\Queue\Job\JobInterface;
@@ -66,7 +67,7 @@ class GetPasscodeHandler implements HandlerInterface
                 $this->dispatcher->add(new SendPasscode($lockId));
                 Logger::log("New SendPasscode Job added For {$booking->getName()} reservation");
             }
-        } catch (\Exception $e) {
+        } catch (GatewayException $e) {
             $error = "Couldn't register new passcode for the booking id {$job->getBookingId()}. Error: {$e->getMessage()}.";
             if (++$job->attempts < self::ATTEMPTS_LIMIT) {
                 $error .= " The Job has been added to the queue. Attempt № $job->attempts";
@@ -77,6 +78,8 @@ class GetPasscodeHandler implements HandlerInterface
             } else {
                 Logger::critical($error);
             }
+        } catch (\Exception $e) {
+            Logger::error("{$e->getMessage()}");
         }
     }
 }

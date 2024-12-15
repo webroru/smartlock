@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Sciener\Client;
 
-use App\Logger;
+use App\Exceptions\GatewayException;
 use GuzzleHttp\ClientInterface;
 
 class Client
@@ -80,10 +80,11 @@ class Client
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during passcode generation for $name: {$result['errmsg']}";
-            if (in_array($result['errcode'], self::GATEWAY_ERRORS)) {
+            if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new GatewayException($message);
+            } else {
                 throw new \Exception($message);
             }
-            Logger::error($message);
         }
         return $result['keyboardPwdId'];
     }
@@ -114,9 +115,10 @@ class Client
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during passcode generation for $name: {$result['errmsg']}";
             if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new GatewayException($message);
+            } else {
                 throw new \Exception($message);
             }
-            Logger::error($message);
         }
     }
 
@@ -147,9 +149,10 @@ class Client
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during passcode generation for $name: {$result['errmsg']}";
             if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new GatewayException($message);
+            } else {
                 throw new \Exception($message);
             }
-            Logger::error($message);
         }
 
         return $result['keyboardPwd'];
@@ -208,9 +211,10 @@ class Client
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}";
             if (in_array($result, self::GATEWAY_ERRORS)) {
+                throw new GatewayException($message);
+            } else {
                 throw new \Exception($message);
             }
-            Logger::error($message);
         }
     }
 

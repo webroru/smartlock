@@ -43,7 +43,6 @@ services:
       - '@App\Services\BookingService'
       - '@App\Repository\BookingRepositoryInterface'
       - '@App\Repository\LockRepositoryInterface'
-      - '@App\Repository\RoomRepositoryInterface'
       - '@App\Queue\RabbitMQ\Dispatcher'
       - '%beds24.token%'
   App\Providers\Beds24\Client\ClientV1:
@@ -90,6 +89,7 @@ services:
     arguments:
       - '@App\Providers\Beds24\Client\ClientV1'
       - '%beds24.props%'
+      - '@App\Repository\RoomRepositoryInterface'
   App\Services\LockService: ~
   App\Services\Telegram: ~
   GuzzleHttp\Client: ~

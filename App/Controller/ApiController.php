@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Booking;
+use App\Entity\Room;
 use App\Helpers\PhoneHepler;
 use App\Logger;
 use App\Queue\Job\GetPasscode;
-use App\Queue\Job\RemovePasscode as RemovePasscodeJob;
+use App\Queue\Job\RemovePasscode;
 use App\Queue\RabbitMQ\Dispatcher;
 use App\Repository\BookingRepositoryInterface;
 use App\Repository\LockRepositoryInterface;
-use App\Repository\RoomRepositoryInterface;
 use App\Services\BookingService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +23,6 @@ class ApiController
         private readonly BookingService $bookingService,
         private readonly BookingRepositoryInterface $bookingRepository,
         private readonly LockRepositoryInterface $lockRepository,
-        private readonly RoomRepositoryInterface $roomRepository,
         private readonly Dispatcher $dispatcher,
         private readonly string $token
     ) {
@@ -58,13 +57,7 @@ class ApiController
                 $bookingId = $this->bookingRepository->add($booking);
             }
 
-            $room = $this->roomRepository->findByNumber($data['room']);
-            $mainRoom = $this->roomRepository->getMainRoom();
-
-            $rooms = [$mainRoom->getId()];
-            if ($room) {
-                $rooms[] = $room->getId();
-            }
+            $rooms = array_map(fn (Room $room) => $room->getId(), $booking->getRooms());
 
             $this->dispatcher->add(new GetPasscode($bookingId, $rooms));
 
@@ -117,8 +110,8 @@ class ApiController
 
         try {
             foreach ($locks as $lock) {
-                $this->dispatcher->add(new RemovePasscodeJob($lock->getId()));
-                Logger::log("New RemovePasscodeJob Job added For {$booking->getName()} (id {$booking->getId()})");
+                $this->dispatcher->add(new RemovePasscode($lock->getId()));
+                Logger::log("New RemovePasscode Job added For {$booking->getName()} (id {$booking->getId()})");
             }
         } catch (\Exception $e) {
             $error = "Couldn't remove passcode. Error: {$e->getMessage()}. " .
@@ -228,8 +221,8 @@ class ApiController
     {
         $locks = $this->lockRepository->findBy(['booking_id' => $booking->getId()]);
         foreach ($locks as $lock) {
-            $this->dispatcher->add(new RemovePasscodeJob($lock->getId(), true));
-            Logger::log("New RemovePasscodeJob Job added For {$booking->getName()} (id {$booking->getId()})");
+            $this->dispatcher->add(new RemovePasscode($lock->getId(), true));
+            Logger::log("New RemovePasscode Job added For {$booking->getName()} (id {$booking->getId()})");
         }
     }
 }

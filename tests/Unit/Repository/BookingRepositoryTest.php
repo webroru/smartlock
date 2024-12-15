@@ -3,6 +3,7 @@
 namespace tests\App\Unit\Repository;
 
 use App\Entity\Booking;
+use App\Entity\Room;
 use App\Repository\BookingRepositoryInterface;
 use tests\App\Unit\UnitTestCase;
 
@@ -22,13 +23,17 @@ class BookingRepositoryTest extends UnitTestCase
 
         $checkInDate = new \DateTime('14:00 +1 year');
         $checkOutDate = new \DateTime('12:00 +1 year + 1 day');
+        $room = (new Room())->setId(1);
+
         $this->booking = (new Booking())
             ->setName(self::NAME)
             ->setPhone(self::PHONE)
             ->setCheckInDate($checkInDate)
             ->setCheckOutDate($checkOutDate)
             ->setProperty(self::PROPERTY_ID)
-            ->setOrderId(self::ORDER_ID);
+            ->setOrderId(self::ORDER_ID)
+            ->setRooms([$room])
+        ;
     }
 
     public function testAdd()

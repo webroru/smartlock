@@ -41,9 +41,9 @@ class BookingService
         $room = $this->roomRepository->findByNumber($roomNumber);
         $mainRoom = $this->roomRepository->getMainRoom();
 
-        $rooms = [$mainRoom->getId()];
+        $rooms = [$mainRoom];
         if ($room) {
-            $rooms[] = $room->getId();
+            $rooms[] = $room;
         }
 
         return (new Booking())

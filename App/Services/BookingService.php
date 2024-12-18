@@ -32,13 +32,19 @@ class BookingService
         $phone = $data['phone'] ?? null;
         $orderId = $data['order_id'] ?? null;
         $property = $data['property'] ?? null;
-        $room = $data['room'] ?? null;
+        $roomNumber = $data['room'] ?? null;
 
-        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property || !$room) {
+        if (!$checkInDate || !$checkOutDate || !$guestName || !$orderId || !$property || !$roomNumber) {
             throw new \Exception('Data is not valid:' . implode(', ', $data));
         }
 
-        $rooms = [$this->roomRepository->findByNumber($room), $this->roomRepository->getMainRoom()];
+        $room = $this->roomRepository->findByNumber($roomNumber);
+        $mainRoom = $this->roomRepository->getMainRoom();
+
+        $rooms = [$mainRoom->getId()];
+        if ($room) {
+            $rooms[] = $room->getId();
+        }
 
         return (new Booking())
             ->setName($guestName)

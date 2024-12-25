@@ -57,9 +57,10 @@ class ApiController
                 $bookingId = $this->bookingRepository->add($booking);
             }
 
-            $rooms = array_map(fn (Room $room) => $room->getId(), $booking->getRooms());
+            $rooms = array_filter($booking->getRooms(), fn (Room $room) => $room->getLockId() !== null);
+            $roomsId = array_map(fn (Room $room) => $room->getId(), $rooms);
 
-            $this->dispatcher->add(new GetPasscode($bookingId, $rooms));
+            $this->dispatcher->add(new GetPasscode($bookingId, $roomsId));
 
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {

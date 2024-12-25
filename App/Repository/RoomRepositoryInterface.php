@@ -8,9 +8,9 @@ use App\Entity\Room;
 
 interface RoomRepositoryInterface
 {
-    public function add(Room $token);
+    public function add(Room $room): int;
     public function find($id): ?Room;
-    public function update(Room $token): void;
+    public function update(Room $room): void;
     public function findBy(array $params): array;
     public function findByNumber(string $number): ?Room;
     public function getMainRoom(): Room;

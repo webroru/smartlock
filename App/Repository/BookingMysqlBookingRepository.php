@@ -80,8 +80,9 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 'property' => $booking->getProperty(),
             ]);
 
+        $this->removeRooms($booking->getId());
         foreach ($booking->getRooms() as $room) {
-            $this->setRoom($room->getId(), $booking->getId());
+            $this->addRoom($room->getId(), $booking->getId());
         }
     }
 
@@ -131,10 +132,10 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
             ->execute([$bookingId, $roomId]);
     }
 
-    private function setRoom(int $roomId, int $bookingId): void
+    private function removeRooms(int $bookingId): void
     {
-        $this->client->prepare('UPDATE booking_has_room SET room_id = ? WHERE booking_id = ?')
-            ->execute([$roomId, $bookingId]);
+        $this->client->prepare('DELETE FROM booking_has_room WHERE booking_id = ?')
+            ->execute([$bookingId]);
     }
 
     private function getRooms(int $bookingId): array

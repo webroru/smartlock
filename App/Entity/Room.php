@@ -6,7 +6,7 @@ class Room
 {
     private int $id;
     private string $number;
-    private string $lockId;
+    private ?string $lockId = null;
 
     public function getId(): ?int
     {
@@ -30,12 +30,12 @@ class Room
         return $this;
     }
 
-    public function getLockId(): string
+    public function getLockId(): ?string
     {
         return $this->lockId;
     }
 
-    public function setLockId(string $lockId): self
+    public function setLockId(?string $lockId): self
     {
         $this->lockId = $lockId;
         return $this;

@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Entity\Booking;
 use App\Entity\Lock;
+use App\Entity\Room;
 use App\Providers\Beds24\Client\ClientV1;
 use App\Repository\RoomRepositoryInterface;
 
@@ -39,12 +40,13 @@ class BookingService
         }
 
         $room = $this->roomRepository->findByNumber($roomNumber);
-        $mainRoom = $this->roomRepository->getMainRoom();
-
-        $rooms = [$mainRoom];
-        if ($room) {
-            $rooms[] = $room;
+        if (!$room) {
+            $room = (new Room())->setNumber($roomNumber);
+            $roomId = $this->roomRepository->add($room);
+            $room->setId($roomId);
         }
+
+        $mainRoom = $this->roomRepository->getMainRoom();
 
         return (new Booking())
             ->setName($guestName)
@@ -53,7 +55,7 @@ class BookingService
             ->setCheckOutDate($this->prepareCheckoutDate($checkOutDate))
             ->setOrderId($orderId)
             ->setProperty($property)
-            ->setRooms($rooms)
+            ->setRooms([$mainRoom, $room])
         ;
     }
 

@@ -18,7 +18,7 @@ class RoomRepositoryTest extends UnitTestCase
         $this->roomRepository = $this->getContainer()->get(RoomRepositoryInterface::class);
 
         $this->room = (new Room())
-            ->setLockId('123')
+            ->setLockId(123)
             ->setNumber('test');
     }
 
@@ -33,11 +33,11 @@ class RoomRepositoryTest extends UnitTestCase
     {
         $id = $this->roomRepository->add($this->room);
         $this->room->setId($id);
-        $this->room->setLockId('321');
+        $this->room->setLockId(321);
         $this->roomRepository->update($this->room);
         $room = $this->roomRepository->find($id);
         $this->roomRepository->delete($id);
-        $this->assertEquals('321', $room->getLockId());
+        $this->assertEquals(321, $room->getLockId());
     }
 
     public function testFind()

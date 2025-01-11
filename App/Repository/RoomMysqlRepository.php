@@ -57,17 +57,17 @@ class RoomMysqlRepository implements RoomRepositoryInterface
      */
     public function findBy(array $params): array
     {
-        $where = '';
+        $where = [];
         $values = [];
         foreach ($params as $field => $value) {
-            $where .= "$field = :$field";
+            $where[] = "$field = :$field";
             $values[$field] = $value;
         }
 
         $sql = "SELECT * FROM $this->table";
 
         if ($where) {
-            $sql .= " WHERE $where";
+            $sql .= ' WHERE ' . implode(' and ', $where);
         }
 
         $statement = $this->client->prepare($sql);

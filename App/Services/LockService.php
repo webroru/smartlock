@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Entity\Booking;
 use App\Entity\Lock;
 use App\Entity\Room;
+use App\Exceptions\GatewayException;
 use App\Logger;
 use App\Providers\Sciener\Client\Client;
 use App\Repository\LockRepositoryInterface;
@@ -45,8 +46,6 @@ class LockService
                     'name' => {$lock->getName()},
                     'passcode_id' => {$lock->getPasscodeId()},
                     'passcode' => {$lock->getPasscode()},
-                    'start_date' => {$lock->getStartDate()->format('Y-m-d H:i:s')},
-                    'end_date' => {$lock->getEndDate()->format('Y-m-d H:i:s')},
                     'booking_id' => {$lock->getBooking()->getId()},
                     'room_id' => {$lock->getRoom()->getId()},
                     'deleted' => {$lock->getDeleted()},
@@ -59,6 +58,9 @@ class LockService
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     public function removeDuplicates(): void
     {
         /** @var Room $room */
@@ -104,17 +106,26 @@ class LockService
         }
     }
 
+    /**
+     * @throws GatewayException
+     */
     public function removePasscode(Lock $lock): void
     {
         $this->scienerApi->deletePasscode($lock->getPasscodeId(), $lock->getRoom()->getLockId());
     }
 
+    /**
+     * @throws GatewayException
+     */
     public function addRandomPasscode(Booking $booking, Room $room): Lock
     {
         $passcode = sprintf('%06d', mt_rand(0, 9999));
         return $this->addPasscode($booking, $room, $passcode);
     }
 
+    /**
+     * @throws GatewayException
+     */
     public function addPasscode(Booking $booking, Room $room, string $passcode): Lock
     {
         $name = $this->prepareName($room->getNumber(), $booking);
@@ -124,19 +135,20 @@ class LockService
         $passcodeId = $this->scienerApi->addPasscode($name, $passcode, $startDate, $endDate, $lockId);
         return (new Lock())
             ->setName($name)
-            ->setStartDate($booking->getCheckInDate())
-            ->setEndDate($booking->getCheckOutDate())
             ->setPasscode($passcode)
             ->setPasscodeId($passcodeId)
             ->setBooking($booking)
             ->setRoom($room);
     }
 
+    /**
+     * @throws GatewayException
+     */
     public function updatePasscode(Lock $lock): void
     {
         $name = $this->prepareName($lock->getRoom()->getNumber(), $lock->getBooking());
-        $startDate = $lock->getStartDate()->getTimestamp() * 1000;
-        $endDate = $lock->getEndDate()->getTimestamp() * 1000;
+        $startDate = $lock->getBooking()->getCheckInDate()->getTimestamp() * 1000;
+        $endDate = $lock->getBooking()->getCheckOutDate()->getTimestamp() * 1000;
         $lockId = $lock->getRoom()->getLockId();
         $passcodeId = $lock->getPasscodeId();
         $this->scienerApi->changePasscode($name, $passcodeId, $startDate, $endDate, $lockId);

@@ -31,7 +31,7 @@ class LockServiceTest extends UnitTestCase
 
         $room = (new Room())
             ->setNumber('13')
-            ->setLockId('6768288');
+            ->setLockId(6768288);
 
         $lock = $this->lockService->addRandomPasscode($booking, $room);
         $this->assertInstanceOf(Lock::class, $lock);

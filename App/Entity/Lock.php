@@ -10,8 +10,6 @@ class Lock
     private int $passcodeId;
     private string $passcode;
     private string $name;
-    private \DateTime $startDate;
-    private \DateTime $endDate;
     private Booking $booking;
     private Room $room;
     private bool $deleted = false;
@@ -57,28 +55,6 @@ class Lock
     public function setName(string $name): self
     {
         $this->name = $name;
-        return $this;
-    }
-
-    public function getStartDate(): \DateTime
-    {
-        return $this->startDate;
-    }
-
-    public function setStartDate(\DateTime $startDate): self
-    {
-        $this->startDate = $startDate;
-        return $this;
-    }
-
-    public function getEndDate(): \DateTime
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(\DateTime $endDate): self
-    {
-        $this->endDate = $endDate;
         return $this;
     }
 

@@ -28,7 +28,7 @@ class LockRepositoryTest extends UnitTestCase
         $this->bookingRepository = $this->getContainer()->get(BookingRepositoryInterface::class);
 
         $this->room = (new Room())
-            ->setLockId('test')
+            ->setLockId(1)
             ->setNumber('test');
 
         $roomId = $this->roomRepository->add($this->room);
@@ -50,8 +50,6 @@ class LockRepositoryTest extends UnitTestCase
             ->setName('test')
             ->setPasscode('0000')
             ->setPasscodeId(42)
-            ->setStartDate(new \DateTime())
-            ->setEndDate(new \DateTime('+1 year'))
             ->setBooking($this->booking)
             ->setRoom($this->room);
     }

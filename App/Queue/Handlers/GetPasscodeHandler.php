@@ -51,15 +51,24 @@ class GetPasscodeHandler implements HandlerInterface
                 return;
             }
 
-            $passcode = $job->getPasscode();
-            if ($passcode) {
-                $lock = $this->lockService->addPasscode($booking, $room, $passcode);
-            } else {
-                $lock = $this->lockService->addRandomPasscode($booking, $room);
-            }
+            $locks = $this->lockRepository->findBy(['booking_id' => $bookingId, 'room_id' => $roomId]);
+            $lock = reset($locks);
 
-            $lockId = $this->lockRepository->add($lock);
-            Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
+            if ($lock) {
+                $this->lockService->updatePasscode($lock);
+                $lockId = $lock->getId();
+                Logger::log("For {$booking->getName()} have been updated password: {$lock->getPasscode()}");
+            } else {
+                $passcode = $job->getPasscode();
+                if ($passcode) {
+                    $lock = $this->lockService->addPasscode($booking, $room, $passcode);
+                } else {
+                    $lock = $this->lockService->addRandomPasscode($booking, $room);
+                }
+
+                $lockId = $this->lockRepository->add($lock);
+                Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
+            }
 
             if ($rooms) {
                 $this->dispatcher->add(new GetPasscode($bookingId, $rooms, $lock->getPasscode()));

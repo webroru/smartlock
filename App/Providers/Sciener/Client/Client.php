@@ -55,7 +55,7 @@ class Client
         $this->token = $this->getAccessToken($appSecret, $user, $password);
     }
 
-    public function addPasscode(string $name, string $password, int $startDate, int $endDate, string $lockId): int
+    public function addPasscode(string $name, string $password, int $startDate, int $endDate, int $lockId): int
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/keyboardPwd/add',
@@ -89,7 +89,7 @@ class Client
         return $result['keyboardPwdId'];
     }
 
-    public function changePasscode(string $name, int $passwordId, int $startDate, int $endDate, string $lockId): void
+    public function changePasscode(string $name, int $passwordId, int $startDate, int $endDate, int $lockId): void
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/keyboardPwd/change',
@@ -122,7 +122,7 @@ class Client
         }
     }
 
-    public function generatePasscode(string $name, int $startDate, int $endDate, string $lockId): string
+    public function generatePasscode(string $name, int $startDate, int $endDate, int $lockId): string
     {
         $name = implode(' ', array_slice(explode(' ', $name), 0, 2));
         $response = $this->client->post(
@@ -158,7 +158,7 @@ class Client
         return $result['keyboardPwd'];
     }
 
-    public function getAllPasscodes(string $lockId, int $pageNo = 1): array
+    public function getAllPasscodes(int $lockId, int $pageNo = 1): array
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/lock/listKeyboardPwd ',
@@ -187,7 +187,7 @@ class Client
         return $list;
     }
 
-    public function deletePasscode(int $keyboardPwdId, string $lockId): void
+    public function deletePasscode(int $keyboardPwdId, int $lockId): void
     {
         $response = $this->client->post(
             self::BASE_URL . '/v3/keyboardPwd/delete ',

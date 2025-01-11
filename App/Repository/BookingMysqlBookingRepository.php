@@ -7,6 +7,7 @@ use PDO;
 
 class BookingMysqlBookingRepository implements BookingRepositoryInterface
 {
+    private string $table = 'booking';
     private \PDO $client;
     private RoomRepositoryInterface $roomRepository;
 
@@ -59,7 +60,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
 
     public function update(Booking $booking): void
     {
-        $sql = 'UPDATE booking
+        $sql = "UPDATE $this->table
             SET
                 name = :name,
                 phone = :phone,
@@ -67,7 +68,7 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
                 check_out_date = :check_out_date,
                 order_id = :order_id,
                 property = :property
-            WHERE id = :id';
+            WHERE id = :id";
 
         $this->client->prepare($sql)
             ->execute([
@@ -88,17 +89,17 @@ class BookingMysqlBookingRepository implements BookingRepositoryInterface
 
     public function findBy(array $params): array
     {
-        $where = '';
+        $where = [];
         $values = [];
         foreach ($params as $field => $value) {
-            $where .= "$field = :$field";
+            $where[] = "$field = :$field";
             $values[$field] = $value;
         }
 
-        $sql = 'SELECT * FROM booking';
+        $sql = "SELECT * FROM `$this->table`";
 
         if ($where) {
-            $sql .= " WHERE $where";
+            $sql .= ' WHERE ' . implode(' and ', $where);
         }
 
         $statement = $this->client->prepare($sql);

@@ -48,3 +48,10 @@ Run specific test:  `docker compose run php ./vendor/bin/phpunit --filter [test 
 
 Lock admin panel: https://lock.sciener.cn
 Lock API panel: https://euapi.sciener.com
+
+## RabbitMQ
+
+### Clear the queue
+```shell
+docker compose exec rabbitmq bash -c "rabbitmq-plugins disable rabbitmq_delayed_message_exchange && rabbitmq-plugins enable rabbitmq_delayed_message_exchange"
+```

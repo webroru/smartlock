@@ -141,19 +141,6 @@ class LockService
             ->setRoom($room);
     }
 
-    /**
-     * @throws GatewayException
-     */
-    public function updatePasscode(Lock $lock): void
-    {
-        $name = $this->prepareName($lock->getRoom()->getNumber(), $lock->getBooking());
-        $startDate = $lock->getBooking()->getCheckInDate()->getTimestamp() * 1000;
-        $endDate = $lock->getBooking()->getCheckOutDate()->getTimestamp() * 1000;
-        $lockId = $lock->getRoom()->getLockId();
-        $passcodeId = $lock->getPasscodeId();
-        $this->scienerApi->changePasscode($name, $passcodeId, $startDate, $endDate, $lockId);
-    }
-
     private function prepareName(string $room, Booking $booking): string
     {
         if ($room === 'main') {

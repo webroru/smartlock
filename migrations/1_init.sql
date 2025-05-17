@@ -5,8 +5,6 @@ create table if not exists `lock`
     passcode_id varchar(200) not null,
     passcode varchar(200) null,
     name varchar(200) null,
-    start_date datetime not null,
-    end_date datetime not null
 ) COLLATE='utf8_general_ci';
 
 create table if not exists booking

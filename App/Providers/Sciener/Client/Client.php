@@ -79,7 +79,7 @@ class Client
         }
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
-            $message = "Error during passcode generation for $name: {$result['errmsg']}";
+            $message = "Error during the adding specific passcode for $name: {$result['errmsg']}";
             if (in_array($result, self::GATEWAY_ERRORS)) {
                 throw new GatewayException($message);
             } else {
@@ -113,7 +113,7 @@ class Client
         }
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
-            $message = "Error during passcode generation for $name: {$result['errmsg']}";
+            $message = "Error during passcode changing for $name: {$result['errmsg']}";
             if (in_array($result, self::GATEWAY_ERRORS)) {
                 throw new GatewayException($message);
             } else {

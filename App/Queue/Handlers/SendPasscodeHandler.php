@@ -39,7 +39,7 @@ class SendPasscodeHandler implements HandlerInterface
             $this->bookingService->updateCode($lock);
             Logger::log("Passcode {$lock->getPasscode()} has been sent for {$lock->getBooking()->getName()}");
         } catch (\Exception $e) {
-            $error = "Couldn't send new passcode for the booking id {$job->getLockId()}. Error: {$e->getMessage()}.";
+            $error = "Couldn't send new passcode for the Lock id {$job->getLockId()}. Error: {$e->getMessage()}.";
             if (++$job->attempts < self::ATTEMPTS_LIMIT) {
                 $error .= " The Job has been added to the queue. Attempt № $job->attempts";
                 $this->dispatcher->add($job, $job->attempts * self::DELAY);

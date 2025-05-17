@@ -58,6 +58,7 @@ class ApiController
             }
 
             $rooms = array_filter($booking->getRooms(), fn (Room $room) => $room->getLockId() !== null);
+            usort($rooms, fn (Room $room1, Room $room2) => $room1->getNumber() === 'main' ? -1 : 1);
             $roomsId = array_map(fn (Room $room) => $room->getId(), $rooms);
 
             $this->dispatcher->add(new GetPasscode($bookingId, $roomsId));

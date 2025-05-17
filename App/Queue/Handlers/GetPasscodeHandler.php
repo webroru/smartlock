@@ -67,7 +67,7 @@ class GetPasscodeHandler implements HandlerInterface
                 }
 
                 $lockId = $this->lockRepository->add($lock);
-                Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()}");
+                Logger::log("For {$booking->getName()} have been added password: {$lock->getPasscode()} for room {$room->getNumber()}");
             }
 
             if ($rooms) {

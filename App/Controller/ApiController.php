@@ -64,7 +64,7 @@ class ApiController
 
             Logger::log("New GetPasscode Job added For {$booking->getName()} reservation");
         } catch (\Exception $e) {
-            Logger::error($e->getMessage());
+            Logger::error("Can't create the booking. Error: {$e->getMessage()}");
             return new Response(
                 $e->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR,

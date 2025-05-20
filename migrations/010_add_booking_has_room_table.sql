@@ -1,4 +1,4 @@
-create table booking_has_room
+create table if not exists booking_has_room
 (
     booking_id int not null,
     room_id int not null

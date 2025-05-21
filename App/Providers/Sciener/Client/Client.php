@@ -16,7 +16,7 @@ class Client
     private const KEYBOARD_PWD_VERSION = 4;
     private const KEYBOARD_PWD_TYPE = ['period' => 3];
     private const SAME_PASSCODE_EXISTS = -3007;
-    private const NERVE_USED_PASSWORD = -3008;
+    private const NEVER_USED_PASSWORD = -3008;
     private const RUN_OUT_OF_MEMORY = -4056;
     private const NO_SPACE = -3009;
     private const NO_GATEWAY_CONNECTION = -2012;
@@ -27,7 +27,7 @@ class Client
     private const LOCK_OFFLINE = -3036;
     private const LOCK_BUSY = -3037;
     private const GATEWAY_ERRORS = [
-        self::NERVE_USED_PASSWORD,
+        self::NEVER_USED_PASSWORD,
         self::RUN_OUT_OF_MEMORY,
         self::NO_SPACE,
         self::NO_GATEWAY_CONNECTION,
@@ -80,7 +80,7 @@ class Client
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during the adding specific passcode for $name: {$result['errmsg']}";
-            if (in_array($result, self::GATEWAY_ERRORS)) {
+            if (in_array($result['errcode'], self::GATEWAY_ERRORS)) {
                 throw new GatewayException($message);
             } else {
                 throw new \Exception($message);
@@ -114,7 +114,7 @@ class Client
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during passcode changing for $name: {$result['errmsg']}";
-            if (in_array($result, self::GATEWAY_ERRORS)) {
+            if (in_array($result['errcode'], self::GATEWAY_ERRORS)) {
                 throw new GatewayException($message);
             } else {
                 throw new \Exception($message);
@@ -148,7 +148,7 @@ class Client
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during passcode generation for $name: {$result['errmsg']}";
-            if (in_array($result, self::GATEWAY_ERRORS)) {
+            if (in_array($result['errcode'], self::GATEWAY_ERRORS)) {
                 throw new GatewayException($message);
             } else {
                 throw new \Exception($message);
@@ -210,7 +210,7 @@ class Client
         $result = json_decode($response->getBody()->getContents(), true);
         if (isset($result['errcode']) && $result['errcode'] < 0) {
             $message = "Error during removing passcode with id $keyboardPwdId: {$result['errmsg']}";
-            if (in_array($result, self::GATEWAY_ERRORS)) {
+            if (in_array($result['errcode'], self::GATEWAY_ERRORS)) {
                 throw new GatewayException($message);
             } else {
                 throw new \Exception($message);

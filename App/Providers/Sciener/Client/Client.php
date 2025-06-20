@@ -37,6 +37,7 @@ class Client
         self::GATEWAY_WIFI,
         self::LOCK_OFFLINE,
         self::LOCK_BUSY,
+        self::SAME_PASSCODE_EXISTS,
     ];
 
     private ClientInterface $client;
